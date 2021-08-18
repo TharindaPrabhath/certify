@@ -1,10 +1,17 @@
-import React from 'react';
-import './App.css';
+import React from "react";
+import "./App.css";
+import Sidebar from "./components/Sidebar";
 
 function App() {
   return (
     <div className="App">
-      <h1>Hello</h1>
+      <div className="left-col">
+        <Sidebar />
+      </div>
+
+      <div className="right-col">
+        <h2>Screens</h2>
+      </div>
     </div>
   );
 }
