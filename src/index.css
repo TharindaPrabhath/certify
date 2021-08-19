@@ -16,3 +16,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+:root {
+  --primary-bg-clr: hsl(220, 22%, 11%);
+  --secondary-bg-clr: hsl(211, 24%, 17%);
+  --primary-font-clr: hsl(0, 0%, 100%);
+
+  --primary-brand-clr: hsl(197, 89%, 49%);
+}
