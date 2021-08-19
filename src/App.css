@@ -1,0 +1,26 @@
+a{
+    text-decoration: none;
+    color: var(--primary-font-clr);
+  }
+
+.app{
+    position: relative;
+    height: 100vh;
+    background-color: var(--primary-bg-clr);
+    color: var(--primary-font-clr);
+}
+
+.app__topbar{
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.app__sidebar{
+    display: none;
+}
+
+.app__screen{
+    position: absolute;
+    top: 4em;
+}
