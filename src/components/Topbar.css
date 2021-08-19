@@ -1,0 +1,13 @@
+.topbar{
+    background-color: transparent;
+    height: 3em;
+    width: 100%;
+}
+
+.topbar__content{
+    padding: 0.5em;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

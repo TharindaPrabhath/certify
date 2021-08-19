@@ -1,11 +1,31 @@
 import React from "react";
+import DashCard from "../components/DashCard";
 
-import "../components/Dashboard.css";
+import "../screens/Dashboard.css";
+
+import CertificateImg from "../assets/certificate.png";
 
 const Dashboard = () => {
   return (
     <div className="dashboard">
-      <h2>Dashboard</h2>
+      <div className="dashboard__content">
+        <DashCard
+          title="Total Issued certificates"
+          value={20}
+          image={CertificateImg}
+        />
+        <DashCard
+          title="Total Issued certificates"
+          value={20}
+          image={CertificateImg}
+        />
+
+        <DashCard
+          title="Total Issued certificates"
+          value={20}
+          image={CertificateImg}
+        />
+      </div>
     </div>
   );
 };

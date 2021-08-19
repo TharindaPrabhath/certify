@@ -1,0 +1,38 @@
+.sidebar{
+    background-color: var(--secondary-bg-clr);
+    color: var(--primary-font-clr);
+    height: 100%;
+    width: 17em;
+}
+
+.sidebar__content{
+    margin: 2em 1em;
+}
+
+.sidebar__content .logo{
+    display: flex;
+    align-items: center;
+}
+
+.logo h2{
+    margin-left: 0.5em;
+    font-family: 'Palette Mosaic', cursive;
+    font-size: 2em;
+    color: rgb(14, 173, 236);
+}
+
+.tabs{
+    margin-top: 2em;
+}
+
+.tabs .tab{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-left-color: transparent;
+    padding-left: 1em;
+}
+
+.tabs .tab.active{
+    border-left: 3px solid var(--primary-brand-clr);
+}
