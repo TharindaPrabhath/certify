@@ -17,7 +17,7 @@ const Topbar = () => {
   return (
     <div className="topbar">
       <div className="topbar__content">
-        <Button onClick={() => toggleSidebar(true)}>
+        <Button className="menu-btn" onClick={() => toggleSidebar(true)}>
           <MenuIcon style={{ color: "white" }} />
         </Button>
         <SwipeableDrawer
@@ -27,7 +27,9 @@ const Topbar = () => {
         >
           <Sidebar />
         </SwipeableDrawer>
-        <Avatar style={{ cursor: "pointer" }}>TP</Avatar>
+        <Avatar className="avatar" style={{ cursor: "pointer" }}>
+          TP
+        </Avatar>
       </div>
     </div>
   );
