@@ -1,11 +1,52 @@
 .dashboard{
-    width: 100vw;
+    height: 100%;
+    overflow-y: auto;
 }
 
 .dashboard__content{
-    padding: 0 1em;
+    padding: 1em 1em;
 
     display: flex;
     flex-direction: column;
     gap: 1.5em;
+}
+
+.welcome-banner{
+    background-color: #D1FFFC;
+    border-radius: 1em;
+}
+
+.welcome-banner__content{
+    padding: 2em 1em;
+    color: black;
+    text-align: center;
+
+    display: flex;
+    flex-direction: column;
+    gap: 3em;
+}
+
+.welcome-banner .illustration{
+    width: 25em;
+}
+
+.analytics-cards{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1em;
+}
+
+@media only screen and (min-width: 650px){
+    .welcome-banner__content{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .welcome-banner__content .illustration{
+        width: 60%;
+        max-width: 25em;
+    }
 }
