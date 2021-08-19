@@ -23,4 +23,7 @@ code {
   --primary-font-clr: hsl(0, 0%, 100%);
 
   --primary-brand-clr: hsl(197, 89%, 49%);
+
+  --primary-error-clr: hsl(339, 100%, 48%);
+  --primary-succes-clr: hsl(151, 100%, 45%);
 }
