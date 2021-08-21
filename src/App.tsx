@@ -7,29 +7,48 @@ import Sidebar from "./components/Sidebar";
 import Dashboard from "./screens/Dashboard";
 import Topbar from "./components/Topbar";
 import User from "./screens/User";
+import NewUser from "./screens/NewUser";
+import { createTheme, ThemeProvider } from "@material-ui/core";
+import colors from "./data/colors";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: colors.primaryBrandClr,
+    },
+    secondary: {
+      main: colors.primaryFontClr,
+    },
+  },
+});
 
 function App() {
   return (
-    <Router>
-      <div className="app">
-        <div className="app__topbar">
-          <Topbar />
-        </div>
+    <ThemeProvider theme={theme}>
+      <Router>
+        <div className="app">
+          <div className="app__topbar">
+            <Topbar />
+          </div>
 
-        <div className="app__sidebar">
-          <Sidebar />
-        </div>
+          <div className="app__sidebar">
+            <Sidebar />
+          </div>
 
-        <div className="app__screen">
-          <Route path="/dashboard">
-            <Dashboard />
-          </Route>
-          <Route path="/user">
-            <User />
-          </Route>
+          <div className="app__screen">
+            <Route path="/dashboard" exact>
+              <Dashboard />
+            </Route>
+            <Route path="/user" exact>
+              <User />
+            </Route>
+            <Route path="/user/new" exact>
+              <NewUser />
+            </Route>
+          </div>
         </div>
-      </div>
-    </Router>
+      </Router>
+    </ThemeProvider>
   );
 }
 
