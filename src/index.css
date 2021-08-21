@@ -20,10 +20,14 @@ code {
 :root {
   --primary-bg-clr: hsl(220, 22%, 11%);
   --secondary-bg-clr: hsl(211, 24%, 17%);
+
   --primary-font-clr: hsl(0, 0%, 100%);
+  --secondary-font-clr: hsl(0, 0%, 88%);
 
   --primary-brand-clr: hsl(197, 89%, 49%);
 
   --primary-error-clr: hsl(339, 100%, 48%);
   --primary-succes-clr: hsl(151, 100%, 45%);
+
+  --dimmed-clr: hsl(211, 15%, 31%);
 }
