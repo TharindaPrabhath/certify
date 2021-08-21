@@ -1,37 +1,32 @@
-import {
-  Breadcrumbs,
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Switch,
-  TextField,
-  Typography,
-} from "@material-ui/core";
 import React from "react";
+
+import { Breadcrumbs, Button, Typography } from "@material-ui/core";
+import { Field, Form, Formik } from "formik";
+import * as yup from "yup";
 import { Link } from "react-router-dom";
-import { useButtonStyles, useTextfieldStyles } from "../data/styles";
-import { useCreateNewUserForm } from "../utils/validation";
+import { useButtonStyles } from "../data/styles";
 
 import "./NewUser.css";
+import CertifyTextField from "../components/core/CertifyTextField";
+import CertifySwitch from "../components/core/CertifySwitch";
+import CertifyDatePicker from "../components/core/CertifyDatePicker";
+import CertifySelect from "../components/core/CertifySelect";
+import { stringify } from "querystring";
 
 const NewUser = () => {
-  const { values, errors, handleChange } = useCreateNewUserForm();
-
-  const textfieldStyles = useTextfieldStyles();
   const buttonStyles = useButtonStyles();
 
-  const handleCreateNewUser = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    alert("Submitted!");
-  };
-
-  const handleChange2 = (e: any) => {
-    console.log(e.target.name);
-  };
-
-  console.log(values.firstName);
+  const schema = yup.object().shape({
+    firstName: yup.string().required(),
+    lastName: yup.string().required(),
+    email: yup.string().email("Invalid Email").required(),
+    phone: yup.number(),
+    role: yup.string(),
+    address: yup.string(),
+    description: yup.string(),
+    emailVerified: yup.boolean(),
+    birthday: yup.date(),
+  });
 
   return (
     <div className="new-user">
@@ -45,137 +40,94 @@ const NewUser = () => {
           </Breadcrumbs>
         </div>
 
-        <div className="details">
-          <form onSubmit={(e) => handleCreateNewUser(e)}>
-            <div className="left-col">
-              <TextField
-                id="outlined-secondary"
-                label="First Name"
-                variant="outlined"
-                name="firstName"
-                value={values.firstName}
-                error={errors.firstName.length !== 0}
-                helperText={errors.firstName}
-                onChange={handleChange}
-                // onInput={handleChange}
-                // required
-                className={textfieldStyles.textField}
-                InputProps={{ className: textfieldStyles.input }}
-              ></TextField>
+        <div className="form-container">
+          <Formik
+            validationSchema={schema}
+            initialValues={{
+              firstName: "",
+              lastName: "",
+              email: "",
+              emailVerified: false,
+              phone: "",
+              birthday: "",
+              role: "",
+              address: "",
+              description: "",
+            }}
+            onSubmit={(values) => {
+              alert(stringify(values));
+            }}
+          >
+            <Form>
+              <div className="left-col">
+                <Field
+                  label="First Name"
+                  name="firstName"
+                  component={CertifyTextField}
+                  required
+                ></Field>
+                <Field
+                  label="Last Name"
+                  name="lastName"
+                  component={CertifyTextField}
+                  required
+                ></Field>
+                <Field
+                  label="Email"
+                  name="email"
+                  component={CertifyTextField}
+                  required
+                ></Field>
+                <div className="email-verified">
+                  <Field name="emailVerified" component={CertifySwitch} />
 
-              <TextField
-                id="outlined-secondary"
-                label="Last Name"
-                variant="outlined"
-                name="lastName"
-                value={values.lastName}
-                onChange={handleChange}
-                // required
-                className={textfieldStyles.textField}
-                InputProps={{ className: textfieldStyles.input }}
-              ></TextField>
-
-              <TextField
-                id="outlined-secondary"
-                label="Email"
-                type="email"
-                variant="outlined"
-                name="email"
-                value={values.email}
-                onChange={handleChange}
-                // required
-                className={textfieldStyles.textField}
-                InputProps={{ className: textfieldStyles.input }}
-              ></TextField>
-              <div className="email-verified">
-                <Switch color="primary" />
-                <div className="right-col">
-                  <label>Email verified</label>
-                  <p>
-                    Disabling this will automatically send the user a
-                    verification email
-                  </p>
+                  <div className="right-col">
+                    <label>Email verified</label>
+                    <p>
+                      Disabling this will automatically send the user a
+                      verification email
+                    </p>
+                  </div>
                 </div>
+                <Field
+                  label="Phone"
+                  name="phone"
+                  component={CertifyTextField}
+                ></Field>
               </div>
 
-              <TextField
-                id="outlined-secondary"
-                label="Phone"
-                variant="outlined"
-                name="phone"
-                value={values.phone}
-                onChange={handleChange}
-                className={textfieldStyles.textField}
-                InputProps={{ className: textfieldStyles.input }}
-              ></TextField>
-            </div>
-
-            <div className="right-col">
-              <FormControl variant="outlined">
-                <InputLabel id="demo-simple-select-outlined-label">
-                  Role
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-outlined-label"
-                  id="demo-simple-select-outlined"
+              <div className="right-col">
+                <Field
+                  label="Birthday"
+                  name="birthday"
+                  component={CertifyDatePicker}
+                ></Field>
+                <Field
                   label="Role"
                   name="role"
-                  value={values.role}
-                  onChange={handleChange}
-                  // required
-                  className={textfieldStyles.textField}
-                  inputProps={{ className: textfieldStyles.input }}
-                >
-                  <MenuItem value={10}>Student</MenuItem>
-                  <MenuItem value={20}>Undergraduate</MenuItem>
-                  <MenuItem value={30}>Graduate</MenuItem>
-                </Select>
-              </FormControl>
+                  component={CertifySelect}
+                  options={["Student", "Undergraduate", "Graduate"]}
+                ></Field>
+                <Field
+                  label="Address"
+                  name="address"
+                  component={CertifyTextField}
+                ></Field>
+                <Field
+                  label="Description"
+                  name="decription"
+                  component={CertifyTextField}
+                  textArea
+                ></Field>
 
-              <TextField
-                id="outlined-secondary"
-                label="Birthday"
-                type="date"
-                variant="outlined"
-                name="birthday"
-                value={values.birthday}
-                onChange={handleChange}
-                className={textfieldStyles.textField}
-                InputProps={{ className: textfieldStyles.input }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              ></TextField>
-
-              <TextField
-                id="outlined-secondary"
-                label="Address"
-                variant="outlined"
-                name="address"
-                value={values.address}
-                onChange={handleChange}
-                className={textfieldStyles.textField}
-                InputProps={{ className: textfieldStyles.input }}
-              ></TextField>
-              <TextField
-                id="outlined-secondary"
-                label="Description"
-                multiline
-                rows={5}
-                variant="outlined"
-                name="description"
-                value={values.description}
-                onChange={handleChange}
-                className={textfieldStyles.textField}
-                InputProps={{ className: textfieldStyles.input }}
-              ></TextField>
-              <div className="submit-btn">
-                <Button type="submit" className={buttonStyles.standardBtn}>
-                  Create User
-                </Button>
+                <div className="submit-btn">
+                  <Button className={buttonStyles.standardBtn} type="submit">
+                    Create User
+                  </Button>
+                </div>
               </div>
-            </div>
-          </form>
+            </Form>
+          </Formik>
         </div>
       </div>
     </div>
