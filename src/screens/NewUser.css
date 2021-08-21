@@ -14,28 +14,28 @@
     gap: 1em;
 }
 
-.new-user__content .details{
+.new-user__content .form-container{
     background-color: var(--secondary-bg-clr);
     margin-top: 2em;
     margin-bottom: 5em;
     border-radius: 1em;
 }
 
-.details form{
+.form-container form{
     padding: 1.5em;
     display: flex;
     flex-direction: column;
     gap: 1em;
 }
 
-.details form .left-col{
+.form-container form .left-col{
     display: flex;
     flex-direction: column;
     gap: 1em;
     width: 100%;
 }
 
-.details .email-verified{
+.form-container .email-verified{
     display: flex;
 }
 
@@ -47,27 +47,27 @@
     color: var(--dimmed-clr);
 }
 
-.details form .right-col{
+.form-container form .right-col{
     display: flex;
     flex-direction: column;
     gap: 1em;
     width: 100%;
 }
 
-.details .right-col .submit-btn{
+.form-container .right-col .submit-btn{
     display: flex;
     justify-content: right;
 }
 
 @media only screen and (min-width: 900px) {
-    .details form{
+    .form-container form{
         display: flex;
         flex-direction: row;
         gap: 2em;
         align-items: flex-start;
     }
 
-    .details .left-col, .detail .right-col{
+    .form-container .left-col, .detail .right-col{
         width: 50%;
     }
 }
