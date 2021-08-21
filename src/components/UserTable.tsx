@@ -24,9 +24,9 @@ import clsx from "clsx";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   useButtonStyles,
-  useCheckboxStyles,
   useTableStyles,
   useTableToolbarStyles,
+  useTextfieldStyles,
 } from "../data/styles";
 
 const getRow = (
@@ -59,6 +59,7 @@ const headCells: UserTableHeadCellProp[] = [
 
 const TableToolbar = ({ numSelected }: { numSelected: number }) => {
   const toolbarStyles = useTableToolbarStyles();
+  const textfieldStyles = useTextfieldStyles();
 
   return (
     <Toolbar
@@ -86,10 +87,15 @@ const TableToolbar = ({ numSelected }: { numSelected: number }) => {
           renderInput={(params) => (
             <TextField
               {...params}
+              color="secondary"
               label="Search user..."
               margin="normal"
               variant="outlined"
-              InputProps={{ ...params.InputProps, type: "search" }}
+              InputProps={{
+                ...params.InputProps,
+                type: "search",
+                className: textfieldStyles.input,
+              }}
             />
           )}
         />
@@ -118,7 +124,6 @@ const UserTable = () => {
 
   const tableStyles = useTableStyles();
   const buttonStyles = useButtonStyles();
-  const checkboxStyles = useCheckboxStyles();
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -175,8 +180,7 @@ const UserTable = () => {
             <TableRow>
               <TableCell padding="checkbox">
                 <Checkbox
-                  icon={<span className={checkboxStyles.icon} />}
-                  checkedIcon={<span className={checkboxStyles.checkedIcon} />}
+                  color="primary"
                   inputProps={{ "aria-label": "decorative checkbox" }}
                   onChange={(event) => handleSelectAllClick(event)}
                 />
@@ -223,10 +227,11 @@ const UserTable = () => {
                       <Checkbox
                         checked={isItemSelected}
                         inputProps={{ "aria-labelledby": labelId }}
-                        icon={<span className={checkboxStyles.icon} />}
-                        checkedIcon={
-                          <span className={checkboxStyles.checkedIcon} />
-                        }
+                        // icon={<span className={checkboxStyles.icon} />}
+                        // checkedIcon={
+                        //   <span className={checkboxStyles.checkedIcon} />
+                        // }
+                        color="primary"
                       />
                     </TableCell>
 
@@ -255,10 +260,28 @@ const UserTable = () => {
                       {row.birthday}
                     </TableCell>
                     <TableCell className={tableStyles.tableCell}>
-                      <Button className={buttonStyles.editBtn}>Edit</Button>
+                      <Button
+                        className={buttonStyles.editBtn}
+                        onClick={(e) => {
+                          // disable selection of the whole row on click
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      >
+                        Edit
+                      </Button>
                     </TableCell>
                     <TableCell className={tableStyles.tableCell}>
-                      <Button className={buttonStyles.deleteBtn}>Delete</Button>
+                      <Button
+                        className={buttonStyles.deleteBtn}
+                        onClick={(e) => {
+                          // disable selection of the whole row on click
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                      >
+                        Delete
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );
