@@ -1,3 +1,10 @@
+export interface TableHeadCellProp{
+    id: string;
+    name: string;
+    numeric: boolean;
+    label: string;
+}
+
 export interface UserTableProp{
     uid: string;
     name: string;
@@ -6,10 +13,11 @@ export interface UserTableProp{
     birthday: string;    
 }
 
-export interface UserTableHeadCellProp{
-    id: string;
-    name: string;
-    numeric: boolean;
-    label: string;
+export interface CertificateTableProp{
+    certificateId: string;
+    recievedBy: string;
+    issuedBy: string;
+    type: string; 
+    issuedDate: string;
 }
 
