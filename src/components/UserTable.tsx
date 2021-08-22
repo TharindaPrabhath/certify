@@ -17,7 +17,7 @@ import {
   Tooltip,
   Typography,
 } from "@material-ui/core";
-import { UserTableHeadCellProp, UserTableProp } from "../types/TableProp";
+import { TableHeadCellProp, UserTableProp } from "../types/TableProp";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FilterListIcon from "@material-ui/icons/FilterList";
 import clsx from "clsx";
@@ -49,7 +49,7 @@ const rows: UserTableProp[] = [
   getRow("007", "Hasitha", "lishitha@gmail.com", "Uni", "2001.03.12"),
 ];
 
-const headCells: UserTableHeadCellProp[] = [
+const headCells: TableHeadCellProp[] = [
   { id: "uid", name: "UID", numeric: false, label: "UID" },
   { id: "name", name: "Name", numeric: false, label: "Name" },
   { id: "email", name: "Email", numeric: false, label: "Email" },
