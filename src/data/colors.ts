@@ -14,6 +14,8 @@ const colors: AppColor = {
     primarySuccesClr: "#00e677",
 
     primaryBlackClr: "black",
+
+    dimmedClr: "#434f5b",
 }
 
 export default colors;
