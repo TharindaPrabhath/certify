@@ -8,6 +8,7 @@ interface AppColor{
     primaryErrorClr: string;
     primarySuccesClr: string;
     primaryBlackClr: String;
+    dimmedClr: string;
 }
 
 export default AppColor;
