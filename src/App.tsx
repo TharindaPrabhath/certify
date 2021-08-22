@@ -10,6 +10,7 @@ import User from "./screens/User";
 import NewUser from "./screens/NewUser";
 import { createTheme, ThemeProvider } from "@material-ui/core";
 import colors from "./data/colors";
+import Certificate from "./screens/Certificate";
 
 const theme = createTheme({
   palette: {
@@ -44,6 +45,9 @@ function App() {
             </Route>
             <Route path="/user/new" exact>
               <NewUser />
+            </Route>
+            <Route path="/certificate" exact>
+              <Certificate />
             </Route>
           </div>
         </div>
