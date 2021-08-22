@@ -12,6 +12,7 @@ import CertifySwitch from "../components/core/CertifySwitch";
 import CertifyDatePicker from "../components/core/CertifyDatePicker";
 import CertifySelect from "../components/core/CertifySelect";
 import { stringify } from "querystring";
+import colors from "../data/colors";
 
 const NewUser = () => {
   const buttonStyles = useButtonStyles();
@@ -36,7 +37,9 @@ const NewUser = () => {
           <Breadcrumbs aria-label="breadcrumb" style={{ color: "white" }}>
             <Link to="/dashboard">Dashboard</Link>
             <Link to="/user">User</Link>
-            <Typography color="textPrimary">New User</Typography>
+            <Typography style={{ color: colors.dimmedClr }}>
+              New User
+            </Typography>
           </Breadcrumbs>
         </div>
 
