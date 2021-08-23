@@ -1,0 +1,42 @@
+.user-profile{
+    position: relative;
+}
+
+.user-profile__header .cover-img{
+    
+}
+
+.user-profile__header img{
+    width: 10em;
+    height: 10em;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 5px solid rgb(194, 194, 194);
+
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+}
+
+.user-profile__header .brief-info{
+    text-align: center;
+    width: 100%;
+    
+    position: absolute;
+    top: 12.5em;
+}
+
+.brief-info .other{
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+}
+
+.brief-info .other p{
+    display: flex;
+    align-items: center;
+    gap: 0.3em;
+    color: #b8b8b8;
+    font-size: 0.9em;
+}
