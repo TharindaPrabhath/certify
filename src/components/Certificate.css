@@ -1,0 +1,83 @@
+.certificate{
+    background-color: #ffffff;
+    color: #000000;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.certificate__content{
+    margin: 1em;
+    border: 3px solid var(--primary-brand-clr);
+    text-align: center;
+
+    width: 60em;
+    height: 30em;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.certificate__content .header{
+    margin-top: 2em;
+}
+
+.header .logo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.certificate__content .body{
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    gap: 5em;
+}
+
+.reciever-details{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+}
+
+.reciever-details .reciever{
+    color: var(--primary-brand-clr);
+    font-weight: 500;
+    font-size: 3em;
+}
+
+.reciever-details .description{
+    width: 25em;
+}
+
+.reciever-details .description span{
+    font-weight: 600;
+}
+
+.body .issuer-details{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.issuer-details .sign-person-1, .issuer-details .sign-person-2{
+    font-weight: 600;
+    border-top: 1px solid #000000;
+}
+
+.certificate__content .footer{
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+}
+
+.footer .certificate-id, .footer .verification-web-site{
+    color: var(--primary-brand-clr);
+    font-weight: 400;
+}
+
+.footer .certificate-id span, .footer .verification-web-site span{
+    color: #000000;
+}
