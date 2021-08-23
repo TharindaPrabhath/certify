@@ -1,0 +1,16 @@
+.certificate-view{
+    position: absolute;
+    z-index: 2;
+    background-color: #f5f5f5;
+    height: 100%;
+    width: 100vw;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.certificate-view__content .certificate-container{
+    width: fit-content;
+    margin: 5em auto 2em auto;
+    box-shadow: 1px 2px 10px #888888;
+    
+}
