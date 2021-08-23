@@ -3,7 +3,7 @@ import AddIcon from "@material-ui/icons/Add";
 
 import React from "react";
 import { Link } from "react-router-dom";
-import UserTable from "../components/UserTable";
+import CertificateTable from "../components/CertificateTable";
 import colors from "../data/colors";
 import { useButtonStyles } from "../data/styles";
 
@@ -13,8 +13,8 @@ const Certificate = () => {
   const buttonStyles = useButtonStyles();
 
   return (
-    <div className="certificate">
-      <div className="certificate__content">
+    <div className="certificate-screen">
+      <div className="certificate-screen__content">
         <div className="top">
           <div className="left-col">
             <h2>Certificates</h2>
@@ -37,7 +37,7 @@ const Certificate = () => {
         </div>
 
         <div className="table">
-          <UserTable />
+          <CertificateTable />
         </div>
       </div>
     </div>
