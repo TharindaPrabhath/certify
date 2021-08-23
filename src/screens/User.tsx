@@ -25,7 +25,7 @@ const User = () => {
           </div>
 
           <div className="right-col">
-            <Link to="user/new">
+            <Link to="user/new/">
               <Button className={buttonStyles.standardBtn}>
                 <AddIcon />
                 New User
