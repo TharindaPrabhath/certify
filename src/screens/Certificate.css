@@ -1,14 +1,14 @@
-.certificate{
+.certificate-screen{
     height: 100%;
     overflow-y: scroll;
     width: 100%;
 }
 
-.certificate__content{
+.certificate-screen__content{
     padding: 1em 2em 1em 2em;
 }
 
-.certificate__content .top{
+.certificate-screen__content .top{
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -20,7 +20,7 @@
     gap: 1em;
 }
 
-.certificate__content .table{
+.certificate-screen__content .table{
     margin-top: 3em;
     margin-bottom: 5em;
 }
