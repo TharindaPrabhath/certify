@@ -3,7 +3,6 @@ import React from "react";
 import {
   Button,
   Checkbox,
-  IconButton,
   Paper,
   Table,
   TableBody,
@@ -12,22 +11,20 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TextField,
-  Toolbar,
-  Tooltip,
-  Typography,
 } from "@material-ui/core";
 import { TableHeadCellProp, UserTableProp } from "../types/TableProp";
-import DeleteIcon from "@material-ui/icons/Delete";
-import FilterListIcon from "@material-ui/icons/FilterList";
-import clsx from "clsx";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import {
-  useButtonStyles,
-  useTableStyles,
-  useTableToolbarStyles,
-  useTextfieldStyles,
-} from "../data/styles";
+
+import { useButtonStyles, useTableStyles } from "../data/styles";
+import TableToolbar from "./TableToolbar";
+import { Link } from "react-router-dom";
+
+const headCells: TableHeadCellProp[] = [
+  { id: "uid", name: "UID", numeric: false, label: "UID" },
+  { id: "name", name: "Name", numeric: false, label: "Name" },
+  { id: "email", name: "Email", numeric: false, label: "Email" },
+  { id: "role", name: "Role", numeric: false, label: "Role" },
+  { id: "birthday", name: "Birthday", numeric: false, label: "Birthday" },
+];
 
 const getRow = (
   uid: string,
@@ -49,72 +46,11 @@ const rows: UserTableProp[] = [
   getRow("007", "Hasitha", "lishitha@gmail.com", "Uni", "2001.03.12"),
 ];
 
-const headCells: TableHeadCellProp[] = [
-  { id: "uid", name: "UID", numeric: false, label: "UID" },
-  { id: "name", name: "Name", numeric: false, label: "Name" },
-  { id: "email", name: "Email", numeric: false, label: "Email" },
-  { id: "role", name: "Role", numeric: false, label: "Role" },
-  { id: "birthday", name: "Birthday", numeric: false, label: "Birthday" },
-];
+const getSuggestions = (): string[] => {
+  var arr: string[] = [];
 
-const TableToolbar = ({ numSelected }: { numSelected: number }) => {
-  const toolbarStyles = useTableToolbarStyles();
-  const textfieldStyles = useTextfieldStyles();
-
-  return (
-    <Toolbar
-      className={clsx(toolbarStyles.root, {
-        [toolbarStyles.highlight]: numSelected > 0,
-      })}
-    >
-      {numSelected > 0 ? (
-        <Typography
-          className={toolbarStyles.title}
-          color="inherit"
-          variant="subtitle1"
-          component="div"
-        >
-          {numSelected} selected
-        </Typography>
-      ) : (
-        <Autocomplete
-          freeSolo
-          id="free-solo-2-demo"
-          className={toolbarStyles.autocompleteField}
-          style={{ width: "15em" }}
-          disableClearable
-          options={rows.map((row) => row.name)}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              color="secondary"
-              label="Search user..."
-              margin="normal"
-              variant="outlined"
-              InputProps={{
-                ...params.InputProps,
-                type: "search",
-                className: textfieldStyles.input,
-              }}
-            />
-          )}
-        />
-      )}
-      {numSelected > 0 ? (
-        <Tooltip title="Delete">
-          <IconButton aria-label="delete">
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-    </Toolbar>
-  );
+  rows.map((row) => arr.push(row.name));
+  return arr;
 };
 
 const UserTable = () => {
@@ -169,7 +105,10 @@ const UserTable = () => {
 
   return (
     <Paper className={tableStyles.paper} style={{ borderRadius: "1em" }}>
-      <TableToolbar numSelected={selected.length} />
+      <TableToolbar
+        numSelected={selected.length}
+        suggestions={getSuggestions()}
+      />
       <TableContainer>
         <Table
           size="medium"
@@ -260,16 +199,17 @@ const UserTable = () => {
                       {row.birthday}
                     </TableCell>
                     <TableCell className={tableStyles.tableCell}>
-                      <Button
-                        className={buttonStyles.editBtn}
-                        onClick={(e) => {
-                          // disable selection of the whole row on click
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                      >
-                        Edit
-                      </Button>
+                      <Link to={"user/edit/" + row.uid}>
+                        <Button
+                          className={buttonStyles.editBtn}
+                          onClick={(e) => {
+                            // disable selection of the whole row on click
+                            e.stopPropagation();
+                          }}
+                        >
+                          Edit
+                        </Button>
+                      </Link>
                     </TableCell>
                     <TableCell className={tableStyles.tableCell}>
                       <Button
