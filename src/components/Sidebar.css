@@ -19,7 +19,7 @@
     margin-left: 0.5em;
     font-family: 'Palette Mosaic', cursive;
     font-size: 2em;
-    color: rgb(14, 173, 236);
+    color: var(--primary-brand-clr);
 }
 
 .tabs{
