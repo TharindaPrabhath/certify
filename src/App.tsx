@@ -17,6 +17,7 @@ import EditUser from "./screens/EditUser";
 import Signin from "./screens/Signin";
 import CertificateVerification from "./screens/CertficateVerification";
 import CertificateView from "./screens/CertificateView";
+import UserProfile from "./screens/UserProfile";
 
 const theme = createTheme({
   palette: {
@@ -66,6 +67,9 @@ function App() {
             </Route>
             <Route path="/user/edit/:uid" exact>
               <EditUser />
+            </Route>
+            <Route path="/user/:uid" exact>
+              <UserProfile />
             </Route>
             <Route path="/certificate" exact>
               <Certificate />
