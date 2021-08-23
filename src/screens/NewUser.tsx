@@ -6,7 +6,7 @@ import * as yup from "yup";
 import { Link } from "react-router-dom";
 import { useButtonStyles } from "../data/styles";
 
-import "./NewUser.css";
+import "./Page.css";
 import CertifyTextField from "../components/core/CertifyTextField";
 import CertifySwitch from "../components/core/CertifySwitch";
 import CertifyDatePicker from "../components/core/CertifyDatePicker";
@@ -18,9 +18,9 @@ const NewUser = () => {
   const buttonStyles = useButtonStyles();
 
   const schema = yup.object().shape({
-    firstName: yup.string().required(),
-    lastName: yup.string().required(),
-    email: yup.string().email("Invalid Email").required(),
+    firstName: yup.string().required("First Name is required"),
+    lastName: yup.string().required("Last Name is required"),
+    email: yup.string().email("Invalid Email").required("Email is required"),
     phone: yup.number(),
     role: yup.string(),
     address: yup.string(),
@@ -30,8 +30,8 @@ const NewUser = () => {
   });
 
   return (
-    <div className="new-user">
-      <div className="new-user__content">
+    <div className="page">
+      <div className="page__content">
         <div className="top">
           <h2 className="">Create a new User</h2>
           <Breadcrumbs aria-label="breadcrumb" style={{ color: "white" }}>
@@ -59,6 +59,7 @@ const NewUser = () => {
             }}
             onSubmit={(values) => {
               alert(stringify(values));
+              console.log(values);
             }}
           >
             <Form>
