@@ -1,0 +1,21 @@
+.user-cell{
+    width: 100%;
+    height: 2.5em;
+    padding: 0 0.5em;
+    cursor: pointer;
+}
+.user-cell:hover{
+    background-color: var(--secondary-bg-clr);
+}
+
+.user-cell__content{
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    width: 100%;
+    height: 100%;
+}
+
+.user-cell__content .username{
+    font-weight: 500;
+}
