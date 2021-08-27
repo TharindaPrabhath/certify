@@ -44,7 +44,7 @@ const Certificate = () => {
           </h5>
           <h5 className="verification-web-site">
             Verify the authenticity of the certificate at:
-            <span> www.certify/certificate/verify.com</span>
+            <span> www.certify.com/certificate/verify</span>
           </h5>
         </div>
       </div>
