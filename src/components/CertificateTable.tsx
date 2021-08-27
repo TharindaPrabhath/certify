@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@material-ui/core";
 import React from "react";
+import { Link } from "react-router-dom";
 import { useButtonStyles, useTableStyles } from "../data/styles";
 import { CertificateTableProp, TableHeadCellProp } from "../types/TableProp";
 import TableToolbar from "./TableToolbar";
@@ -185,7 +186,9 @@ const CertificateTable = () => {
                       className={tableStyles.tableCell}
                       style={{ fontWeight: 700 }}
                     >
-                      {row.recievedBy}
+                      <Link to={`user/${row.recievedBy}`}>
+                        {row.recievedBy}
+                      </Link>
                     </TableCell>
                     <TableCell align="left" className={tableStyles.tableCell}>
                       {row.issuedBy}
