@@ -12,6 +12,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { Link, useLocation } from "react-router-dom";
+import colors from "../data/colors";
 
 const useStyle = makeStyles({
   listItem: {
@@ -46,7 +47,15 @@ const Sidebar = () => {
                     to={item.path}
                   >
                     <ListItemIcon>
-                      {<item.icon.name htmlColor={item.icon.htmlColor} />}
+                      {
+                        <item.icon.name
+                          htmlColor={
+                            location.pathname === item.path
+                              ? item.icon.htmlColor
+                              : colors.secondaryFontClr
+                          }
+                        />
+                      }
                     </ListItemIcon>
                     <ListItemText primary={item.title} />
                   </Link>
