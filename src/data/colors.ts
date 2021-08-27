@@ -8,7 +8,7 @@ const colors: AppColor = {
     secondaryBrandClr: "#106ba3",
 
     primaryFontClr: "#ffffff",
-    secondaryFontClr: "#e0e0e0",
+    secondaryFontClr: "#b3b3b3",
 
     primaryErrorClr: "#f50056",
     primarySuccesClr: "#00e677",
