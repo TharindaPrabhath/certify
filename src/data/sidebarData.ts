@@ -5,8 +5,9 @@ import PersonIcon from '@material-ui/icons/Person';
 import CardGiftcardIcon from '@material-ui/icons/CardGiftcard';
 import HistoryIcon from '@material-ui/icons/History';
 import SettingsIcon from '@material-ui/icons/Settings';
+import colors from './colors';
 
-const color = "#FFFFFF";
+const color = colors.primaryBrandClr;
 
 const Dashboard: SidebarProp = {
     title: "Dashboard",
