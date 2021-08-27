@@ -187,7 +187,7 @@ const UserTable = () => {
                       className={tableStyles.tableCell}
                       style={{ fontWeight: 700 }}
                     >
-                      {row.name}
+                      <Link to={`user/${row.uid}`}>{row.name}</Link>
                     </TableCell>
                     <TableCell align="left" className={tableStyles.tableCell}>
                       {row.email}
