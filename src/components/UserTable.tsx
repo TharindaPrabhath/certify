@@ -17,6 +17,7 @@ import { TableHeadCellProp, UserTableProp } from "../types/TableProp";
 import { useButtonStyles, useTableStyles } from "../data/styles";
 import TableToolbar from "./TableToolbar";
 import { Link } from "react-router-dom";
+import UserDto from "../types/models/UserDto";
 
 const headCells: TableHeadCellProp[] = [
   { id: "uid", name: "UID", numeric: false, label: "UID" },
@@ -46,14 +47,7 @@ const rows: UserTableProp[] = [
   getRow("007", "Hasitha", "lishitha@gmail.com", "Uni", "2001.03.12"),
 ];
 
-const getSuggestions = (): string[] => {
-  var arr: string[] = [];
-
-  rows.map((row) => arr.push(row.name));
-  return arr;
-};
-
-const UserTable = () => {
+const UserTable = ({ users }: { users: UserDto[] }) => {
   const [selected, setSelected] = React.useState<string[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -63,7 +57,7 @@ const UserTable = () => {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.uid);
+      const newSelecteds = users.map((n) => String(n.uid));
       setSelected(newSelecteds);
       return;
     }
@@ -102,6 +96,13 @@ const UserTable = () => {
   };
 
   const isSelected = (name: string) => selected.indexOf(name) !== -1;
+
+  const getSuggestions = (): string[] => {
+    var arr: string[] = [];
+
+    users.map((user) => arr.push(user.fName + " " + user.lName));
+    return arr;
+  };
 
   return (
     <Paper className={tableStyles.paper} style={{ borderRadius: "1em" }}>
@@ -142,10 +143,10 @@ const UserTable = () => {
           </TableHead>
 
           <TableBody>
-            {rows
+            {users
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, index) => {
-                const isItemSelected = isSelected(row.uid);
+              .map((user, index) => {
+                const isItemSelected = isSelected(String(user.uid));
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
@@ -154,7 +155,7 @@ const UserTable = () => {
                     key={index}
                     hover={true}
                     role="checkbox"
-                    onClick={(event) => handleClick(event, row.uid)}
+                    onClick={(event) => handleClick(event, String(user.uid))}
                     aria-checked={isItemSelected}
                     selected={isItemSelected}
                     tabIndex={-1}
@@ -180,26 +181,28 @@ const UserTable = () => {
                       padding="normal"
                       className={tableStyles.tableCell}
                     >
-                      {row.uid}
+                      {user.uid}
                     </TableCell>
                     <TableCell
                       align="left"
                       className={tableStyles.tableCell}
                       style={{ fontWeight: 700 }}
                     >
-                      <Link to={`user/${row.uid}`}>{row.name}</Link>
+                      <Link to={`user/${user.uid}`}>
+                        {user.fName + " " + user.lName}
+                      </Link>
                     </TableCell>
                     <TableCell align="left" className={tableStyles.tableCell}>
-                      {row.email}
+                      {user.email}
                     </TableCell>
                     <TableCell align="left" className={tableStyles.tableCell}>
-                      {row.role}
+                      {user.role}
                     </TableCell>
                     <TableCell align="left" className={tableStyles.tableCell}>
-                      {row.birthday}
+                      {user.birthday}
                     </TableCell>
                     <TableCell className={tableStyles.tableCell}>
-                      <Link to={"user/edit/" + row.uid}>
+                      <Link to={"user/edit/" + user.uid}>
                         <Button
                           className={buttonStyles.editBtn}
                           onClick={(e) => {
