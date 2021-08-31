@@ -2,7 +2,6 @@ import React from "react";
 
 import { Breadcrumbs, Button, Typography } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
-import * as yup from "yup";
 import { Link } from "react-router-dom";
 import { useButtonStyles } from "../data/styles";
 
@@ -11,23 +10,49 @@ import CertifyTextField from "../components/core/CertifyTextField";
 import CertifySwitch from "../components/core/CertifySwitch";
 import CertifyDatePicker from "../components/core/CertifyDatePicker";
 import CertifySelect from "../components/core/CertifySelect";
-import { stringify } from "querystring";
 import colors from "../data/colors";
+import axios from "../utils/axios";
+import requests from "../data/requests";
+import * as yup from "yup";
 
 const NewUser = () => {
   const buttonStyles = useButtonStyles();
 
-  const schema = yup.object().shape({
-    firstName: yup.string().required("First Name is required"),
-    lastName: yup.string().required("Last Name is required"),
+  const initialValues = {
+    fName: "",
+    lName: "",
+    email: "",
+    emailVerified: false,
+    phone: "",
+    birthday: "",
+    role: "",
+    address: "",
+    description: "",
+  };
+
+  const userValidationSchema = yup.object().shape({
+    fName: yup.string().required("First Name is required"),
+    lName: yup.string().required("Last Name is required"),
     email: yup.string().email("Invalid Email").required("Email is required"),
     phone: yup.number(),
-    role: yup.string(),
+    role: yup.string().required("Role is required"),
     address: yup.string(),
     description: yup.string(),
     emailVerified: yup.boolean(),
     birthday: yup.date(),
   });
+
+  const validatePhone = (value: any) => {
+    let error;
+    if (!value) return (error = "Phone is required");
+    else value.length !== 10 ? (error = "Invalid Phone") : (error = "");
+    return error;
+  };
+
+  const submit = async (values: typeof initialValues) => {
+    const res = await axios.post(requests.postNewUser, values);
+    console.log(res);
+  };
 
   return (
     <div className="page">
@@ -45,34 +70,24 @@ const NewUser = () => {
 
         <div className="form-container">
           <Formik
-            validationSchema={schema}
-            initialValues={{
-              firstName: "",
-              lastName: "",
-              email: "",
-              emailVerified: false,
-              phone: "",
-              birthday: "",
-              role: "",
-              address: "",
-              description: "",
-            }}
+            validationSchema={userValidationSchema}
+            initialValues={initialValues}
             onSubmit={(values) => {
-              alert(stringify(values));
               console.log(values);
+              submit(values);
             }}
           >
             <Form>
               <div className="left-col">
                 <Field
                   label="First Name"
-                  name="firstName"
+                  name="fName"
                   component={CertifyTextField}
                   required
                 ></Field>
                 <Field
                   label="Last Name"
-                  name="lastName"
+                  name="lName"
                   component={CertifyTextField}
                   required
                 ></Field>
@@ -96,6 +111,7 @@ const NewUser = () => {
                 <Field
                   label="Phone"
                   name="phone"
+                  validate={validatePhone}
                   component={CertifyTextField}
                 ></Field>
               </div>
@@ -119,9 +135,9 @@ const NewUser = () => {
                 ></Field>
                 <Field
                   label="Description"
-                  name="decription"
-                  component={CertifyTextField}
+                  name="description"
                   textArea
+                  component={CertifyTextField}
                 ></Field>
 
                 <div className="submit-btn">

@@ -8,12 +8,31 @@ import CertifySwitch from "../components/core/CertifySwitch";
 import CertifyTextField from "../components/core/CertifyTextField";
 import colors from "../data/colors";
 import { useButtonStyles } from "../data/styles";
-import validationConditions from "../data/validation";
+import * as yup from "yup";
 
 import "./Page.css";
 
 const EditUser = () => {
   const buttonStyles = useButtonStyles();
+
+  const userValidationSchema = yup.object().shape({
+    fName: yup.string().required("First Name is required"),
+    lName: yup.string().required("Last Name is required"),
+    email: yup.string().email("Invalid Email").required("Email is required"),
+    phone: yup.number().min(9).max(10),
+    role: yup.string().required("Role is required"),
+    address: yup.string(),
+    description: yup.string(),
+    emailVerified: yup.boolean(),
+    birthday: yup.date(),
+  });
+
+  const validatePhone = (value: any) => {
+    let error;
+    if (!value) return (error = "Phone is required");
+    else value.length !== 10 ? (error = "Invalid Phone") : (error = "");
+    return error;
+  };
 
   return (
     <div className="page">
@@ -31,10 +50,10 @@ const EditUser = () => {
 
         <div className="form-container">
           <Formik
-            validationSchema={validationConditions.userValidationSchema}
+            validationSchema={userValidationSchema}
             initialValues={{
-              firstName: "",
-              lastName: "",
+              fName: "",
+              lName: "",
               email: "",
               emailVerified: false,
               phone: "",
@@ -49,13 +68,13 @@ const EditUser = () => {
               <div className="left-col">
                 <Field
                   label="First Name"
-                  name="firstName"
+                  name="fName"
                   component={CertifyTextField}
                   required
                 ></Field>
                 <Field
                   label="Last Name"
-                  name="lastName"
+                  name="lName"
                   component={CertifyTextField}
                   required
                 ></Field>
@@ -79,6 +98,7 @@ const EditUser = () => {
                 <Field
                   label="Phone"
                   name="phone"
+                  validate={validatePhone}
                   component={CertifyTextField}
                 ></Field>
               </div>

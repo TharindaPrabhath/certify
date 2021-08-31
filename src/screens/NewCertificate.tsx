@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Breadcrumbs, Button, Switch, Typography } from "@material-ui/core";
+import { Breadcrumbs, Button, Typography } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import { Link } from "react-router-dom";
 import { useButtonStyles } from "../data/styles";
@@ -11,7 +11,9 @@ import CertifySelect from "../components/core/CertifySelect";
 import colors from "../data/colors";
 import { useState } from "react";
 import CertifySwitch from "../components/core/CertifySwitch";
-import validationConditions from "../data/validation";
+import axios from "../utils/axios";
+import requests from "../data/requests";
+import * as yup from "yup";
 
 const NewCertificate = () => {
   const [toggle, setToggle] = useState<boolean>(true);
@@ -22,6 +24,29 @@ const NewCertificate = () => {
     toggle ? setToggle(false) : setToggle(true);
   };
   console.log(toggle);
+
+  const initialValues = {
+    reciever: "",
+    type: "",
+    defaultEmail: true,
+    customEmail: "",
+    reason: "",
+    remarks: "",
+  };
+
+  const certificateValidationSchema = yup.object().shape({
+    reciever: yup.string().required("Reciever is required"),
+    type: yup.string().required("Type is required"),
+    customEmail: yup.string().email("Invalid Email"),
+    defaultEmail: yup.boolean(),
+    reason: yup.string().required("Reason is required"),
+    remarks: yup.string().required("Remarks are required"),
+  });
+
+  const submit = async (values: typeof initialValues) => {
+    const res = await axios.post(requests.postNewCertificate, values);
+    console.log(res);
+  };
 
   return (
     <div className="page">
@@ -39,18 +64,11 @@ const NewCertificate = () => {
 
         <div className="form-container">
           <Formik
-            validationSchema={validationConditions.certificateValidationSchema}
-            initialValues={{
-              reciever: "",
-              type: "",
-              defaultEmail: true,
-              customEmail: "",
-              remarks: "",
-            }}
+            validationSchema={certificateValidationSchema}
+            initialValues={initialValues}
             onSubmit={(values) => {
               console.log("data: ", values);
-              alert(values);
-              console.log(JSON.stringify(values));
+              submit(values);
             }}
           >
             <Form>
@@ -110,10 +128,19 @@ const NewCertificate = () => {
 
               <div className="right-col">
                 <Field
+                  label="Reason"
+                  name="reason"
+                  component={CertifyTextField}
+                  textArea
+                  required
+                ></Field>
+
+                <Field
                   label="Remarks"
                   name="remarks"
                   component={CertifyTextField}
                   textArea
+                  required
                 ></Field>
 
                 <div className="submit-bt">
