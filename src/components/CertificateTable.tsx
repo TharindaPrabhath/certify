@@ -13,6 +13,7 @@ import {
 import React from "react";
 import { Link } from "react-router-dom";
 import { useButtonStyles, useTableStyles } from "../data/styles";
+import CertificateDto from "../types/models/CertificateDto";
 import { CertificateTableProp, TableHeadCellProp } from "../types/TableProp";
 import TableToolbar from "./TableToolbar";
 
@@ -49,14 +50,11 @@ const rows: CertificateTableProp[] = [
   getRow("007", "Tharinda P", "Lasana", "Participation", "2001.03.12"),
 ];
 
-const getSuggestions = (): string[] => {
-  var arr: string[] = [];
-
-  rows.map((row) => arr.push(row.recievedBy));
-  return arr;
-};
-
-const CertificateTable = () => {
+const CertificateTable = ({
+  certificates,
+}: {
+  certificates: CertificateDto[];
+}) => {
   const [selected, setSelected] = React.useState<string[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -66,7 +64,7 @@ const CertificateTable = () => {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.certificateId);
+      const newSelecteds = certificates.map((n) => String(n.id));
       setSelected(newSelecteds);
       return;
     }
@@ -105,6 +103,15 @@ const CertificateTable = () => {
   };
 
   const isSelected = (name: string) => selected.indexOf(name) !== -1;
+
+  const getSuggestions = (): string[] => {
+    var arr: string[] = [];
+
+    certificates.map((certificate) =>
+      arr.push(certificate.user.fName + " " + certificate.user.lName)
+    );
+    return arr;
+  };
 
   return (
     <Paper className={tableStyles.paper} style={{ borderRadius: "1em" }}>
@@ -145,10 +152,10 @@ const CertificateTable = () => {
           </TableHead>
 
           <TableBody>
-            {rows
+            {certificates
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, index) => {
-                const isItemSelected = isSelected(row.certificateId);
+              .map((certificate, index) => {
+                const isItemSelected = isSelected(String(certificate.id));
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
@@ -157,7 +164,9 @@ const CertificateTable = () => {
                     key={index}
                     hover={true}
                     role="checkbox"
-                    onClick={(event) => handleClick(event, row.certificateId)}
+                    onClick={(event) =>
+                      handleClick(event, String(certificate.id))
+                    }
                     aria-checked={isItemSelected}
                     selected={isItemSelected}
                     tabIndex={-1}
@@ -179,25 +188,29 @@ const CertificateTable = () => {
                       padding="normal"
                       className={tableStyles.tableCell}
                     >
-                      {row.certificateId}
+                      {certificate.id}
                     </TableCell>
                     <TableCell
                       align="left"
                       className={tableStyles.tableCell}
                       style={{ fontWeight: 700 }}
                     >
-                      <Link to={`user/${row.recievedBy}`}>
-                        {row.recievedBy}
+                      <Link
+                        to={`user/${
+                          certificate.user.fName + certificate.user.lName
+                        }`}
+                      >
+                        {certificate.user.fName + " " + certificate.user.lName}
                       </Link>
                     </TableCell>
                     <TableCell align="left" className={tableStyles.tableCell}>
-                      {row.issuedBy}
+                      {certificate.issuedAdmin.username}
                     </TableCell>
                     <TableCell align="left" className={tableStyles.tableCell}>
-                      {row.type}
+                      {certificate.type}
                     </TableCell>
                     <TableCell align="left" className={tableStyles.tableCell}>
-                      {row.issuedDate}
+                      {certificate.issuedDate}
                     </TableCell>
                     <TableCell className={tableStyles.tableCell}>
                       <Button
