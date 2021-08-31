@@ -8,9 +8,25 @@ import UserTable from "../components/UserTable";
 import { Link } from "react-router-dom";
 import { useButtonStyles } from "../data/styles";
 import colors from "../data/colors";
+import { useEffect } from "react";
+import axios from "../utils/axios";
+import requests from "../data/requests";
+import { useState } from "react";
+import UserDto from "../types/models/UserDto";
+import { toUserDtos } from "../utils/mapper";
 
 const User = () => {
+  const [users, setUsers] = useState<UserDto[]>([]);
   const buttonStyles = useButtonStyles();
+
+  useEffect(() => {
+    axios
+      .get(requests.fetchUsers)
+      .then((res) => {
+        setUsers(toUserDtos(res.data));
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   return (
     <div className="user">
@@ -35,7 +51,7 @@ const User = () => {
         </div>
 
         <div className="table">
-          <UserTable />
+          <UserTable users={users} />
         </div>
       </div>
     </div>
