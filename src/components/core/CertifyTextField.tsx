@@ -8,7 +8,6 @@ const CertifyTextField: React.FC<
 > = ({ field, form, textArea, required, ...props }) => {
   const error =
     getIn(form.touched, field.name) && getIn(form.errors, field.name);
-
   const styles = useTextfieldStyles();
 
   return (
