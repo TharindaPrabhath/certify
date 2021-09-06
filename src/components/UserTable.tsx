@@ -29,22 +29,30 @@ const headCells: TableHeadCellProp[] = [
 
 const getRow = (
   uid: string,
-  name: string,
+  fname: string,
+  lname: string,
   email: string,
   role: string,
   birthday: string
-): UserTableProp => {
-  return { uid, name, email, role, birthday };
+) => {
+  return { uid, fname, lname, email, role, birthday };
 };
 
-const rows: UserTableProp[] = [
-  getRow("001", "Tharinda P", "tharindahp@gmail.com", "Uni", "2001.03.12"),
-  getRow("002", "Lasana", "anurajeewa@gmail.com", "Uni", "2001.03.12"),
-  getRow("003", "Lasana", "lasana@gmail.com", "Uni", "2001.03.12"),
-  getRow("004", "Lishitha", "lishitha@gmail.com", "Uni", "2001.03.12"),
-  getRow("005", "Alahakoon", "lishitha@gmail.com", "Uni", "2001.03.12"),
-  getRow("006", "Chamath", "lishitha@gmail.com", "Uni", "2001.03.12"),
-  getRow("007", "Hasitha", "lishitha@gmail.com", "Uni", "2001.03.12"),
+const rows = [
+  getRow("001", "Tharinda", "P", "tharindahp@gmail.com", "Uni", "2001.03.12"),
+  getRow("002", "Prabhath", "", "anurajeewa@gmail.com", "Uni", "2001.03.12"),
+  getRow("003", "Lasana", "sanketh", "lasana@gmail.com", "Uni", "2001.03.12"),
+  getRow(
+    "004",
+    "Lishitha",
+    "Alahakoon",
+    "lishitha@gmail.com",
+    "Uni",
+    "2001.03.12"
+  ),
+  getRow("005", "Nadun", "", "nadun@gmail.com", "Uni", "2001.03.12"),
+  getRow("006", "Chamath", "Roo", "chamath@gmail.com", "Uni", "2001.03.12"),
+  getRow("007", "Hasitha", "G", "hasitha@gmail.com", "Uni", "2001.03.12"),
 ];
 
 const UserTable = ({ users }: { users: UserDto[] }) => {
@@ -100,7 +108,7 @@ const UserTable = ({ users }: { users: UserDto[] }) => {
   const getSuggestions = (): string[] => {
     var arr: string[] = [];
 
-    users.map((user) => arr.push(user.fName + " " + user.lName));
+    users.map((user) => arr.push(user.fname + " " + user.lname));
     return arr;
   };
 
@@ -189,7 +197,7 @@ const UserTable = ({ users }: { users: UserDto[] }) => {
                       style={{ fontWeight: 700 }}
                     >
                       <Link to={`user/${user.uid}`}>
-                        {user.fName + " " + user.lName}
+                        {user.fname + " " + user.lname}
                       </Link>
                     </TableCell>
                     <TableCell align="left" className={tableStyles.tableCell}>
