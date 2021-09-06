@@ -8,7 +8,7 @@ interface CertificateDto{
     remarks: string,
     issuedDate: string,
     user: UserDto,
-    issuedAdmin: AdminDto
+    admin: AdminDto
 }
 
 export default CertificateDto;
