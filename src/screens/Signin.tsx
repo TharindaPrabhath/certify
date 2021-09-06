@@ -1,7 +1,7 @@
 import { Button, Typography } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import CertifyCheckbox from "../components/core/CertifyCheckbox";
 import CertifyTextField from "../components/core/CertifyTextField";
 import { useButtonStyles } from "../data/styles";
@@ -10,9 +10,50 @@ import "./Signin.css";
 
 import LoginImage from "../assets/login.svg";
 import logo from "../assets/logo/logo.png";
+import axios from "axios";
+
+import { useDispatch } from "react-redux";
+import { bindActionCreators } from "redux";
+import { actionCreators } from "../redux";
+import { getAdminDto } from "../utils/mapper";
+import axiosInstance from "../utils/axios";
+import requests from "../data/requests";
 
 const Signin = () => {
   const buttonStyles = useButtonStyles();
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const { initAdmin, removeAdmin } = bindActionCreators(
+    actionCreators,
+    dispatch
+  );
+
+  const initialValues = {
+    username: "",
+    password: "",
+    //rememberMe: true,
+  };
+
+  const submit = (values: typeof initialValues) => {
+    axios
+      .post("http://localhost:8080/login", values)
+      .then((res) => {
+        if (res.status === 200) {
+          history.push("dashboard");
+          localStorage.setItem("token", res.data.token);
+
+          axiosInstance.get("/admin/get/1").then((res) => {
+            initAdmin(getAdminDto(res.data));
+            //console.log(res);
+            localStorage.setItem(
+              "currentAdmin",
+              getAdminDto(res.data).username
+            );
+          });
+        }
+      })
+      .catch((err) => console.error(err));
+  };
 
   return (
     <div className="signin">
@@ -32,12 +73,8 @@ const Signin = () => {
           <h1>Sign in</h1>
           <div className="form-container">
             <Formik
-              initialValues={{
-                username: "",
-                password: "",
-                rememberMe: true,
-              }}
-              onSubmit={() => {}}
+              initialValues={initialValues}
+              onSubmit={(values) => submit(values)}
             >
               <Form>
                 <div className="form">
@@ -63,7 +100,9 @@ const Signin = () => {
                       </Typography>
                     </Link>
                   </div>
-                  <Button className={buttonStyles.standardBtn}>Login</Button>
+                  <Button className={buttonStyles.standardBtn} type="submit">
+                    Login
+                  </Button>
                 </div>
               </Form>
             </Formik>
