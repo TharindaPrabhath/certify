@@ -1,11 +1,14 @@
 .user-profile{
+    height: 100vh;
 }
 
 .user-profile__content{
     display: flex;
+    height: 100%;
 }
 
 .user-profile__content .left-col{
+    overflow-y: scroll;
     width: 100%;
 }
 
