@@ -42,11 +42,11 @@ const getRow = (
 
 const rows: CertificateTableProp[] = [
   getRow("001", "Tharinda P", "Lasana", "Participation", "2001.03.12"),
-  getRow("002", "Tharinda P", "Lasana", "Participation", "2001.03.12"),
-  getRow("003", "Tharinda P", "Lasana", "Participation", "2001.03.12"),
-  getRow("004", "Tharinda P", "Lasana", "Participation", "2001.03.12"),
-  getRow("005", "Tharinda P", "Lasana", "Participation", "2001.03.12"),
-  getRow("006", "Tharinda P", "Lasana", "Participation", "2001.03.12"),
+  getRow("002", "Lishitha", "Lasana", "Participation", "2001.03.12"),
+  getRow("003", "Chamath", "Lasana", "Participation", "2001.03.12"),
+  getRow("004", "Nadun", "Lasana", "Participation", "2001.03.12"),
+  getRow("005", "Haritha", "Hasitha", "Participation", "2001.03.12"),
+  getRow("006", "Alahakoon", "Hasitha", "Participation", "2001.03.12"),
   getRow("007", "Tharinda P", "Lasana", "Participation", "2001.03.12"),
 ];
 
@@ -108,7 +108,7 @@ const CertificateTable = ({
     var arr: string[] = [];
 
     certificates.map((certificate) =>
-      arr.push(certificate.user.fName + " " + certificate.user.lName)
+      arr.push(certificate.user.fname + " " + certificate.user.lname)
     );
     return arr;
   };
@@ -195,16 +195,12 @@ const CertificateTable = ({
                       className={tableStyles.tableCell}
                       style={{ fontWeight: 700 }}
                     >
-                      <Link
-                        to={`user/${
-                          certificate.user.fName + certificate.user.lName
-                        }`}
-                      >
-                        {certificate.user.fName + " " + certificate.user.lName}
+                      <Link to={`user/${certificate.user.uid}`}>
+                        {certificate.user.fname + " " + certificate.user.lname}
                       </Link>
                     </TableCell>
                     <TableCell align="left" className={tableStyles.tableCell}>
-                      {certificate.issuedAdmin.username}
+                      {certificate.admin.username}
                     </TableCell>
                     <TableCell align="left" className={tableStyles.tableCell}>
                       {certificate.type}
