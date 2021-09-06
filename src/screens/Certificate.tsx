@@ -20,9 +20,12 @@ const Certificate = () => {
   const buttonStyles = useButtonStyles();
 
   useEffect(() => {
-    axios.get(requests.fetchCertificates).then((res) => {
-      setCertificates(toCertificateDtos(res.data));
-    });
+    axios
+      .get(requests.fetchCertificates)
+      .then((res) => {
+        setCertificates(toCertificateDtos(res.data));
+      })
+      .catch((err) => console.error(err));
   }, []);
 
   return (
