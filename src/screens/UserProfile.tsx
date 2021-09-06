@@ -7,6 +7,7 @@ import DateRangeIcon from "@material-ui/icons/DateRange";
 import {
   AppBar,
   Box,
+  Button,
   List,
   Tab,
   Tabs,
@@ -15,6 +16,9 @@ import {
 } from "@material-ui/core";
 import SwipeableViews from "react-swipeable-views";
 import UserCell from "../components/UserCell";
+
+import "./InfoPage.css";
+import { useButtonStyles } from "../data/styles";
 
 const userProfileAvatar =
   "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80";
@@ -27,6 +31,43 @@ interface TabPanelProps {
   index: any;
   value: any;
 }
+
+const InfoPage = () => {
+  const buttonStyles = useButtonStyles();
+
+  return (
+    <div className="info-page">
+      <div className="info-page__content">
+        {/* <div className="actions-container">
+          <Button className={buttonStyles.editBtn}>Edit</Button>
+        </div> */}
+
+        <div className="badges-container">
+          <h4>Badges</h4>
+        </div>
+
+        <div className="details-container">
+          <div className="info-page__content__left-col">
+            <label className="name">First Name</label>
+            <label className="name">Last Name</label>
+            <label className="name">Role</label>
+            <label className="name">Email</label>
+            <label className="name">Phone</label>
+            <label className="name"></label>
+          </div>
+
+          <div className="info-page__content__right-col">
+            <label className="value">Tharinda</label>
+            <label className="value">Anurajeewa</label>
+            <label className="value">Student</label>
+            <label className="value">tharindahp@gmail.com</label>
+            <label className="value">0714883840</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
@@ -124,11 +165,13 @@ const UserProfile = () => {
                 onChangeIndex={handleChangeIndex}
               >
                 <TabPanel value={value} index={0} dir={theme.direction}>
-                  Item One
+                  <InfoPage />
                 </TabPanel>
-                <TabPanel value={value} index={1} dir={theme.direction}>
-                  Item Two
-                </TabPanel>
+                <TabPanel
+                  value={value}
+                  index={1}
+                  dir={theme.direction}
+                ></TabPanel>
                 <TabPanel value={value} index={2} dir={theme.direction}>
                   Item Three
                 </TabPanel>
