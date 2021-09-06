@@ -1,0 +1,35 @@
+.info-page__content{
+}
+
+.badges-container, .details-container{
+    background-color: var(--secondary-bg-clr);
+    margin: 1em auto;
+    padding: 3em 0;
+    border-radius: 1em;
+    max-width: 35em;
+}
+
+.details-container{
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 3em;
+}
+
+.details-container .info-page__content__left-col, .info-page__content__right-col{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.details-container .name{
+    color: var(--secondary-font-clr);
+}
+
+.details-container .value{
+    color: var(--primary-font-clr);
+}
+
+/* @media only screen and (min-width: 900px) {
+
+} */
