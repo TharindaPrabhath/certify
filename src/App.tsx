@@ -18,6 +18,7 @@ import Signin from "./screens/Signin";
 import CertificateVerification from "./screens/CertficateVerification";
 import CertificateView from "./screens/CertificateView";
 import UserProfile from "./screens/UserProfile";
+import { SnackbarProvider } from "notistack";
 
 const theme = createTheme({
   palette: {
@@ -34,51 +35,53 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <Router>
-        <div className="app">
-          <div className="signin-screen">
-            <Route path="/signin" exact>
-              <Signin />
-            </Route>
-            <Route path="/certificate/verify" exact>
-              <CertificateVerification />
-            </Route>
-            <Route path="/certificate/view" exact>
-              <CertificateView />
-            </Route>
-          </div>
+        <SnackbarProvider>
+          <div className="app">
+            <div className="signin-screen">
+              <Route path="/signin" exact>
+                <Signin />
+              </Route>
+              <Route path="/certificate/verify" exact>
+                <CertificateVerification />
+              </Route>
+              <Route path="/certificate/view" exact>
+                <CertificateView />
+              </Route>
+            </div>
 
-          <div className="app__topbar">
-            <Topbar />
-          </div>
+            <div className="app__topbar">
+              <Topbar />
+            </div>
 
-          <div className="app__sidebar">
-            <Sidebar />
-          </div>
+            <div className="app__sidebar">
+              <Sidebar />
+            </div>
 
-          <div className="app__screen">
-            <Route path="/dashboard" exact>
-              <Dashboard />
-            </Route>
-            <Route path="/user" exact>
-              <User />
-            </Route>
-            <Route path="/user/new" exact>
-              <NewUser />
-            </Route>
-            <Route path="/user/edit/:uid" exact>
-              <EditUser />
-            </Route>
-            <Route path="/user/:uid" exact>
-              <UserProfile />
-            </Route>
-            <Route path="/certificate" exact>
-              <Certificate />
-            </Route>
-            <Route path="/certificate/new" exact>
-              <NewCertificate />
-            </Route>
+            <div className="app__screen">
+              <Route path="/dashboard" exact>
+                <Dashboard />
+              </Route>
+              <Route path="/user" exact>
+                <User />
+              </Route>
+              <Route path="/user/new" exact>
+                <NewUser />
+              </Route>
+              <Route path="/user/edit/:uid" exact>
+                <EditUser />
+              </Route>
+              <Route path="/user/:uid" exact>
+                <UserProfile />
+              </Route>
+              <Route path="/certificate" exact>
+                <Certificate />
+              </Route>
+              <Route path="/certificate/new" exact>
+                <NewCertificate />
+              </Route>
+            </div>
           </div>
-        </div>
+        </SnackbarProvider>
       </Router>
     </ThemeProvider>
   );
