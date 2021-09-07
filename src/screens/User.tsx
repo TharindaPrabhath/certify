@@ -16,17 +16,7 @@ import UserDto from "../types/models/UserDto";
 import { toUserDtos } from "../utils/mapper";
 
 const User = () => {
-  const [users, setUsers] = useState<UserDto[]>([]);
   const buttonStyles = useButtonStyles();
-
-  useEffect(() => {
-    axios
-      .get(requests.fetchUsers)
-      .then((res) => {
-        setUsers(toUserDtos(res.data));
-      })
-      .catch((err) => console.error(err));
-  }, []);
 
   return (
     <div className="user">
@@ -51,7 +41,7 @@ const User = () => {
         </div>
 
         <div className="table">
-          <UserTable users={users} />
+          <UserTable />
         </div>
       </div>
     </div>
