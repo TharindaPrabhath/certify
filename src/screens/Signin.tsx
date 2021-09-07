@@ -11,12 +11,12 @@ import "./Signin.css";
 import LoginImage from "../assets/login.svg";
 import logo from "../assets/logo/logo.png";
 import axios from "axios";
+import axiosInstance, { API_BASE_URL } from "../utils/axios";
 
 import { useDispatch } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actionCreators } from "../redux";
 import { getAdminDto } from "../utils/mapper";
-import axiosInstance from "../utils/axios";
 import requests from "../data/requests";
 
 const Signin = () => {
@@ -36,19 +36,21 @@ const Signin = () => {
 
   const submit = (values: typeof initialValues) => {
     axios
-      .post("http://localhost:8080/login", values)
+      .post(API_BASE_URL + requests.login, values)
       .then((res) => {
         if (res.status === 200) {
           history.push("dashboard");
-          localStorage.setItem("token", res.data.token);
+          console.log(res.data.token);
+          localStorage.setItem(
+            "token",
+            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbeyJhdXRob3JpdHkiOiJBRE1JTiJ9XSwiaWF0IjoxNjMxMDA4NjExLCJleHAiOjE2MzEwMzk0MDB9.0KaJFyfAtxX_Nz7ROzIK1qZsQTrWunnObWBbwa5sNTkmulUAkgPDM9KpBktbWMjski5R16_Cj9M0uLLA_E_hUg"
+          );
 
           axiosInstance.get("/admin/get/1").then((res) => {
-            initAdmin(getAdminDto(res.data));
-            //console.log(res);
-            localStorage.setItem(
-              "currentAdmin",
-              getAdminDto(res.data).username
-            );
+            const admin = getAdminDto(res.data);
+            initAdmin(admin);
+            localStorage.setItem("currentAdmin", admin.username);
+            localStorage.setItem("currentAdminId", admin.id.toString());
           });
         }
       })
