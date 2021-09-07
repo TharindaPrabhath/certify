@@ -1,25 +1,68 @@
-import { Breadcrumbs, Button, Typography } from "@material-ui/core";
-import { Field, Form, Formik } from "formik";
-import React from "react";
+import {
+  Breadcrumbs,
+  Button,
+  MenuItem,
+  Select,
+  Switch,
+  TextField,
+  Typography,
+} from "@material-ui/core";
+import { useFormik } from "formik";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import CertifyDatePicker from "../components/core/CertifyDatePicker";
-import CertifySelect from "../components/core/CertifySelect";
-import CertifySwitch from "../components/core/CertifySwitch";
-import CertifyTextField from "../components/core/CertifyTextField";
 import colors from "../data/colors";
-import { useButtonStyles } from "../data/styles";
+import { useButtonStyles, useTextfieldStyles } from "../data/styles";
 import * as yup from "yup";
 
 import "./Page.css";
+import { useSelector } from "react-redux";
+import { ReducerType } from "../redux/store";
+import UserDto from "../types/models/UserDto";
+import axios from "../utils/axios";
+import requests from "../data/requests";
+import { getUserDto } from "../utils/mapper";
+import { updateUser } from "../utils/requestHelper";
+import { useSnackbar } from "notistack";
 
 const EditUser = () => {
+  const [user, setUser] = useState<UserDto>({
+    uid: 0,
+    fname: "",
+    lname: "",
+    email: "",
+    address: "",
+    role: "",
+    description: "",
+    admin: { id: 0, username: "" },
+    emailVerified: false,
+    certified: false,
+    numCertificates: 0,
+    phone: "",
+    birthday: "",
+    createdDate: "",
+  });
+  const styles = useTextfieldStyles();
+  const { enqueueSnackbar } = useSnackbar();
+  const currentUser = useSelector(
+    (state: ReducerType) => state.userReducer.currentUser
+  );
+
+  useEffect(() => {
+    async function fetchUser() {
+      const res = await axios.get(requests.fetchUser + "/" + currentUser?.uid);
+      setUser(getUserDto(res.data));
+    }
+
+    fetchUser();
+  }, []);
+
   const buttonStyles = useButtonStyles();
 
   const userValidationSchema = yup.object().shape({
-    fName: yup.string().required("First Name is required"),
-    lName: yup.string().required("Last Name is required"),
+    fname: yup.string().required("First Name is required"),
+    lname: yup.string().required("Last Name is required"),
     email: yup.string().email("Invalid Email").required("Email is required"),
-    phone: yup.number().min(9).max(10),
+    phone: yup.number().min(10, "Invalid Phone"),
     role: yup.string().required("Role is required"),
     address: yup.string(),
     description: yup.string(),
@@ -33,6 +76,42 @@ const EditUser = () => {
     else value.length !== 10 ? (error = "Invalid Phone") : (error = "");
     return error;
   };
+
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      fname: user?.fname,
+      lname: user?.lname,
+      email: user?.email,
+      emailVerified: user?.emailVerified,
+      phone: user?.phone,
+      birthday: user?.birthday,
+      role: user?.role,
+      address: user?.address,
+      description: user?.description,
+    },
+    onSubmit: (values) => {
+      const res = updateUser(user.uid, getUserDto(values));
+      res
+        .then(() => {
+          enqueueSnackbar(
+            `Successfully deleted the user ${user.fname} ${user.lname}`,
+            {
+              variant: "success",
+            }
+          );
+        })
+        .catch((err) => {
+          enqueueSnackbar(
+            `${err} .Could not update the user.Try again later.`,
+            {
+              variant: "error",
+            }
+          );
+        });
+    },
+    validationSchema: userValidationSchema,
+  });
 
   return (
     <div className="page">
@@ -49,92 +128,151 @@ const EditUser = () => {
         </div>
 
         <div className="form-container">
-          <Formik
-            validationSchema={userValidationSchema}
-            initialValues={{
-              fName: "",
-              lName: "",
-              email: "",
-              emailVerified: false,
-              phone: "",
-              birthday: "",
-              role: "",
-              address: "",
-              description: "",
-            }}
-            onSubmit={(values) => {}}
-          >
-            <Form>
-              <div className="left-col">
-                <Field
-                  label="First Name"
-                  name="fName"
-                  component={CertifyTextField}
-                  required
-                ></Field>
-                <Field
-                  label="Last Name"
-                  name="lName"
-                  component={CertifyTextField}
-                  required
-                ></Field>
-                <Field
-                  label="Email"
-                  name="email"
-                  component={CertifyTextField}
-                  required
-                ></Field>
-                <div className="email-verified">
-                  <Field name="emailVerified" component={CertifySwitch} />
+          <form onSubmit={formik.handleSubmit}>
+            <div className="left-col">
+              <TextField
+                id="fname"
+                name="fname"
+                type="text"
+                label="First Name"
+                value={formik.values.fname}
+                onChange={formik.handleChange}
+                error={!!formik.errors.fname}
+                helperText={formik.errors.fname}
+                variant="outlined"
+                required={true}
+                InputProps={{ className: styles.input }}
+              />
+              <TextField
+                id="lname"
+                name="lname"
+                type="text"
+                label="Last Name"
+                value={formik.values.lname}
+                onChange={formik.handleChange}
+                error={!!formik.errors.lname}
+                helperText={formik.errors.lname}
+                variant="outlined"
+                required={true}
+                InputProps={{ className: styles.input }}
+              />
+              <TextField
+                id="email"
+                name="email"
+                type="email"
+                label="Email"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                error={!!formik.errors.email}
+                helperText={formik.errors.email}
+                variant="outlined"
+                required={true}
+                InputProps={{ className: styles.input }}
+              />
 
-                  <div className="right-col">
-                    <label>Email verified</label>
-                    <p>
-                      Disabling this will automatically send the user a
-                      verification email
-                    </p>
-                  </div>
-                </div>
-                <Field
-                  label="Phone"
-                  name="phone"
-                  validate={validatePhone}
-                  component={CertifyTextField}
-                ></Field>
-              </div>
-
-              <div className="right-col">
-                <Field
-                  label="Birthday"
-                  name="birthday"
-                  component={CertifyDatePicker}
-                ></Field>
-                <Field
-                  label="Role"
-                  name="role"
-                  component={CertifySelect}
-                  options={["Student", "Undergraduate", "Graduate"]}
-                ></Field>
-                <Field
-                  label="Address"
-                  name="address"
-                  component={CertifyTextField}
-                ></Field>
-                <Field
-                  label="Description"
-                  name="decription"
-                  component={CertifyTextField}
-                  textArea
-                ></Field>
-
-                <div className="submit-btn">
-                  <Button className={buttonStyles.standardBtn} type="submit">
-                    Update User
-                  </Button>
+              <div className="email-verified">
+                <Switch
+                  color="primary"
+                  name="emailVerified"
+                  value={formik.values.emailVerified}
+                  checked={formik.values.emailVerified}
+                  onChange={formik.handleChange}
+                />
+                <div className="right-col">
+                  <label>Email verified</label>
+                  <p>
+                    Disabling this will automatically send the user a
+                    verification email
+                  </p>
                 </div>
               </div>
-            </Form>
-          </Formik>
+              <TextField
+                id="phone"
+                name="phone"
+                type="text"
+                label="Phone"
+                value={formik.values.phone}
+                onChange={formik.handleChange}
+                error={!!formik.errors.phone}
+                helperText={formik.errors.phone}
+                variant="outlined"
+                required={false}
+                InputProps={{ className: styles.input }}
+              />
+            </div>
+
+            <div className="right-col">
+              <TextField
+                id="birthday"
+                name="birthday"
+                type="date"
+                label="Birthday"
+                value={formik.values.birthday}
+                onChange={formik.handleChange}
+                variant="outlined"
+                required={false}
+                InputLabelProps={{
+                  className: styles.input,
+                  shrink: true,
+                }}
+              />
+              <Select
+                id="role"
+                name="role"
+                label="Role"
+                color="primary"
+                variant="outlined"
+                value={formik.values.role}
+                onChange={formik.handleChange}
+                error={!!formik.errors.role}
+              >
+                {["Student", "Undergraduate", "Graduate", "Unknown"].map(
+                  (option, index) => {
+                    return (
+                      <MenuItem key={index} value={option}>
+                        {option}
+                      </MenuItem>
+                    );
+                  }
+                )}
+              </Select>
+              <TextField
+                id="address"
+                name="address"
+                type="text"
+                label="Address"
+                value={formik.values.address}
+                onChange={formik.handleChange}
+                error={!!formik.errors.address}
+                helperText={formik.errors.address}
+                variant="outlined"
+                required={false}
+                InputProps={{ className: styles.input }}
+                multiline={true}
+                rows={5}
+              />
+              <TextField
+                id="description"
+                name="description"
+                type="text"
+                label="Description"
+                value={formik.values.description}
+                onChange={formik.handleChange}
+                error={!!formik.errors.description}
+                helperText={formik.errors.description}
+                variant="outlined"
+                required={false}
+                InputProps={{ className: styles.input }}
+                multiline={true}
+                rows={5}
+              />
+              <div className="submit-btn">
+                <Button className={buttonStyles.standardBtn} type="submit">
+                  Update User
+                </Button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
