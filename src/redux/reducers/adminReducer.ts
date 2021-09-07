@@ -1,14 +1,14 @@
 import AdminDto from "../../types/models/AdminDto";
 import { AdminActionType } from "../actions/ActionTypes";
 
-export interface Action {
+export interface AdminAction {
     type: AdminActionType,
     payload: {
         admin: AdminDto
     }
 }
 
-export interface State{
+interface State{
     currentAdmin: AdminDto | null | undefined
 }
 
@@ -20,7 +20,7 @@ const initialState:State = {
     }
 }
 
-const adminReducer = (state: State = initialState, action: Action): State => {
+const adminReducer = (state: State = initialState, action: AdminAction): State => {
     switch (action.type){
         case AdminActionType.INITIATE_ADMIN:
             return {...state, currentAdmin: action.payload.admin};
