@@ -9,7 +9,6 @@ import WelcomeImg from "../assets/welcome.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actionCreators } from "../redux";
-import { State } from "../redux/reducers/adminReducer";
 import { ReducerType } from "../redux/store";
 
 const Dashboard = () => {
