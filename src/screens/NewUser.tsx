@@ -11,12 +11,15 @@ import CertifySwitch from "../components/core/CertifySwitch";
 import CertifyDatePicker from "../components/core/CertifyDatePicker";
 import CertifySelect from "../components/core/CertifySelect";
 import colors from "../data/colors";
-import axios from "../utils/axios";
-import requests from "../data/requests";
 import * as yup from "yup";
+import { addUser } from "../utils/requestHelper";
+import { getUserDto } from "../utils/mapper";
+import { useSnackbar } from "notistack";
+import UserDto from "../types/models/UserDto";
 
 const NewUser = () => {
   const buttonStyles = useButtonStyles();
+  const { enqueueSnackbar } = useSnackbar();
 
   const initialValues = {
     fName: "",
@@ -49,9 +52,32 @@ const NewUser = () => {
     return error;
   };
 
-  const submit = async (values: typeof initialValues) => {
-    const res = await axios.post(requests.postNewUser, values);
-    console.log(res);
+  const submit = (values: typeof initialValues) => {
+    const user: any = {
+      fname: values.fName,
+      lname: values.lName,
+      email: values.email,
+      emailVerified: values.emailVerified,
+      certified: false,
+      numCertificates: 0,
+      phone: values.phone,
+      role: values.role,
+      birthday: values.birthday,
+      address: values.address,
+      description: values.description,
+      admin: {
+        id: parseInt(localStorage.getItem("currentAdminId")!),
+      },
+    };
+    addUser(getUserDto(user))
+      .then(() => {
+        enqueueSnackbar("Successfully added the user", { variant: "success" });
+      })
+      .catch((err) => {
+        enqueueSnackbar(`${err} .Could not add the user.Try again later.`, {
+          variant: "error",
+        });
+      });
   };
 
   return (
