@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Button,
   Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Paper,
   Table,
   TableBody,
@@ -16,8 +21,16 @@ import { TableHeadCellProp, UserTableProp } from "../types/TableProp";
 
 import { useButtonStyles, useTableStyles } from "../data/styles";
 import TableToolbar from "./TableToolbar";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import UserDto from "../types/models/UserDto";
+
+import { useDispatch, useSelector } from "react-redux";
+import { bindActionCreators } from "redux";
+import { actionCreators } from "../redux";
+import { toUserDtos } from "../utils/mapper";
+import { deleteUser, fetchUsers } from "../utils/requestHelper";
+import { useSnackbar } from "notistack";
+import { ReducerType } from "../redux/store";
 
 const headCells: TableHeadCellProp[] = [
   { id: "uid", name: "UID", numeric: false, label: "UID" },
@@ -55,13 +68,37 @@ const rows = [
   getRow("007", "Hasitha", "G", "hasitha@gmail.com", "Uni", "2001.03.12"),
 ];
 
-const UserTable = ({ users }: { users: UserDto[] }) => {
+const UserTable = () => {
+  const [users, setUsers] = useState<UserDto[]>([]);
   const [selected, setSelected] = React.useState<string[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+  const [selectedUserId, setSelectedUserId] = useState<number>();
+  const [redirect, setRedirect] = useState<boolean>(false);
+
+  const [openConfirmBox, setOpenConfirmBox] = useState<boolean>(false);
+  const [confirmBoxAgree, setConfirmBoxAgree] = useState<boolean>(false);
+
   const tableStyles = useTableStyles();
   const buttonStyles = useButtonStyles();
+
+  const dispatch = useDispatch();
+  const { setUser, removeUser } = bindActionCreators(actionCreators, dispatch);
+  const currentUser = useSelector(
+    (state: ReducerType) => state.userReducer.currentUser
+  );
+  const { enqueueSnackbar } = useSnackbar();
+
+  useEffect(() => {
+    fetchUsers()
+      .then((res) => {
+        setUsers(toUserDtos(res.data));
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -70,6 +107,51 @@ const UserTable = ({ users }: { users: UserDto[] }) => {
       return;
     }
     setSelected([]);
+  };
+
+  const handleEditClick = (event: React.MouseEvent<unknown>, user: UserDto) => {
+    // set current user in redux store
+    setUser(user);
+
+    // disable selection of the whole row on click
+    event.stopPropagation();
+    setSelectedUserId(user.uid);
+    setRedirect(true);
+  };
+
+  const handleDeleteClick = (
+    event: React.MouseEvent<unknown>,
+    user: UserDto
+  ) => {
+    event.stopPropagation();
+
+    setOpenConfirmBox(true);
+
+    if (confirmBoxAgree) {
+      deleteUser(user.uid)
+        .then(() => {
+          enqueueSnackbar(
+            `Successfully deleted the user ${user.fname} ${user.lname}`,
+            {
+              variant: "success",
+            }
+          );
+
+          // removing the item from the table
+          setUsers(users.filter((u) => u.uid !== user.uid));
+
+          // if the deleted user is the current user in redux store. delete it
+          if (currentUser?.uid === user.uid) removeUser();
+        })
+        .catch((err) => {
+          enqueueSnackbar(
+            `${err} .Could not delete the user.Try again later.`,
+            {
+              variant: "error",
+            }
+          );
+        });
+    }
   };
 
   const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
@@ -111,6 +193,18 @@ const UserTable = ({ users }: { users: UserDto[] }) => {
     users.map((user) => arr.push(user.fname + " " + user.lname));
     return arr;
   };
+
+  const handleConfirmBoxClose = () => {
+    setOpenConfirmBox(false);
+    setConfirmBoxAgree(false);
+  };
+
+  const handleConfirmBoxAgree = () => {
+    handleConfirmBoxClose();
+    setConfirmBoxAgree(true);
+  };
+
+  if (redirect) return <Redirect push to={`/user/edit/${selectedUserId}`} />;
 
   return (
     <Paper className={tableStyles.paper} style={{ borderRadius: "1em" }}>
@@ -210,26 +304,17 @@ const UserTable = ({ users }: { users: UserDto[] }) => {
                       {user.birthday}
                     </TableCell>
                     <TableCell className={tableStyles.tableCell}>
-                      <Link to={"user/edit/" + user.uid}>
-                        <Button
-                          className={buttonStyles.editBtn}
-                          onClick={(e) => {
-                            // disable selection of the whole row on click
-                            e.stopPropagation();
-                          }}
-                        >
-                          Edit
-                        </Button>
-                      </Link>
+                      <Button
+                        className={buttonStyles.editBtn}
+                        onClick={(e) => handleEditClick(e, user)}
+                      >
+                        Edit
+                      </Button>
                     </TableCell>
                     <TableCell className={tableStyles.tableCell}>
                       <Button
                         className={buttonStyles.deleteBtn}
-                        onClick={(e) => {
-                          // disable selection of the whole row on click
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
+                        onClick={(e) => handleDeleteClick(e, user)}
                       >
                         Delete
                       </Button>
@@ -250,6 +335,28 @@ const UserTable = ({ users }: { users: UserDto[] }) => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+      <Dialog
+        open={openConfirmBox}
+        //onClose={handleClose}
+        aria-labelledby="Confirm"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Are you sure?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            The certificates recieved by this user will also be deleted. Do you
+            really want to delete?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfirmBoxClose} color="primary">
+            Disagree
+          </Button>
+          <Button onClick={handleConfirmBoxAgree} color="primary" autoFocus>
+            Agree
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 };

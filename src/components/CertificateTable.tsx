@@ -1,6 +1,11 @@
 import {
   Button,
   Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Paper,
   Table,
   TableBody,
@@ -10,12 +15,19 @@ import {
   TablePagination,
   TableRow,
 } from "@material-ui/core";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useButtonStyles, useTableStyles } from "../data/styles";
 import CertificateDto from "../types/models/CertificateDto";
 import { CertificateTableProp, TableHeadCellProp } from "../types/TableProp";
+import { useSnackbar } from "notistack";
 import TableToolbar from "./TableToolbar";
+import { deleteCertificate, fetchCertificates } from "../utils/requestHelper";
+import { toCertificateDtos } from "../utils/mapper";
+import { useDispatch, useSelector } from "react-redux";
+import { bindActionCreators } from "redux";
+import { actionCreators } from "../redux";
+import { ReducerType } from "../redux/store";
 
 const headCells: TableHeadCellProp[] = [
   {
@@ -50,17 +62,39 @@ const rows: CertificateTableProp[] = [
   getRow("007", "Tharinda P", "Lasana", "Participation", "2001.03.12"),
 ];
 
-const CertificateTable = ({
-  certificates,
-}: {
-  certificates: CertificateDto[];
-}) => {
+const CertificateTable = () => {
   const [selected, setSelected] = React.useState<string[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const tableStyles = useTableStyles();
   const buttonStyles = useButtonStyles();
+
+  const [openConfirmBox, setOpenConfirmBox] = useState<boolean>(false);
+  const [confirmBoxAgree, setConfirmBoxAgree] = useState<boolean>(false);
+
+  const [certificates, setCertficates] = useState<CertificateDto[]>([]);
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const dispatch = useDispatch();
+  const { setCertificate, removeCertificate } = bindActionCreators(
+    actionCreators,
+    dispatch
+  );
+  const currentCertificate = useSelector(
+    (state: ReducerType) => state.certificateReducer.currentCertificate
+  );
+
+  useEffect(() => {
+    fetchCertificates()
+      .then((res) => {
+        setCertficates(toCertificateDtos(res.data));
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
@@ -69,6 +103,41 @@ const CertificateTable = ({
       return;
     }
     setSelected([]);
+  };
+
+  const handleDeleteClick = (
+    event: React.MouseEvent<unknown>,
+    certificate: CertificateDto
+  ) => {
+    event.stopPropagation();
+
+    setOpenConfirmBox(true);
+
+    if (confirmBoxAgree) {
+      deleteCertificate(certificate.id)
+        .then(() => {
+          enqueueSnackbar(
+            `Successfully deleted the certificate ${certificate.id}`,
+            {
+              variant: "success",
+            }
+          );
+
+          // removing the item from the table
+          setCertficates(certificates.filter((c) => c.id !== certificate.id));
+
+          // if the deleted certificate is the current certificate in redux store. delete it
+          if (currentCertificate?.id === certificate.id) removeCertificate();
+        })
+        .catch((err) => {
+          enqueueSnackbar(
+            `${err} .Could not delete the certificate.Try again later.`,
+            {
+              variant: "error",
+            }
+          );
+        });
+    }
   };
 
   const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
@@ -111,6 +180,16 @@ const CertificateTable = ({
       arr.push(certificate.user.fname + " " + certificate.user.lname)
     );
     return arr;
+  };
+
+  const handleConfirmBoxClose = () => {
+    setOpenConfirmBox(false);
+    setConfirmBoxAgree(false);
+  };
+
+  const handleConfirmBoxAgree = () => {
+    handleConfirmBoxClose();
+    setConfirmBoxAgree(true);
   };
 
   return (
@@ -224,8 +303,7 @@ const CertificateTable = ({
                       <Button
                         className={buttonStyles.deleteBtn}
                         onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
+                          handleDeleteClick(e, certificate);
                         }}
                       >
                         Delete
@@ -247,6 +325,27 @@ const CertificateTable = ({
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />
+      <Dialog
+        open={openConfirmBox}
+        aria-labelledby="Confirm"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Are you sure?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            The certificates recieved by this user will also be deleted. Do you
+            really want to delete?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfirmBoxClose} color="primary">
+            Disagree
+          </Button>
+          <Button onClick={handleConfirmBoxAgree} color="primary" autoFocus>
+            Agree
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 };
