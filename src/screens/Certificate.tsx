@@ -53,7 +53,7 @@ const Certificate = () => {
         </div>
 
         <div className="table">
-          <CertificateTable certificates={certificates} />
+          <CertificateTable />
         </div>
       </div>
     </div>
