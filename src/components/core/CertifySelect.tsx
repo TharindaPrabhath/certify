@@ -1,6 +1,7 @@
 import {
   FormControl,
   FormHelperText,
+  InputLabel,
   MenuItem,
   Select,
 } from "@material-ui/core";
@@ -14,8 +15,10 @@ const CertifySelect: React.FC<
     getIn(form.touched, field.name) && getIn(form.errors, field.name);
 
   return (
-    <FormControl error={!!error}>
+    <FormControl variant="outlined" error={!!error}>
+      <InputLabel id="certify-select">{label}</InputLabel>
       <Select
+        labelId="certify-select"
         color="primary"
         variant="outlined"
         label={label}
