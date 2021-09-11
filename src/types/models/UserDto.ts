@@ -1,7 +1,7 @@
 import AdminDto from "./AdminDto";
 
 interface UserDto{
-    uid: number,
+    id: number,
     fname: string,
     lname: string,
     email: string;
