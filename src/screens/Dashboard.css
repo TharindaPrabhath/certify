@@ -4,11 +4,15 @@
 }
 
 .dashboard__content{
+    margin-right: 0 auto;
     padding: 1em 1em;
 
     display: flex;
     flex-direction: column;
     gap: 1.5em;
+    width: 100;
+
+    margin-bottom: 10em;
 }
 
 .welcome-banner{
@@ -30,11 +34,12 @@
     width: 25em;
 }
 
-.analytics-cards{
+.analytic-cards, .analytic-cards .row-1, .analytic-cards .row-2, .analytic-cards .row-4, .row-4__progressbar-widget-container{
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 1em;
+    width: 100%;
 }
 
 @media only screen and (min-width: 650px){
@@ -47,6 +52,24 @@
 
     .welcome-banner__content .illustration{
         width: 60%;
+        max-width: 25em;
+    }
+}
+
+@media only screen and (min-width: 1130px){
+
+    .analytic-cards .row-1{
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+    
+    }
+
+    .analytic-cards .row-2{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .analytic-cards .row-4__progressbar-widget-container{
         max-width: 25em;
     }
 }
