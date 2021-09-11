@@ -1,7 +1,7 @@
 import { Button, Typography } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
-import React from "react";
-import { Link, useHistory } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, Redirect } from "react-router-dom";
 import CertifyCheckbox from "../components/core/CertifyCheckbox";
 import CertifyTextField from "../components/core/CertifyTextField";
 import { useButtonStyles } from "../data/styles";
@@ -18,10 +18,11 @@ import { bindActionCreators } from "redux";
 import { actionCreators } from "../redux";
 import { getAdminDto } from "../utils/mapper";
 import requests from "../data/requests";
+import { fetchAdminByUsername } from "../utils/requestHelper";
 
 const Signin = () => {
+  const [success, setSuccess] = useState<boolean>(false);
   const buttonStyles = useButtonStyles();
-  const history = useHistory();
   const dispatch = useDispatch();
   const { initAdmin, removeAdmin } = bindActionCreators(
     actionCreators,
@@ -39,23 +40,22 @@ const Signin = () => {
       .post(API_BASE_URL + requests.login, values)
       .then((res) => {
         if (res.status === 200) {
-          history.push("dashboard");
-          console.log(res.data.token);
-          localStorage.setItem(
-            "token",
-            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImF1dGhvcml0aWVzIjpbeyJhdXRob3JpdHkiOiJBRE1JTiJ9XSwiaWF0IjoxNjMxMDA4NjExLCJleHAiOjE2MzEwMzk0MDB9.0KaJFyfAtxX_Nz7ROzIK1qZsQTrWunnObWBbwa5sNTkmulUAkgPDM9KpBktbWMjski5R16_Cj9M0uLLA_E_hUg"
-          );
-
-          axiosInstance.get("/admin/get/1").then((res) => {
-            const admin = getAdminDto(res.data);
-            initAdmin(admin);
-            localStorage.setItem("currentAdmin", admin.username);
-            localStorage.setItem("currentAdminId", admin.id.toString());
-          });
+          localStorage.setItem("token", res.data.token);
+          fetchAdminByUsername(values.username)
+            .then((res) => {
+              const admin = getAdminDto(res.data);
+              initAdmin(admin);
+              localStorage.setItem("currentAdmin", admin.username);
+              localStorage.setItem("currentAdminId", admin.id.toString());
+              setSuccess(true);
+            })
+            .catch((err) => console.error(err));
         }
       })
       .catch((err) => console.error(err));
   };
+
+  if (success) return <Redirect to="/dashboard" />;
 
   return (
     <div className="signin">
