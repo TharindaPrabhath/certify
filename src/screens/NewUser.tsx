@@ -15,7 +15,6 @@ import * as yup from "yup";
 import { addUser } from "../utils/requestHelper";
 import { getUserDto } from "../utils/mapper";
 import { useSnackbar } from "notistack";
-import UserDto from "../types/models/UserDto";
 
 const NewUser = () => {
   const buttonStyles = useButtonStyles();
