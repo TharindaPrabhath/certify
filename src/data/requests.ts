@@ -1,9 +1,13 @@
 const login = "/auth/login"
+const validateToken = "/auth/validateToken"
 
+const fetchAdminByUsername = "/admin/get/byUsername"
 const fetchAdmins = "/admin"
 const fetchUser = "/user/get"
 const fetchUsers = "/user"
 const fetchCertificates = "/certificate"
+const fetchUsersAnalytics = "/analytics/user"
+const fetchCertificatesAnalytics = "/analytics/certificate"
 
 const postNewUser = "/user/add"
 const postNewCertificate = "/certificate/add"
@@ -14,8 +18,8 @@ const updateCertificate = "/certificate/update"
 const deleteUser = "/user/delete"
 const deleteCertificate = "/certificate/delete"
 
-const requests = {login, fetchAdmins, fetchUser, fetchUsers, 
-                fetchCertificates, postNewUser, postNewCertificate, 
+const requests = {login, validateToken, fetchAdminByUsername , fetchAdmins, fetchUser, fetchUsers, 
+                fetchCertificates, fetchUsersAnalytics, fetchCertificatesAnalytics, postNewUser, postNewCertificate, 
                 updateUser, updateCertificate, deleteUser, deleteCertificate}
     
 export default requests;
