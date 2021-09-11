@@ -26,7 +26,7 @@ import { useSnackbar } from "notistack";
 
 const EditUser = () => {
   const [user, setUser] = useState<UserDto>({
-    uid: 0,
+    id: 0,
     fname: "",
     lname: "",
     email: "",
@@ -49,7 +49,7 @@ const EditUser = () => {
 
   useEffect(() => {
     async function fetchUser() {
-      const res = await axios.get(requests.fetchUser + "/" + currentUser?.uid);
+      const res = await axios.get(requests.fetchUser + "/" + currentUser?.id);
       setUser(getUserDto(res.data));
     }
 
@@ -91,7 +91,7 @@ const EditUser = () => {
       description: user?.description,
     },
     onSubmit: (values) => {
-      const res = updateUser(user.uid, getUserDto(values));
+      const res = updateUser(user.id, getUserDto(values));
       res
         .then(() => {
           enqueueSnackbar(
