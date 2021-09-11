@@ -6,29 +6,9 @@ import {
   Theme,
 } from "@material-ui/core";
 import React from "react";
+import { useAvatarStyles } from "../data/styles";
 
 import "./UserCell.css";
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      display: "flex",
-      "& > *": {
-        margin: theme.spacing(1),
-      },
-    },
-    small: {
-      width: theme.spacing(3),
-      height: theme.spacing(3),
-      fontSize: "0.8em",
-      backgroundColor: theme.palette.success.dark,
-    },
-    large: {
-      width: theme.spacing(7),
-      height: theme.spacing(7),
-    },
-  })
-);
 
 const UserCell = ({
   firstName,
@@ -37,7 +17,7 @@ const UserCell = ({
   firstName: string;
   lastName: string;
 }) => {
-  const classes = useStyles();
+  const classes = useAvatarStyles();
 
   return (
     <div className="user-cell">
