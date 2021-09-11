@@ -7,7 +7,7 @@ export const getAdminDto = (data: any):AdminDto => {
 }
 
 export const getUserDto = (data: any):UserDto => {
-    return {uid: data.uid, fname: data.fname, lname: data.lname, email: data.email, 
+    return {id: data.uid, fname: data.fname, lname: data.lname, email: data.email, 
             phone: data.phone, role: data.role, address: data.address, 
             description: data.description, emailVerified: data.emailVerified, 
             certified: data.certified, numCertificates: data.numCertificates, admin: data.admin, 
