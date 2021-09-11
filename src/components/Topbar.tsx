@@ -21,11 +21,13 @@ import { bindActionCreators } from "redux";
 import { actionCreators } from "../redux";
 import { ReducerType } from "../redux/store";
 import colors from "../data/colors";
+import { Redirect } from "react-router";
 
 const Topbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState<boolean>(false);
   const avatarBtnRef = React.useRef<HTMLButtonElement>(null);
+  const [logout, setLogout] = useState<boolean>(false);
 
   const dispatch = useDispatch();
   const { initAdmin, removeAdmin } = bindActionCreators(
@@ -54,6 +56,13 @@ const Topbar = () => {
 
     setAvatarMenuOpen(false);
   };
+
+  const handleLogoutClick = () => {
+    localStorage.clear();
+    setLogout(true);
+  };
+
+  if (logout) return <Redirect push to={`/signin`} />;
 
   return (
     <div className="topbar">
@@ -104,7 +113,9 @@ const Topbar = () => {
                 <ClickAwayListener onClickAway={handleClose}>
                   <MenuList autoFocusItem={avatarMenuOpen} id="menu-list-grow">
                     <MenuItem>Profile</MenuItem>
-                    <MenuItem>Logout</MenuItem>
+                    <MenuItem button onClick={handleLogoutClick}>
+                      Logout
+                    </MenuItem>
                   </MenuList>
                 </ClickAwayListener>
               </Paper>
