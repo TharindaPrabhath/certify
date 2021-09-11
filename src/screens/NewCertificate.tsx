@@ -1,32 +1,62 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-import { Breadcrumbs, Button, Typography } from "@material-ui/core";
-import { Field, Form, Formik } from "formik";
+import {
+  Breadcrumbs,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControl,
+  InputLabel,
+  List,
+  ListItem,
+  MenuItem,
+  Select,
+  Switch,
+  TextField,
+  Typography,
+} from "@material-ui/core";
+import { useFormik } from "formik";
 import { Link } from "react-router-dom";
-import { useButtonStyles } from "../data/styles";
+import { useButtonStyles, useTextfieldStyles } from "../data/styles";
 
 import "./Page.css";
-import CertifyTextField from "../components/core/CertifyTextField";
-import CertifySelect from "../components/core/CertifySelect";
 import colors from "../data/colors";
 import { useState } from "react";
-import CertifySwitch from "../components/core/CertifySwitch";
 import axios from "../utils/axios";
 import requests from "../data/requests";
 import * as yup from "yup";
+import axiosInstance from "../utils/axios";
+import UserDto from "../types/models/UserDto";
+import { toUserDtos } from "../utils/mapper";
+import { useSnackbar } from "notistack";
+import { addCertificate } from "../utils/requestHelper";
 
 const NewCertificate = () => {
-  const [toggle, setToggle] = useState<boolean>(true);
-
+  const [openUserSelectBox, setOpenUserSelectBox] = useState<boolean>(false);
+  const [users, setUsers] = useState<UserDto[]>([]);
+  const [suggestionUsers, setSuggestionUsers] = useState<UserDto[]>([]);
+  const [searchedUser, setSearchedUser] = useState<string>("");
+  const [searchedUserId, setSearchedUserId] = useState<number>(0);
+  const { enqueueSnackbar } = useSnackbar();
   const buttonStyles = useButtonStyles();
+  const styles = useTextfieldStyles();
 
-  const handleChange = () => {
-    toggle ? setToggle(false) : setToggle(true);
-  };
-  console.log(toggle);
+  useEffect(() => {
+    axiosInstance
+      .get(requests.fetchUsers)
+      .then((res) => {
+        setUsers(toUserDtos(res.data));
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
 
   const initialValues = {
-    reciever: "",
+    reciever: searchedUser,
     type: "",
     defaultEmail: true,
     customEmail: "",
@@ -48,6 +78,55 @@ const NewCertificate = () => {
     console.log(res);
   };
 
+  const handleOnClick = () => {
+    setOpenUserSelectBox(true);
+  };
+
+  const handleUserSelectBoxClose = () => {
+    setOpenUserSelectBox(false);
+  };
+
+  const handleSuggestedUserClick = (searchedUser: UserDto) => {
+    setSearchedUser(searchedUser.fname + " " + searchedUser.lname);
+    setSearchedUserId(searchedUser.id);
+    setOpenUserSelectBox(false);
+  };
+
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: initialValues,
+    onSubmit: (values) => {
+      console.log(values);
+      const res = addCertificate({
+        ...values,
+        user: {
+          uid: searchedUserId,
+        },
+        admin: {
+          id: localStorage.getItem("currentAdminId"),
+        },
+      });
+      res
+        .then(() => {
+          enqueueSnackbar(
+            `Successfully issued the certificate to ${values.reciever}`,
+            {
+              variant: "success",
+            }
+          );
+        })
+        .catch((err) => {
+          enqueueSnackbar(
+            `${err} .Could not issue the certificate.Try again later.`,
+            {
+              variant: "error",
+            }
+          );
+        });
+    },
+    validationSchema: certificateValidationSchema,
+  });
+
   return (
     <div className="page">
       <div className="page__content">
@@ -63,96 +142,175 @@ const NewCertificate = () => {
         </div>
 
         <div className="form-container">
-          <Formik
-            validationSchema={certificateValidationSchema}
-            initialValues={initialValues}
-            onSubmit={(values) => {
-              console.log("data: ", values);
-              submit(values);
-            }}
-          >
-            <Form>
-              <div className="left-col">
-                <Field
-                  label="Reciever"
-                  name="reciever"
-                  options={["Tharinda P", "Lasana", "Lishitha", "Chamath"]}
-                  component={CertifySelect}
-                  required
-                ></Field>
-                <Field
-                  label="Type"
+          <form onSubmit={formik.handleSubmit}>
+            <div className="left-col">
+              <TextField
+                id="reciever"
+                name="reciever"
+                type="text"
+                label="Reciever"
+                value={formik.values.reciever}
+                onClick={() => setOpenUserSelectBox(true)}
+                onChange={formik.handleChange}
+                error={!!formik.errors.reciever}
+                helperText={formik.errors.reciever}
+                variant="outlined"
+                required={true}
+                InputProps={{ className: styles.input }}
+              />
+              <FormControl variant="outlined">
+                <InputLabel id="type">Type</InputLabel>
+                <Select
+                  labelId="type"
+                  id="type"
                   name="type"
-                  options={[
-                    "Content Contribution",
-                    "Platform Development",
-                    "Teaching",
-                    "Other",
-                  ]}
-                  component={CertifySelect}
-                  required
-                ></Field>
-
-                <div className="email-verified">
-                  <Field
-                    name="defaultEmail"
-                    checked={toggle}
-                    onChange={handleChange}
-                    component={CertifySwitch}
-                  />
-                  {/* <Switch
-                    color="primary"
-                    checked={defaultEmail}
-                    onChange={(e) => {
-                      setDefaultEmail(e.target.checked);
-                    }}
-                  ></Switch> */}
-
-                  <div className="right-col">
-                    <label>Send to reciever's default email</label>
-                    <p>
-                      Disabling this will send the issued certificate to the
-                      custom email
-                    </p>
-                  </div>
-                </div>
-                {!toggle && (
-                  <Field
-                    label="Custom Email"
-                    name="customEmail"
-                    component={CertifyTextField}
-                    required
-                  />
-                )}
-              </div>
-
-              <div className="right-col">
-                <Field
-                  label="Reason"
-                  name="reason"
-                  component={CertifyTextField}
-                  textArea
-                  required
-                ></Field>
-
-                <Field
-                  label="Remarks"
-                  name="remarks"
-                  component={CertifyTextField}
-                  textArea
-                  required
-                ></Field>
-
-                <div className="submit-bt">
-                  <Button className={buttonStyles.standardBtn} type="submit">
-                    Create Certificate
-                  </Button>
+                  label="Type"
+                  color="primary"
+                  variant="outlined"
+                  value={formik.values.type}
+                  onChange={formik.handleChange}
+                  error={!!formik.errors.type}
+                >
+                  {["Participation", "Content Creation", "Other"].map(
+                    (option, index) => {
+                      return (
+                        <MenuItem key={index} value={option}>
+                          {option}
+                        </MenuItem>
+                      );
+                    }
+                  )}
+                </Select>
+              </FormControl>
+              <div className="email-verified">
+                <Switch
+                  color="primary"
+                  name="defaultEmail"
+                  value={formik.values.defaultEmail}
+                  checked={formik.values.defaultEmail}
+                  onChange={formik.handleChange}
+                />
+                <div className="right-col">
+                  <label>Send to reciever's default email</label>
+                  <p>
+                    Disabling this will send the issued certificate to the
+                    custom email
+                  </p>
                 </div>
               </div>
-            </Form>
-          </Formik>
+              {!formik.values.defaultEmail && (
+                <TextField
+                  id="customEmail"
+                  name="customEmail"
+                  type="email"
+                  label="Email"
+                  value={formik.values.customEmail}
+                  onChange={formik.handleChange}
+                  error={!!formik.errors.customEmail}
+                  helperText={formik.errors.customEmail}
+                  variant="outlined"
+                  required={true}
+                  InputProps={{ className: styles.input }}
+                />
+              )}
+            </div>
+            <div className="right-col">
+              <TextField
+                id="reason"
+                name="reason"
+                type="text"
+                label="Reason"
+                value={formik.values.reason}
+                onChange={formik.handleChange}
+                error={!!formik.errors.reason}
+                helperText={formik.errors.reason}
+                variant="outlined"
+                required={true}
+                InputProps={{ className: styles.input }}
+                multiline={true}
+                rows={5}
+              />
+              <TextField
+                id="remarks"
+                name="remarks"
+                type="text"
+                label="Remarks"
+                value={formik.values.remarks}
+                onChange={formik.handleChange}
+                error={!!formik.errors.remarks}
+                helperText={formik.errors.remarks}
+                variant="outlined"
+                required={true}
+                InputProps={{ className: styles.input }}
+                multiline={true}
+                rows={5}
+              />
+              <div className="submit-btn">
+                <Button className={buttonStyles.standardBtn} type="submit">
+                  Create Certificate
+                </Button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
+
+      <Dialog
+        open={openUserSelectBox}
+        aria-labelledby="Confirm"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "1em",
+              width: "20em",
+            }}
+          >
+            Select the reciever
+            <TextField
+              label="Search the reciever"
+              variant="outlined"
+              value={searchedUser}
+              onChange={(e) => {
+                const text = e.target.value;
+                setSearchedUser(text);
+
+                const regex = new RegExp(`^${text}`, `i`);
+                setSuggestionUsers(
+                  users
+                    .sort()
+                    .filter((u) => regex.test(u.fname) || regex.test(u.lname))
+                );
+              }}
+            />
+          </div>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            <List style={{ height: "20em", maxHeight: "25em" }}>
+              {suggestionUsers.map((user) => {
+                return (
+                  <ListItem
+                    button
+                    onClick={() => handleSuggestedUserClick(user)}
+                    key={user.id}
+                  >
+                    {`${user.fname} ${user.lname}`}
+                  </ListItem>
+                );
+              })}
+            </List>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleUserSelectBoxClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
