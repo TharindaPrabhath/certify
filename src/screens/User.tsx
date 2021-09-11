@@ -8,12 +8,6 @@ import UserTable from "../components/UserTable";
 import { Link } from "react-router-dom";
 import { useButtonStyles } from "../data/styles";
 import colors from "../data/colors";
-import { useEffect } from "react";
-import axios from "../utils/axios";
-import requests from "../data/requests";
-import { useState } from "react";
-import UserDto from "../types/models/UserDto";
-import { toUserDtos } from "../utils/mapper";
 
 const User = () => {
   const buttonStyles = useButtonStyles();
