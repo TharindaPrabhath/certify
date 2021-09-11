@@ -1,46 +1,26 @@
 import {
   Button,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useButtonStyles, useTableStyles } from "../data/styles";
+import { useButtonStyles } from "../data/styles";
 import CertificateDto from "../types/models/CertificateDto";
-import { CertificateTableProp, TableHeadCellProp } from "../types/TableProp";
+import { CertificateTableProp } from "../types/TableProp";
 import { useSnackbar } from "notistack";
-import TableToolbar from "./TableToolbar";
 import { deleteCertificate, fetchCertificates } from "../utils/requestHelper";
-import { toCertificateDtos } from "../utils/mapper";
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actionCreators } from "../redux";
 import { ReducerType } from "../redux/store";
-
-const headCells: TableHeadCellProp[] = [
-  {
-    id: "certificateId",
-    name: "CertificateId",
-    numeric: false,
-    label: "CertificateId",
-  },
-  { id: "recievedBy", name: "RecievedBy", numeric: false, label: "RecievedBy" },
-  { id: "issuedBy", name: "IssuedBy", numeric: false, label: "IssuedBy" },
-  { id: "type", name: "Type", numeric: false, label: "Type" },
-  { id: "issuedDate", name: "IssuedDate", numeric: false, label: "IssuedDate" },
-];
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import colors from "../data/colors";
+import moment from "moment";
 
 const getRow = (
   certificateId: string,
@@ -63,20 +43,11 @@ const rows: CertificateTableProp[] = [
 ];
 
 const CertificateTable = () => {
-  const [selected, setSelected] = React.useState<string[]>([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
-  const tableStyles = useTableStyles();
   const buttonStyles = useButtonStyles();
-
   const [openConfirmBox, setOpenConfirmBox] = useState<boolean>(false);
   const [confirmBoxAgree, setConfirmBoxAgree] = useState<boolean>(false);
-
-  const [certificates, setCertficates] = useState<CertificateDto[]>([]);
-
+  const [certificates, setCertficates] = useState<CertificateTableRow[]>([]);
   const { enqueueSnackbar } = useSnackbar();
-
   const dispatch = useDispatch();
   const { setCertificate, removeCertificate } = bindActionCreators(
     actionCreators,
@@ -86,24 +57,42 @@ const CertificateTable = () => {
     (state: ReducerType) => state.certificateReducer.currentCertificate
   );
 
+  type CertificateTableRow = {
+    id: number;
+    recievedBy: string;
+    issuedBy: string;
+    type: string;
+    issuedDate: string;
+  };
+
+  const toCertificateTableData = (dataArr: any[]): CertificateTableRow[] => {
+    var list: CertificateTableRow[] = [];
+    dataArr.map((d) => {
+      list.push(getAsCertificateTableRow(d));
+      return;
+    });
+    return list;
+  };
+
+  const getAsCertificateTableRow = (data: any): CertificateTableRow => {
+    return {
+      id: data.id,
+      recievedBy: data.user.fname + " " + data.user.lname,
+      issuedBy: data.admin.name,
+      type: data.type,
+      issuedDate: moment(data.issuedDate, "YYYY-MM-DD").format("DD-MM-YYYY"),
+    };
+  };
+
   useEffect(() => {
     fetchCertificates()
       .then((res) => {
-        setCertficates(toCertificateDtos(res.data));
+        setCertficates(toCertificateTableData(res.data));
       })
       .catch((err) => {
         console.error(err);
       });
   }, []);
-
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      const newSelecteds = certificates.map((n) => String(n.id));
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
 
   const handleDeleteClick = (
     event: React.MouseEvent<unknown>,
@@ -140,48 +129,6 @@ const CertificateTable = () => {
     }
   };
 
-  const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected: string[] = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-
-    setSelected(newSelected);
-  };
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const isSelected = (name: string) => selected.indexOf(name) !== -1;
-
-  const getSuggestions = (): string[] => {
-    var arr: string[] = [];
-
-    certificates.map((certificate) =>
-      arr.push(certificate.user.fname + " " + certificate.user.lname)
-    );
-    return arr;
-  };
-
   const handleConfirmBoxClose = () => {
     setOpenConfirmBox(false);
     setConfirmBoxAgree(false);
@@ -192,139 +139,88 @@ const CertificateTable = () => {
     setConfirmBoxAgree(true);
   };
 
+  const columns: GridColDef[] = [
+    {
+      field: "id",
+      headerName: "ID",
+      width: 120,
+      editable: false,
+    },
+    {
+      field: "recievedBy",
+      headerName: "Reciever",
+      width: 150,
+      editable: false,
+    },
+    {
+      field: "issuedBy",
+      headerName: "Issuer",
+      width: 150,
+      editable: false,
+    },
+    {
+      field: "type",
+      headerName: "Type",
+      width: 200,
+      editable: false,
+    },
+    {
+      field: "issuedDate",
+      headerName: "Issued Date",
+      width: 200,
+      editable: false,
+    },
+    {
+      field: "action",
+      headerName: "Action",
+      width: 170,
+      editable: false,
+      renderCell: (params) => {
+        return (
+          <div>
+            <Button
+              className={buttonStyles.editBtn}
+              //onClick={(e) => handleEditClick(e, params.row.id)}
+            >
+              Edit
+            </Button>
+            <Button
+              style={{ marginLeft: "1em" }}
+              className={buttonStyles.deleteBtn}
+              onClick={(e) => handleDeleteClick(e, params.row.id)}
+            >
+              <DeleteOutlineIcon />
+            </Button>
+          </div>
+        );
+      },
+    },
+  ];
+
   return (
-    <Paper className={tableStyles.paper} style={{ borderRadius: "1em" }}>
-      <TableToolbar
-        numSelected={selected.length}
-        suggestions={getSuggestions()}
+    <div
+      style={{
+        height: 400,
+        width: "100%",
+        backgroundColor: colors.secondaryBgClr,
+        borderRadius: "1em",
+      }}
+    >
+      <DataGrid
+        rows={certificates}
+        columns={columns}
+        pageSize={5}
+        rowsPerPageOptions={[5]}
+        checkboxSelection
+        disableSelectionOnClick
+        style={{
+          color: colors.secondaryFontClr,
+          borderColor: "transparent",
+          borderRadius: "1em",
+          padding: "0.5em",
+        }}
       />
-      <TableContainer>
-        <Table
-          size="medium"
-          className={tableStyles.table}
-          aria-label="enhanced table"
-        >
-          <TableHead>
-            <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox
-                  color="primary"
-                  inputProps={{ "aria-label": "decorative checkbox" }}
-                  onChange={(event) => handleSelectAllClick(event)}
-                />
-              </TableCell>
-              {headCells.map((headCell, index) => {
-                return (
-                  <TableCell
-                    key={index}
-                    align="left"
-                    padding="normal"
-                    className={tableStyles.tableHeaderCell}
-                  >
-                    {headCell.label}
-                  </TableCell>
-                );
-              })}
-              <TableCell></TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableHead>
 
-          <TableBody>
-            {certificates
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((certificate, index) => {
-                const isItemSelected = isSelected(String(certificate.id));
-                const labelId = `enhanced-table-checkbox-${index}`;
-
-                return (
-                  <TableRow
-                    className={tableStyles.tableRow}
-                    key={index}
-                    hover={true}
-                    role="checkbox"
-                    onClick={(event) =>
-                      handleClick(event, String(certificate.id))
-                    }
-                    aria-checked={isItemSelected}
-                    selected={isItemSelected}
-                    tabIndex={-1}
-                  >
-                    <TableCell
-                      padding="checkbox"
-                      className={tableStyles.tableCell}
-                    >
-                      <Checkbox
-                        checked={isItemSelected}
-                        inputProps={{ "aria-labelledby": labelId }}
-                        color="primary"
-                      />
-                    </TableCell>
-
-                    <TableCell
-                      component="th"
-                      scope="row"
-                      padding="normal"
-                      className={tableStyles.tableCell}
-                    >
-                      {certificate.id}
-                    </TableCell>
-                    <TableCell
-                      align="left"
-                      className={tableStyles.tableCell}
-                      style={{ fontWeight: 700 }}
-                    >
-                      <Link to={`user/${certificate.user.uid}`}>
-                        {certificate.user.fname + " " + certificate.user.lname}
-                      </Link>
-                    </TableCell>
-                    <TableCell align="left" className={tableStyles.tableCell}>
-                      {certificate.admin.username}
-                    </TableCell>
-                    <TableCell align="left" className={tableStyles.tableCell}>
-                      {certificate.type}
-                    </TableCell>
-                    <TableCell align="left" className={tableStyles.tableCell}>
-                      {certificate.issuedDate}
-                    </TableCell>
-                    <TableCell className={tableStyles.tableCell}>
-                      <Button
-                        className={buttonStyles.editBtn}
-                        onClick={(e) => {
-                          // disable selection of the whole row on click
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                      >
-                        Edit
-                      </Button>
-                    </TableCell>
-                    <TableCell className={tableStyles.tableCell}>
-                      <Button
-                        className={buttonStyles.deleteBtn}
-                        onClick={(e) => {
-                          handleDeleteClick(e, certificate);
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <TablePagination
-        className={tableStyles.pagination}
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
       <Dialog
         open={openConfirmBox}
         aria-labelledby="Confirm"
@@ -346,7 +242,7 @@ const CertificateTable = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Paper>
+    </div>
   );
 };
 
