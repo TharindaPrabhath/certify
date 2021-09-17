@@ -58,7 +58,7 @@ const CertificateTable = () => {
   );
 
   type CertificateTableRow = {
-    id: number;
+    id: string;
     recievedBy: string;
     issuedBy: string;
     type: string;
@@ -80,7 +80,7 @@ const CertificateTable = () => {
       recievedBy: data.user.fname + " " + data.user.lname,
       issuedBy: data.admin.name,
       type: data.type,
-      issuedDate: moment(data.issuedDate, "YYYY-MM-DD").format("DD-MM-YYYY"),
+      issuedDate: moment(data.issuedDate, "YYYY-MM-DD").format("YYYY-MM-DD"),
     };
   };
 
