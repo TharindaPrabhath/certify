@@ -25,14 +25,11 @@ import { useButtonStyles, useTextfieldStyles } from "../data/styles";
 import "./Page.css";
 import colors from "../data/colors";
 import { useState } from "react";
-import axios from "../utils/axios";
-import requests from "../data/requests";
 import * as yup from "yup";
-import axiosInstance from "../utils/axios";
 import UserDto from "../types/models/UserDto";
 import { toUserDtos } from "../utils/mapper";
 import { useSnackbar } from "notistack";
-import { addCertificate } from "../utils/requestHelper";
+import { addCertificate, fetchUsers } from "../utils/requestHelper";
 
 const NewCertificate = () => {
   const [openUserSelectBox, setOpenUserSelectBox] = useState<boolean>(false);
@@ -45,14 +42,9 @@ const NewCertificate = () => {
   const styles = useTextfieldStyles();
 
   useEffect(() => {
-    axiosInstance
-      .get(requests.fetchUsers)
-      .then((res) => {
-        setUsers(toUserDtos(res.data));
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+    fetchUsers()
+      .then((res) => setUsers(toUserDtos(res.data)))
+      .catch((err) => console.error(err));
   }, []);
 
   const initialValues = {
@@ -72,15 +64,6 @@ const NewCertificate = () => {
     reason: yup.string().required("Reason is required"),
     remarks: yup.string().required("Remarks are required"),
   });
-
-  const submit = async (values: typeof initialValues) => {
-    const res = await axios.post(requests.postNewCertificate, values);
-    console.log(res);
-  };
-
-  const handleOnClick = () => {
-    setOpenUserSelectBox(true);
-  };
 
   const handleUserSelectBoxClose = () => {
     setOpenUserSelectBox(false);
@@ -103,7 +86,7 @@ const NewCertificate = () => {
           uid: searchedUserId,
         },
         admin: {
-          id: localStorage.getItem("currentAdminId"),
+          id: parseInt(localStorage.getItem("currentAdminId")!),
         },
       });
       res
