@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import "./App.css";
 import "./components/Topbar.css";
@@ -21,6 +21,10 @@ import UserProfile from "./screens/UserProfile";
 import { SnackbarProvider } from "notistack";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthRoute from "./components/AuthRoute";
+import useLocalStorage from "./utils/useLocalStorage";
+import { useSelector } from "react-redux";
+import { ReducerType } from "./redux/store";
+import { fetchAdminByUsername } from "./utils/requestHelper";
 
 const theme = createTheme({
   palette: {
@@ -34,6 +38,20 @@ const theme = createTheme({
 });
 
 function App() {
+  const { saveAdmin } = useLocalStorage();
+  const currentAdmin = useSelector(
+    (state: ReducerType) => state.adminReducer.currentAdmin
+  );
+
+  useEffect(() => {
+    console.log(currentAdmin?.username);
+    fetchAdminByUsername(currentAdmin?.username!)
+      .then((res) => {
+        saveAdmin({ id: res.data.id, username: currentAdmin?.username });
+      })
+      .catch((err) => console.error(err));
+  }, [currentAdmin?.username, saveAdmin]);
+
   return (
     <ThemeProvider theme={theme}>
       <Router>
