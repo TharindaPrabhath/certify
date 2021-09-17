@@ -33,7 +33,6 @@
     display: flex;
     flex-direction: column;
     gap: 1em;
-    width: 100%;
 }
 
 .form .special-actions{
@@ -97,4 +96,8 @@
         max-width: 35em;
         border-radius: 0 1em 1em 0;
     } 
+
+    .right-col .form{
+        width: 100%;
+    }
 }
