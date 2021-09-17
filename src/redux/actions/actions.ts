@@ -7,7 +7,7 @@ import { CertificateAction } from "../reducers/certificateReducer"
 import { UserAction } from "../reducers/userReducer"
 import { AdminActionType, CertificateActionType, UserActionType } from "./ActionTypes"
 
-export const initAdmin = (admin: AdminDto) => {
+export const setAdmin = (admin: AdminDto) => {
     return ((dispatch: Dispatch<AdminAction>) => {
         dispatch({
             type: AdminActionType.INITIATE_ADMIN,
