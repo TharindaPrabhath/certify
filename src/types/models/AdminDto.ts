@@ -1,6 +1,6 @@
 interface AdminDto{
-    id: number,
-    username: string;
+    id?: number,
+    username?: string;
     email?: string,
 }
 
