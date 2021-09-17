@@ -3,8 +3,14 @@ import React from "react";
 import "./Certificate.css";
 
 import logo from "../assets/logo/logo.png";
+import CertificateDto from "../types/models/CertificateDto";
+import moment from "moment";
 
-const Certificate = () => {
+const Certificate = ({
+  certificate,
+}: {
+  certificate: CertificateDto | undefined;
+}) => {
   return (
     <div className="certificate">
       <div className="certificate__content">
@@ -17,11 +23,13 @@ const Certificate = () => {
 
         <div className="body">
           <div className="reciever-details">
-            <h1 className="reciever">Tharinda P Anurajeewa</h1>
+            <h1 className="reciever">{`${certificate?.user.fname} ${certificate?.user.lname}`}</h1>
             <p className="description">
               is hereby awarded this certificate of achievement for the
-              contribution of <span>Supplying educational materials</span> on
-              2021 Aug 23
+              contribution of <span>{certificate?.reason}</span> on
+              {` ${moment(certificate?.issuedDate, "YYYY-MM-DD").format(
+                "YYYY-MM-DD"
+              )}`}
             </p>
           </div>
 
@@ -40,7 +48,7 @@ const Certificate = () => {
 
         <div className="footer">
           <h5 className="certificate-id">
-            Certificate ID:<span> 123-567-890</span>
+            Certificate ID:<span>{`  ${certificate?.id}`}</span>
           </h5>
           <h5 className="verification-web-site">
             Verify the authenticity of the certificate at:
