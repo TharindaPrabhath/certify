@@ -7,10 +7,6 @@ import CertificateImg from "../assets/certificate.svg";
 import WelcomeImg from "../assets/welcome.svg";
 import UsersImg from "../assets/users.svg";
 
-import { useDispatch, useSelector } from "react-redux";
-import { bindActionCreators } from "redux";
-import { actionCreators } from "../redux";
-import { ReducerType } from "../redux/store";
 import PercentageWidget from "../components/dashWidgets/PercentageWidget";
 import colors from "../data/colors";
 import MemberRegistrationAnalysisWidget from "../components/dashWidgets/MemberRegistrationAnalysisWidget";
@@ -21,6 +17,7 @@ import {
 import CertifiedMember from "../../src/assets/certifiedMember.svg";
 import VerifiedMember from "../../src/assets/verifiedMember.svg";
 import ProgressbarWidget from "../components/dashWidgets/ProgressbarWidget";
+import BarChartWidget from "../components/dashWidgets/BarChartWidget";
 
 const Dashboard = () => {
   const [userAnalytics, setUserAnalytics] = useState<{
@@ -45,14 +42,6 @@ const Dashboard = () => {
     totalCertificates: number;
     totalUserConfirmedCertificates: number;
   }>();
-  const dispatch = useDispatch();
-  const { initAdmin, removeAdmin } = bindActionCreators(
-    actionCreators,
-    dispatch
-  );
-  const currentAdmin = useSelector(
-    (state: ReducerType) => state.adminReducer.currentAdmin
-  );
 
   useEffect(() => {
     fetchUsersAnalytics()
@@ -179,6 +168,10 @@ const Dashboard = () => {
           <MemberRegistrationAnalysisWidget />
 
           <div className="row-4">
+            <div className="row-4__bar-chart-widget-container">
+              <BarChartWidget />
+            </div>
+
             <div className="row-4__progressbar-widget-container">
               <ProgressbarWidget
                 title="Issued Certificate Types"
