@@ -34,7 +34,7 @@
     width: 25em;
 }
 
-.analytic-cards, .analytic-cards .row-1, .analytic-cards .row-2, .analytic-cards .row-4, .row-4__progressbar-widget-container{
+.analytic-cards, .analytic-cards .row-1, .analytic-cards .row-2, .analytic-cards .row-4, .row-4__progressbar-widget-container, .row-4__bar-chart-widget-container{
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
@@ -69,7 +69,9 @@
         grid-template-columns: 1fr 1fr;
     }
 
-    .analytic-cards .row-4__progressbar-widget-container{
-        max-width: 25em;
+    .analytic-cards .row-4{
+        display: grid;
+        grid-template-columns: 2fr 1fr;
     }
+
 }
