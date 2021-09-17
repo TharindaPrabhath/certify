@@ -1,59 +1,60 @@
-import { Button, Typography } from "@material-ui/core";
-import { Field, Form, Formik } from "formik";
+import { Button, Checkbox, TextField, Typography } from "@material-ui/core";
+import { useFormik } from "formik";
 import React, { useState } from "react";
 import { Link, Redirect } from "react-router-dom";
-import CertifyCheckbox from "../components/core/CertifyCheckbox";
-import CertifyTextField from "../components/core/CertifyTextField";
-import { useButtonStyles } from "../data/styles";
+import { useButtonStyles, useTextfieldStyles } from "../data/styles";
 
 import "./Signin.css";
 
 import LoginImage from "../assets/login.svg";
 import logo from "../assets/logo/logo.png";
-import axios from "axios";
-import axiosInstance, { API_BASE_URL } from "../utils/axios";
 
-import { useDispatch } from "react-redux";
+import useAuth from "../utils/useAuth";
+
+import * as yup from "yup";
+import colors from "../data/colors";
+import useTokenService from "../utils/useTokenService";
 import { bindActionCreators } from "redux";
 import { actionCreators } from "../redux";
-import { getAdminDto } from "../utils/mapper";
-import requests from "../data/requests";
-import { fetchAdminByUsername } from "../utils/requestHelper";
+import { useDispatch } from "react-redux";
 
 const Signin = () => {
   const [success, setSuccess] = useState<boolean>(false);
   const buttonStyles = useButtonStyles();
+  const { signin } = useAuth();
+  const styles = useTextfieldStyles();
+
+  const userValidationSchema = yup.object().shape({
+    username: yup.string().required("Username is required"),
+    password: yup.string().required("Password is required"),
+  });
+  const { setAccessToken } = useTokenService();
   const dispatch = useDispatch();
-  const { initAdmin, removeAdmin } = bindActionCreators(
-    actionCreators,
-    dispatch
-  );
+  const { setAdmin } = bindActionCreators(actionCreators, dispatch);
 
-  const initialValues = {
-    username: "",
-    password: "",
-    //rememberMe: true,
-  };
-
-  const submit = (values: typeof initialValues) => {
-    axios
-      .post(API_BASE_URL + requests.login, values)
-      .then((res) => {
-        if (res.status === 200) {
-          localStorage.setItem("token", res.data.token);
-          fetchAdminByUsername(values.username)
-            .then((res) => {
-              const admin = getAdminDto(res.data);
-              initAdmin(admin);
-              localStorage.setItem("currentAdmin", admin.username);
-              localStorage.setItem("currentAdminId", admin.id.toString());
-              setSuccess(true);
-            })
-            .catch((err) => console.error(err));
-        }
-      })
-      .catch((err) => console.error(err));
-  };
+  const formik = useFormik({
+    //enableReinitialize: true,
+    initialValues: {
+      username: "",
+      password: "",
+      //rememberMe: true,
+    },
+    validationSchema: userValidationSchema,
+    onSubmit: (values) => {
+      signin(values)
+        .then((res) => {
+          if (res.status === 200) {
+            setAccessToken(res.data.accessToken);
+            setAdmin({ username: values.username });
+            setSuccess(true);
+          } else setSuccess(false);
+        })
+        .catch((err) => {
+          setSuccess(false);
+          console.error(err);
+        });
+    },
+  });
 
   if (success) return <Redirect to="/dashboard" />;
 
@@ -74,40 +75,54 @@ const Signin = () => {
         <div className="right-col">
           <h1>Sign in</h1>
           <div className="form-container">
-            <Formik
-              initialValues={initialValues}
-              onSubmit={(values) => submit(values)}
-            >
-              <Form>
-                <div className="form">
-                  <Field
-                    label="Username"
-                    name="username"
-                    component={CertifyTextField}
-                  />
-                  <Field
-                    label="Password"
-                    name="password"
-                    component={CertifyTextField}
-                  />
-                  <div className="special-actions">
-                    <Field
-                      label="Remember me"
-                      name="rememberMe"
-                      component={CertifyCheckbox}
-                    />
-                    <Link to="">
-                      <Typography className="forgot-password">
-                        Forgot password?
-                      </Typography>
-                    </Link>
+            <form onSubmit={formik.handleSubmit}>
+              <div className="form">
+                <TextField
+                  id="username"
+                  name="username"
+                  type="text"
+                  label="Username"
+                  value={formik.values.username}
+                  onChange={formik.handleChange}
+                  error={!!formik.errors.username}
+                  helperText={formik.errors.username}
+                  variant="outlined"
+                  required={true}
+                  InputProps={{ className: styles.input }}
+                />
+                <TextField
+                  id="password"
+                  name="password"
+                  type="password"
+                  label="Password"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  error={!!formik.errors.password}
+                  helperText={formik.errors.password}
+                  variant="outlined"
+                  required={true}
+                  InputProps={{ className: styles.input }}
+                />
+
+                <div className="special-actions">
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <Checkbox color="primary" />
+                    <Typography style={{ color: colors.secondaryFontClr }}>
+                      Remember me
+                    </Typography>
                   </div>
-                  <Button className={buttonStyles.standardBtn} type="submit">
-                    Login
-                  </Button>
+
+                  <Link to="">
+                    <Typography className="forgot-password">
+                      Forgot password?
+                    </Typography>
+                  </Link>
                 </div>
-              </Form>
-            </Formik>
+                <Button className={buttonStyles.standardBtn} type="submit">
+                  Login
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
