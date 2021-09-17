@@ -2,31 +2,15 @@ import { Breadcrumbs, Button, Typography } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 
 import React from "react";
-import { useEffect } from "react";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import CertificateTable from "../components/CertificateTable";
 import colors from "../data/colors";
-import requests from "../data/requests";
 import { useButtonStyles } from "../data/styles";
-import CertificateDto from "../types/models/CertificateDto";
-import axios from "../utils/axios";
-import { toCertificateDtos } from "../utils/mapper";
 
 import "./Certificate.css";
 
 const Certificate = () => {
-  const [certificates, setCertificates] = useState<CertificateDto[]>([]);
   const buttonStyles = useButtonStyles();
-
-  useEffect(() => {
-    axios
-      .get(requests.fetchCertificates)
-      .then((res) => {
-        setCertificates(toCertificateDtos(res.data));
-      })
-      .catch((err) => console.error(err));
-  }, []);
 
   return (
     <div className="certificate-screen">
