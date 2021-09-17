@@ -49,8 +49,6 @@ const PercentageWidget: React.FC<PercentageWidgetProps> = ({
     setSuggestions(data.list!);
   }, [data.list]);
 
-  console.log(suggestions);
-
   return (
     <div className="percentage-widget">
       <div
