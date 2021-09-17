@@ -22,6 +22,7 @@ import { actionCreators } from "../redux";
 import { ReducerType } from "../redux/store";
 import colors from "../data/colors";
 import { Redirect } from "react-router";
+import NotificationsIcon from "@material-ui/icons/Notifications";
 
 const Topbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
@@ -30,7 +31,7 @@ const Topbar = () => {
   const [logout, setLogout] = useState<boolean>(false);
 
   const dispatch = useDispatch();
-  const { initAdmin, removeAdmin } = bindActionCreators(
+  const { setAdmin, removeAdmin } = bindActionCreators(
     actionCreators,
     dispatch
   );
@@ -77,6 +78,9 @@ const Topbar = () => {
         >
           <Sidebar />
         </SwipeableDrawer>
+        <Button>
+          <NotificationsIcon color="secondary" />
+        </Button>
         <Button
           className="avatar"
           ref={avatarBtnRef}
