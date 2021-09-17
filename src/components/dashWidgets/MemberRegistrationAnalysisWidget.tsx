@@ -60,7 +60,7 @@ const data = [
   },
 ];
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+export const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div
