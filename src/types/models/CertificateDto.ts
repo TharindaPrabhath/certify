@@ -2,7 +2,7 @@ import AdminDto from "./AdminDto";
 import UserDto from "./UserDto";
 
 interface CertificateDto{
-    id: number,
+    id: string,
     type: string,
     reason: string,
     remarks: string,
