@@ -18,10 +18,8 @@ import "./Page.css";
 import { useSelector } from "react-redux";
 import { ReducerType } from "../redux/store";
 import UserDto from "../types/models/UserDto";
-import axios from "../utils/axios";
-import requests from "../data/requests";
 import { getUserDto } from "../utils/mapper";
-import { updateUser } from "../utils/requestHelper";
+import { fetchUser, updateUser } from "../utils/requestHelper";
 import { useSnackbar } from "notistack";
 
 const EditUser = () => {
@@ -48,13 +46,10 @@ const EditUser = () => {
   );
 
   useEffect(() => {
-    async function fetchUser() {
-      const res = await axios.get(requests.fetchUser + "/" + currentUser?.id);
-      setUser(getUserDto(res.data));
-    }
-
-    fetchUser();
-  }, []);
+    fetchUser(currentUser?.id!)
+      .then((res) => setUser(getUserDto(res.data)))
+      .catch((err) => console.error(err));
+  }, [currentUser?.id]);
 
   const buttonStyles = useButtonStyles();
 
