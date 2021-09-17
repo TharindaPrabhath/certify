@@ -57,6 +57,16 @@ const CertificateTable = () => {
     (state: ReducerType) => state.certificateReducer.currentCertificate
   );
 
+  useEffect(() => {
+    fetchCertificates()
+      .then((res) => {
+        setCertficates(toCertificateTableData(res.data));
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
+
   type CertificateTableRow = {
     id: string;
     recievedBy: string;
@@ -83,16 +93,6 @@ const CertificateTable = () => {
       issuedDate: moment(data.issuedDate, "YYYY-MM-DD").format("YYYY-MM-DD"),
     };
   };
-
-  useEffect(() => {
-    fetchCertificates()
-      .then((res) => {
-        setCertficates(toCertificateTableData(res.data));
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
 
   const handleDeleteClick = (
     event: React.MouseEvent<unknown>,
