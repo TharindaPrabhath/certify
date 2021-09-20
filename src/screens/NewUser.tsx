@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Breadcrumbs, Button, Typography } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
@@ -16,9 +16,24 @@ import { addUser } from "../utils/requestHelper";
 import { getUserDto } from "../utils/mapper";
 import { useSnackbar } from "notistack";
 
+import { bindActionCreators } from "redux";
+import { actionCreators } from "../redux";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { ReducerType } from "../redux/store";
+
 const NewUser = () => {
   const buttonStyles = useButtonStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const dispatch = useDispatch();
+  const { setLoading } = bindActionCreators(actionCreators, dispatch);
+  const loading = useSelector(
+    (state: ReducerType) => state.loadingReducer.loading
+  );
+
+  useEffect(() => {
+    setLoading(false);
+  }, []);
 
   const initialValues = {
     fName: "",
@@ -51,7 +66,8 @@ const NewUser = () => {
     return error;
   };
 
-  const submit = (values: typeof initialValues) => {
+  const submit = async (values: typeof initialValues) => {
+    setLoading(true);
     const user: any = {
       fname: values.fName,
       lname: values.lName,
@@ -76,7 +92,8 @@ const NewUser = () => {
         enqueueSnackbar(`${err} .Could not add the user.Try again later.`, {
           variant: "error",
         });
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -98,7 +115,6 @@ const NewUser = () => {
             validationSchema={userValidationSchema}
             initialValues={initialValues}
             onSubmit={(values) => {
-              console.log(values);
               submit(values);
             }}
           >
@@ -107,6 +123,7 @@ const NewUser = () => {
                 <Field
                   label="First Name"
                   name="fName"
+                  autoFocus
                   component={CertifyTextField}
                   required
                 ></Field>
@@ -166,7 +183,11 @@ const NewUser = () => {
                 ></Field>
 
                 <div className="submit-btn">
-                  <Button className={buttonStyles.standardBtn} type="submit">
+                  <Button
+                    className={buttonStyles.standardBtn}
+                    type="submit"
+                    disabled={loading}
+                  >
                     Create User
                   </Button>
                 </div>
