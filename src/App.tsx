@@ -22,9 +22,13 @@ import { SnackbarProvider } from "notistack";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthRoute from "./components/AuthRoute";
 import useLocalStorage from "./utils/useLocalStorage";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ReducerType } from "./redux/store";
 import { fetchAdminByUsername } from "./utils/requestHelper";
+import Activity from "./screens/Activity";
+import { bindActionCreators } from "redux";
+import { actionCreators } from "../src/redux";
+import Settings from "./screens/Settings";
 
 const theme = createTheme({
   palette: {
@@ -38,18 +42,23 @@ const theme = createTheme({
 });
 
 function App() {
-  const { saveAdmin } = useLocalStorage();
+  const { saveAdmin, getAdmin } = useLocalStorage();
   const currentAdmin = useSelector(
     (state: ReducerType) => state.adminReducer.currentAdmin
   );
+  const dispatch = useDispatch();
+  const { setAdmin } = bindActionCreators(actionCreators, dispatch);
 
   useEffect(() => {
-    console.log(currentAdmin?.username);
     fetchAdminByUsername(currentAdmin?.username!)
       .then((res) => {
         saveAdmin({ id: res.data.id, username: currentAdmin?.username });
       })
       .catch((err) => console.error(err));
+    // if (currentAdmin === null) {
+    //   const admin = getAdmin();
+    //   setAdmin({ id: parseInt(admin.id!), username: admin.username! });
+    // }
   }, [currentAdmin?.username, saveAdmin]);
 
   return (
@@ -101,6 +110,12 @@ function App() {
                 </ProtectedRoute>
                 <ProtectedRoute path="/certificate/new" exact>
                   <NewCertificate />
+                </ProtectedRoute>
+                <ProtectedRoute path="/activity" exact>
+                  <Activity />
+                </ProtectedRoute>
+                <ProtectedRoute path="/settings" exact>
+                  <Settings />
                 </ProtectedRoute>
               </Switch>
             </div>
