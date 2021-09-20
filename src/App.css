@@ -1,7 +1,7 @@
 a{
     text-decoration: none;
     color: var(--primary-font-clr);
-  }
+}
 
 .app{
     position: relative;
@@ -53,8 +53,8 @@ a{
         display: none;
     }
 
-    .topbar .avatar{
+    .topbar .topbar__content-right-col{
         position: absolute;
         right: 1em;
     }
-   }
+}
