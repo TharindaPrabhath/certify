@@ -12,7 +12,7 @@ import {
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
 import { useButtonStyles } from "../data/styles";
-import { Link, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import UserDto from "../types/models/UserDto";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -24,6 +24,8 @@ import { useSnackbar } from "notistack";
 import { ReducerType } from "../redux/store";
 import colors from "../data/colors";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import UserProfile from "./UserProfile";
+import useLocalStorage from "../utils/useLocalStorage";
 
 const getRow = (
   id: string,
@@ -66,6 +68,8 @@ const UserTable = () => {
     (state: ReducerType) => state.userReducer.currentUser
   );
   const { enqueueSnackbar } = useSnackbar();
+  const [openUserProfile, setOpenUserProfile] = useState<boolean>(false);
+  const { getAdmin } = useLocalStorage();
 
   useEffect(() => {
     fetchUsers()
@@ -76,6 +80,13 @@ const UserTable = () => {
         console.error(err);
       });
   }, []);
+
+  const handleViewClick = (event: React.MouseEvent<unknown>, id: number) => {
+    // set current user in redux store
+    setUser(users.find((u) => u.id === id)!);
+    setSelectedUserId(id);
+    setOpenUserProfile(true);
+  };
 
   const handleEditClick = (event: React.MouseEvent<unknown>, id: number) => {
     // set current user in redux store
@@ -89,7 +100,7 @@ const UserTable = () => {
     setOpenConfirmBox(true);
 
     if (confirmBoxAgree) {
-      deleteUser(id)
+      deleteUser(id, parseInt(getAdmin().id!))
         .then(() => {
           enqueueSnackbar(`Successfully deleted the user ${id}`, {
             variant: "success",
@@ -152,11 +163,18 @@ const UserTable = () => {
     {
       field: "action",
       headerName: "Action",
-      width: 170,
+      width: 230,
       editable: false,
       renderCell: (params) => {
         return (
-          <div>
+          <div style={{ display: "flex", gap: "0.5em" }}>
+            <Button
+              onClick={(e) => handleViewClick(e, params.row.id)}
+              variant="contained"
+              style={{ textTransform: "capitalize" }}
+            >
+              View
+            </Button>
             <Button
               className={buttonStyles.editBtn}
               onClick={(e) => handleEditClick(e, params.row.id)}
@@ -164,7 +182,6 @@ const UserTable = () => {
               Edit
             </Button>
             <Button
-              style={{ marginLeft: "1em" }}
               className={buttonStyles.deleteBtn}
               onClick={(e) => handleDeleteClick(e, params.row.id)}
             >
@@ -210,6 +227,12 @@ const UserTable = () => {
           borderRadius: "1em",
           padding: "0.5em",
         }}
+      />
+
+      <UserProfile
+        open={openUserProfile}
+        onClose={() => setOpenUserProfile(false)}
+        id={selectedUserId!}
       />
 
       <Dialog
