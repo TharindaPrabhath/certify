@@ -1,5 +1,5 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@material-ui/core";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -10,7 +10,6 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { TooltipProps } from "recharts";
 import colors from "../../data/colors";
 
 import "./MemberRegistrationAnalysisWidget.css";
@@ -60,11 +59,10 @@ const data = [
   },
 ];
 
-export const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div
-        className="custom-tooltip"
         style={{
           backgroundColor: "#161C24",
           color: "#e0e0e0",
@@ -73,7 +71,6 @@ export const CustomTooltip = ({ active, payload, label }: any) => {
         }}
       >
         <div
-          className="admin"
           style={{
             display: "flex",
             alignItems: "center",
@@ -90,8 +87,7 @@ export const CustomTooltip = ({ active, payload, label }: any) => {
           />
           {`Members : ${payload[0].value}`}
         </div>
-        <div
-          className="admin"
+        {/* <div
           style={{
             display: "flex",
             alignItems: "center",
@@ -107,7 +103,7 @@ export const CustomTooltip = ({ active, payload, label }: any) => {
             }}
           />
           {`Admins : ${payload[1].value}`}
-        </div>
+        </div> */}
       </div>
     );
   }
@@ -115,7 +111,28 @@ export const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-const MemberRegistrationAnalysisWidget = () => {
+const MemberRegistrationAnalysisWidget = ({
+  data,
+}: {
+  data: any[] | undefined[];
+}) => {
+  const [yearRegistration, setYearRegistration] = useState<any[]>([]);
+  const [years, setYears] = useState<number[]>([]);
+  const [year, setYear] = useState<number | unknown>(0);
+
+  useEffect(() => {
+    if (data !== undefined && data.length !== 0) {
+      let yearsArr: number[] = [];
+      data.map((i) => {
+        yearsArr.push(i.year);
+        //return i;
+      });
+      setYear(yearsArr[0]);
+      setYears(yearsArr);
+      setYearRegistration(data[0].monthRegistrations);
+    }
+  }, [data]);
+
   return (
     <div className="mra-widget">
       <div className="mra-widget__header">
@@ -125,15 +142,23 @@ const MemberRegistrationAnalysisWidget = () => {
           <Select
             labelId="demo-simple-select-filled-label"
             id="demo-simple-select-filled"
-            //value={age}
-            //onChange={handleChange}
+            labelWidth={35}
+            value={year}
+            onChange={(e) => {
+              setYear(e.target.value);
+              years.map((i, index) => {
+                if (i === e.target.value)
+                  setYearRegistration(data[index].monthRegistrations);
+              });
+            }}
           >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value={10}>Ten</MenuItem>
-            <MenuItem value={20}>Twenty</MenuItem>
-            <MenuItem value={30}>Thirty</MenuItem>
+            {years.map((year, index) => {
+              return (
+                <MenuItem key={index} value={year}>
+                  {year}
+                </MenuItem>
+              );
+            })}
           </Select>
         </FormControl>
       </div>
@@ -142,7 +167,7 @@ const MemberRegistrationAnalysisWidget = () => {
           <LineChart
             width={730}
             height={250}
-            data={data}
+            data={yearRegistration}
             margin={{ top: 5, right: 30, left: 5, bottom: 5 }}
           >
             <CartesianGrid
@@ -150,22 +175,22 @@ const MemberRegistrationAnalysisWidget = () => {
               strokeOpacity="0.2"
               vertical={false}
             />
-            <XAxis dataKey="name" />
-            <YAxis strokeOpacity="0" />
+            <XAxis dataKey="month" />
+            <YAxis strokeOpacity="0" dataKey="numOfRegistrations" />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
             <Line
               type="monotone"
-              dataKey="pv"
+              dataKey="numOfRegistrations"
               stroke="#F4DE02"
               strokeWidth="3px"
             />
-            <Line
+            {/* <Line
               type="monotone"
               dataKey="uv"
               stroke={colors.primaryBrandClr}
               strokeWidth="3px"
-            />
+            /> */}
           </LineChart>
         </ResponsiveContainer>
       </div>
