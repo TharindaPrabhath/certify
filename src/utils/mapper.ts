@@ -1,3 +1,4 @@
+import moment from "moment";
 import AdminDto from "../types/models/AdminDto";
 import CertificateDto from "../types/models/CertificateDto";
 import UserDto from "../types/models/UserDto";
@@ -28,7 +29,7 @@ export const toUserDtos = (arr: any[]):UserDto[] => {
 
 export const getCertificateDto = (data: any):CertificateDto => {
     return {id: data.id, type: data.type, reason: data.reason, remarks: data.remarks, 
-            issuedDate: data.issuedDate, user: getUserDto(data.user), admin: getAdminDto(data.admin)}
+            issuedDate: moment(data.issuedDate, "YYYY-MM-DD").format("YYYY-MM-DD"), user: getUserDto(data.user), admin: getAdminDto(data.admin)}
 }
 
 export const toCertificateDtos = (arr: any[]):CertificateDto[] => {
