@@ -4,40 +4,50 @@ import CertificateDto from "../types/models/CertificateDto";
 import UserDto from "../types/models/UserDto";
 import axiosInstance, { API_BASE_URL } from "./axios";
 
+export async function changePassword(currentPassword: string, newPassword: string, adminId: number){
+    return await axiosInstance().put(requests.changePassword, {
+        newPassword: newPassword,
+        currentPassword: currentPassword,
+        adminId: adminId,
+    });
+}
+
 export function validateToken(){
     return axiosInstance().get(requests.validateToken);
 }
 
-export async function fetchAdminByUsername(username: string) {
-    return await axiosInstance().get(requests.fetchAdminByUsername, {params: {
+export function fetchAdminByUsername(username: string) {
+    return axiosInstance().get(requests.fetchAdminByUsername, {params: {
         username: username
     }});
 }
 
 
-export async function fetchUser(id: number){
-    return await axiosInstance().get(requests.fetchUser, {params: {
+export function fetchUser(id: number){
+    return axiosInstance().get(requests.fetchUser, {params: {
         id: id
     }});
 }
 
-export async function fetchUsers(){
-    return await axiosInstance().get(requests.fetchUsers);
+export function fetchUsers(){
+    return axiosInstance().get(requests.fetchUsers);
 }
 
 export async function addUser(user: any){
     return await axiosInstance().post(requests.postNewUser, user);
 }
 
-export async function updateUser(id: number, updatedUser: UserDto){
+export async function updateUser(id: number, updatedUser: UserDto, adminId: number){
     return await axiosInstance().put(requests.updateUser, updatedUser, {params: {
-        id: id
+        userId: id,
+        adminId: adminId
     }});
 } 
 
-export function deleteUser(id: number){
+export function deleteUser(id: number, adminId: number){
     return axiosInstance().delete(requests.deleteUser, {params: {
-        id: id
+        userId: id,
+        adminId: adminId
     }})
 }
 
@@ -48,32 +58,47 @@ export async function validateCertificate(id: string) {
     }})
 }
 
-export async function fetchCertificate(id: string){
-    return await axiosInstance().get(requests.fetchCertificate, {params: {
+export function fetchCertificate(id: string){
+    return axiosInstance().get(requests.fetchCertificate, {params: {
         id: id
     }})
 }
 
-export async function fetchCertificates(){
-    return await axiosInstance().get(requests.fetchCertificates);
+export function fetchCertificates(){
+    return axiosInstance().get(requests.fetchCertificates);
 }
+
+export function fetchCertificatesByUser(uid: number){
+    return axiosInstance().get(requests.fetchCertificatesByUser, {params:{
+        id: uid
+    }});
+}
+
+
 
 export async function addCertificate(certificate: any){
     return await axiosInstance().post(requests.postNewCertificate, certificate);
 }
 
-export async function updateCertificate(id: string, updatedCertificate: CertificateDto){
+export async function updateCertificate(id: string, updatedCertificate: CertificateDto, adminId: number){
     return await axiosInstance().put(requests.updateCertificate, updatedCertificate, {params: {
-        id: id
+        certificateId: id,
+        adminId: adminId
     }});
 } 
 
-export async function deleteCertificate(id: string){
+export async function deleteCertificate(id: string, adminId: number){
     return await axiosInstance().delete(requests.deleteCertificate, {params: {
-        id: id
+        certificateId: id,
+        adminId: adminId
     }})
 }
 
+
+
+export async function fetchAdminsAnalytics(){
+    return await axiosInstance().get(requests.fetchAdminsAnalytics);
+}
 
 export async function fetchUsersAnalytics(){
     return await axiosInstance().get(requests.fetchUsersAnalytics);
@@ -81,4 +106,12 @@ export async function fetchUsersAnalytics(){
 
 export async function fetchCertificatesAnalytics(){
     return await axiosInstance().get(requests.fetchCertificatesAnalytics);
+}
+
+
+
+export async function fetchActivities(adminId: number){
+    return await axiosInstance().get(requests.fetchActivities, {params: {
+        admin_id: adminId
+    }});
 }
