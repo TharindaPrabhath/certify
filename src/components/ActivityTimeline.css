@@ -1,0 +1,42 @@
+.activity-timeline{
+    width: 5em;
+}
+
+.activity-timeline-container__content{
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    gap: 1em;
+}
+
+.activity-timeline-container__content .timeline__topic{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 500;
+    color: var(--secondary-font-clr);
+}
+
+.activity-timeline-container__content .timeline-time{
+    font-size: 0.9em;
+    color: var(--secondary-font-clr);
+}
+
+.activity-content .activity-content__row-1{
+    display: flex;
+    gap: 1em;
+}
+
+.activity-content .activity-content-text-block{
+    font-size: 1em;
+    color: var(--secondary-font-clr);
+}
+
+.activity-content .activity-content-text-block.interactive{
+    color: var(--primary-font-clr);
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.activity-content .activity-content-text-block.interactive:hover{
+    text-decoration: underline;
+}
