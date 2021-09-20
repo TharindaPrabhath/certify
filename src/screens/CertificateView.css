@@ -59,7 +59,7 @@
     width: 100%;
 }
 
-.form-container{
+.block-form-container{
     margin-top: 1em;
 
     display: flex;
@@ -67,21 +67,21 @@
     gap: 3em;
 }
 
-.form-container__left-col, .form-container__right-col{
+.block-form-containerr__left-col, .form-container__right-col{
     display: flex;
     flex-direction: column;
     gap: 1em;
 }
 
-.form-container .key, .about-certificate .section__key{
+.block-form-container .key, .about-certificate .section__key{
     color: #5f5d5d;
 }
 
-.form-container .value{
+.block-form-container .value{
     font-weight: 600;
 }
 
-.form-container .value.type{
+.block-form-container .value.type{
     background-color: var(--primary-warning-clr);
     padding: 0.2em 1.5em;
     border-radius: 0.5em;
