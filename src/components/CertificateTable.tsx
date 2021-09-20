@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { useButtonStyles } from "../data/styles";
 import CertificateDto from "../types/models/CertificateDto";
 import { CertificateTableProp } from "../types/TableProp";
@@ -21,6 +21,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import colors from "../data/colors";
 import moment from "moment";
+import useLocalStorage from "../utils/useLocalStorage";
 
 const getRow = (
   certificateId: string,
@@ -56,6 +57,8 @@ const CertificateTable = () => {
   const currentCertificate = useSelector(
     (state: ReducerType) => state.certificateReducer.currentCertificate
   );
+  const history = useHistory();
+  const { getAdmin } = useLocalStorage();
 
   useEffect(() => {
     fetchCertificates()
@@ -79,7 +82,6 @@ const CertificateTable = () => {
     var list: CertificateTableRow[] = [];
     dataArr.map((d) => {
       list.push(getAsCertificateTableRow(d));
-      return;
     });
     return list;
   };
@@ -94,6 +96,12 @@ const CertificateTable = () => {
     };
   };
 
+  const handleViewClick = (event: React.MouseEvent<unknown>, id: string) => {
+    // set current user in redux store
+    //setCertificate(certificates.find((c) => c.id === id)!);
+    history.push(`/certificate/view?id=${id}`);
+  };
+
   const handleDeleteClick = (
     event: React.MouseEvent<unknown>,
     certificate: CertificateDto
@@ -103,7 +111,7 @@ const CertificateTable = () => {
     setOpenConfirmBox(true);
 
     if (confirmBoxAgree) {
-      deleteCertificate(certificate.id)
+      deleteCertificate(certificate.id, parseInt(getAdmin().id!))
         .then(() => {
           enqueueSnackbar(
             `Successfully deleted the certificate ${certificate.id}`,
@@ -173,11 +181,18 @@ const CertificateTable = () => {
     {
       field: "action",
       headerName: "Action",
-      width: 170,
+      width: 230,
       editable: false,
       renderCell: (params) => {
         return (
-          <div>
+          <div style={{ display: "flex", gap: "0.5em" }}>
+            <Button
+              onClick={(e) => handleViewClick(e, params.row.id)}
+              variant="contained"
+              style={{ textTransform: "capitalize" }}
+            >
+              View
+            </Button>
             <Button
               className={buttonStyles.editBtn}
               //onClick={(e) => handleEditClick(e, params.row.id)}
@@ -185,7 +200,6 @@ const CertificateTable = () => {
               Edit
             </Button>
             <Button
-              style={{ marginLeft: "1em" }}
               className={buttonStyles.deleteBtn}
               onClick={(e) => handleDeleteClick(e, params.row.id)}
             >
