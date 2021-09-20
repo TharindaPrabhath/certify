@@ -8,11 +8,13 @@ import {
   Button,
   ClickAwayListener,
   Grow,
+  LinearProgress,
   MenuItem,
   MenuList,
   Paper,
   Popper,
   SwipeableDrawer,
+  Tooltip,
 } from "@material-ui/core";
 import { useState } from "react";
 import Sidebar from "./Sidebar";
@@ -23,12 +25,20 @@ import { ReducerType } from "../redux/store";
 import colors from "../data/colors";
 import { Redirect } from "react-router";
 import NotificationsIcon from "@material-ui/icons/Notifications";
+import SearchIcon from "@material-ui/icons/Search";
+import Notification from "./Notification";
+import LoadingLinearProgress from "./LoadingLinearProgress";
 
 const Topbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState<boolean>(false);
-  const avatarBtnRef = React.useRef<HTMLButtonElement>(null);
+  const [notificationOpen, setNotificationOpen] = useState<boolean>(false);
   const [logout, setLogout] = useState<boolean>(false);
+  const notificationBtnRef = React.useRef<HTMLButtonElement>(null);
+  const avatarBtnRef = React.useRef<HTMLButtonElement>(null);
+
+  const ICON_SIZE = 24;
+  const ICON_INACTIVE_COLOR = "#f5f5f5";
 
   const dispatch = useDispatch();
   const { setAdmin, removeAdmin } = bindActionCreators(
@@ -48,13 +58,6 @@ const Topbar = () => {
   };
 
   const handleClose = (event: React.MouseEvent<EventTarget>) => {
-    if (
-      avatarBtnRef.current &&
-      avatarBtnRef.current.contains(event.target as HTMLElement)
-    ) {
-      return;
-    }
-
     setAvatarMenuOpen(false);
   };
 
@@ -67,10 +70,59 @@ const Topbar = () => {
 
   return (
     <div className="topbar">
+      <LoadingLinearProgress />
       <div className="topbar__content">
-        <Button className="menu-btn" onClick={() => toggleSidebar(true)}>
-          <MenuIcon style={{ color: "white" }} />
-        </Button>
+        <div className="topbar__content-left-col">
+          <Button className="menu-btn" onClick={() => toggleSidebar(true)}>
+            <MenuIcon style={{ color: ICON_INACTIVE_COLOR }} />
+          </Button>
+
+          <Tooltip
+            children={
+              <Button>
+                <SearchIcon htmlColor={ICON_INACTIVE_COLOR} fontSize="medium" />
+              </Button>
+            }
+            title={"Search"}
+          />
+        </div>
+
+        <div className="topbar__content-right-col">
+          <Tooltip
+            children={
+              <Button
+                ref={notificationBtnRef}
+                aria-controls={notificationOpen ? "grow" : undefined}
+                aria-haspopup="true"
+                onClick={() => setNotificationOpen(!notificationOpen)}
+              >
+                <NotificationsIcon
+                  htmlColor={ICON_INACTIVE_COLOR}
+                  fontSize="medium"
+                />
+              </Button>
+            }
+            title={"Notifications"}
+          />
+
+          <Tooltip
+            children={
+              <Button
+                className="avatar"
+                ref={avatarBtnRef}
+                aria-controls={avatarMenuOpen ? "menu-list-grow" : undefined}
+                aria-haspopup="true"
+                onClick={handleAvatarToggle}
+              >
+                <Avatar style={{ cursor: "pointer" }}>
+                  {localStorage.getItem("currentAdmin")?.substring(0, 2)}
+                </Avatar>
+              </Button>
+            }
+            title={"Avatar"}
+          />
+        </div>
+
         <SwipeableDrawer
           open={sidebarOpen}
           onOpen={() => toggleSidebar(true)}
@@ -78,20 +130,12 @@ const Topbar = () => {
         >
           <Sidebar />
         </SwipeableDrawer>
-        <Button>
-          <NotificationsIcon color="secondary" />
-        </Button>
-        <Button
-          className="avatar"
-          ref={avatarBtnRef}
-          aria-controls={avatarMenuOpen ? "menu-list-grow" : undefined}
-          aria-haspopup="true"
-          onClick={handleAvatarToggle}
-        >
-          <Avatar style={{ cursor: "pointer" }}>
-            {localStorage.getItem("currentAdmin")?.substring(0, 2)}
-          </Avatar>
-        </Button>
+
+        <Notification
+          open={notificationOpen}
+          anchorEl={notificationBtnRef}
+          onClose={() => setNotificationOpen(false)}
+        />
 
         <Popper
           open={avatarMenuOpen}
