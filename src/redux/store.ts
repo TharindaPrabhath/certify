@@ -3,12 +3,14 @@ import thunk from "redux-thunk"
 import { composeWithDevTools } from "redux-devtools-extension"
 import adminReducer from "./reducers/adminReducer"
 import userReducer from "./reducers/userReducer"
+import loadingReducer from "./reducers/loadingReducer"
 import certificateReducer from "./reducers/certificateReducer"
 
 const reducer = combineReducers({
     adminReducer,
     userReducer,
-    certificateReducer
+    certificateReducer,
+    loadingReducer
 })
 
 const store = createStore(
