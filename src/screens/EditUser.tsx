@@ -21,6 +21,7 @@ import UserDto from "../types/models/UserDto";
 import { getUserDto } from "../utils/mapper";
 import { fetchUser, updateUser } from "../utils/requestHelper";
 import { useSnackbar } from "notistack";
+import useLocalStorage from "../utils/useLocalStorage";
 
 const EditUser = () => {
   const [user, setUser] = useState<UserDto>({
@@ -44,6 +45,7 @@ const EditUser = () => {
   const currentUser = useSelector(
     (state: ReducerType) => state.userReducer.currentUser
   );
+  const { getAdmin } = useLocalStorage();
 
   useEffect(() => {
     fetchUser(currentUser?.id!)
@@ -86,7 +88,11 @@ const EditUser = () => {
       description: user?.description,
     },
     onSubmit: (values) => {
-      const res = updateUser(user.id, getUserDto(values));
+      const res = updateUser(
+        user.id,
+        getUserDto(values),
+        parseInt(getAdmin().id!)
+      );
       res
         .then(() => {
           enqueueSnackbar(
