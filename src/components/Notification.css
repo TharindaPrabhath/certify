@@ -1,0 +1,28 @@
+.notification{
+    width: 28em;
+    box-sizing: border-box;
+}
+
+.notification__header{
+    border-bottom: 1px solid var(--dimmed-clr);
+    padding: 1em 1em;
+}
+
+.notification__footer{
+    border-top: 1px solid var(--dimmed-clr);
+    padding: 0.3em;
+}
+
+.notification .clear-btn{
+    margin-left: auto;
+    margin-right: auto;
+
+    text-transform: capitalize;
+    font-size: medium;
+    font-weight: 600;
+    color: var(--primary-brand-clr);
+    width: 100%;
+}
+.notification .clear-btn:hover{
+    background-color: #213746;
+}
