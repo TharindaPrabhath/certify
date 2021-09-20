@@ -2,7 +2,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Legend,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -10,36 +9,70 @@ import {
 } from "recharts";
 import colors from "../../data/colors";
 import "./BarChartWidget.css";
-import { CustomTooltip } from "./MemberRegistrationAnalysisWidget";
 
-const data = [
+const dataa = [
   {
     name: "Student",
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
+    //uv: 4000,
+    pv: 2,
+    //amt: 2400,
   },
   {
     name: "Undergrad",
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
+    //uv: 3000,
+    pv: 13,
+    //amt: 2210,
   },
   {
     name: "Graduate",
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
+    //uv: 2000,
+    pv: 9,
+    //amt: 2290,
   },
   {
     name: "Other",
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
+    //uv: 2780,
+    pv: 3,
+    //amt: 2000,
   },
 ];
 
-const BarChartWidget = () => {
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div
+        style={{
+          backgroundColor: "#161C24",
+          color: "#e0e0e0",
+          padding: "1em",
+          borderRadius: "1em",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              width: "1em",
+              height: "1em",
+              backgroundColor: colors.primaryBrandClr,
+              borderRadius: "50%",
+              marginRight: "0.5em",
+            }}
+          />
+          {`Members : ${payload[0].value}`}
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+const BarChartWidget = ({ data }: { data: any[] | undefined[] }) => {
   return (
     <div className="bar-chart-widget">
       <div className="bar-chart-widget__header">
@@ -58,10 +91,10 @@ const BarChartWidget = () => {
               strokeOpacity="0.2"
               vertical={false}
             />
-            <XAxis dataKey="name" />
-            <YAxis strokeOpacity="0" />
-            <Tooltip />
-            <Bar dataKey="pv" fill={colors.primaryBrandClr} />
+            <XAxis dataKey="role" />
+            <YAxis strokeOpacity="0" dataKey="numOfUsers" />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar dataKey="numOfUsers" fill={colors.primaryBrandClr} />
           </BarChart>
         </ResponsiveContainer>
       </div>
