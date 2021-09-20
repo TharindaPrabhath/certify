@@ -1,0 +1,13 @@
+.activity-screen{
+    height: 100%;
+    overflow-y: auto;
+}
+
+.activity-screen__content{
+    padding-left: 1em;
+    padding-top: 1em;
+    padding-bottom: 4em;
+}
+
+.activity-timelines-container{
+}
