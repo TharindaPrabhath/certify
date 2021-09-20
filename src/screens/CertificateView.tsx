@@ -44,6 +44,7 @@ import {
   WhatsappIcon,
   WhatsappShareButton,
 } from "react-share";
+import useBadge from "../utils/useBadge";
 
 const CertificateView = () => {
   const [certificate, setCertificate] = useState<CertificateDto>();
@@ -51,6 +52,7 @@ const CertificateView = () => {
   const [shareDialogOpen, setShareDialogOpen] = useState<boolean>(false);
   const [pageUrl, setPageUrl] = useState<string>("");
   const buttonStyles = useButtonStyles();
+  const { VerifiedBadge } = useBadge();
   const SHARE_ICON_SIZE = 36;
 
   useEffect(() => {
@@ -138,41 +140,28 @@ const CertificateView = () => {
 
             <div className="about-reciever">
               <h4>About reciever</h4>
-              <div className="form-container">
-                <div className="form-container__left-col">
+              <div className="block-form-container">
+                <div className="block-form-container__left-col">
                   <p className="key">First Name</p>
                   <p className="key">Last Name</p>
                   <p className="key">Status</p>
                 </div>
-                <div className="form-container__right-col">
+                <div className="block-form-container__right-col">
                   <p className="value">{certificate?.user.fname}</p>
                   <p className="value">{certificate?.user.lname}</p>
-                  <p
-                    className="value"
-                    style={{
-                      backgroundColor: certificate?.user.emailVerified
-                        ? colors.primarySuccesClr
-                        : colors.primaryErrorClr,
-
-                      borderRadius: "0.5em",
-                      padding: "0.2em 1em",
-                      boxShadow: "1px 2px 5px #1b1a1a",
-                    }}
-                  >
-                    {certificate?.user.emailVerified ? "Verified" : "Unknown"}
-                  </p>
+                  <VerifiedBadge verified={certificate?.user.emailVerified!} />
                 </div>
               </div>
             </div>
 
             <div className="about-certificate">
               <h4>About certificate</h4>
-              <div className="form-container">
-                <div className="form-container__left-col">
+              <div className="block-form-container">
+                <div className="block-form-container__left-col">
                   <p className="key">Issued On</p>
                   <p className="key">Type</p>
                 </div>
-                <div className="form-container__right-col">
+                <div className="block-form-container__right-col">
                   <p className="value">
                     {moment(certificate?.issuedDate, "YYYY-MM-DD").format(
                       "YYYY-MM-DD"
