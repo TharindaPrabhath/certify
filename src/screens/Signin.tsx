@@ -82,6 +82,7 @@ const Signin = () => {
                   name="username"
                   type="text"
                   label="Username"
+                  autoFocus
                   value={formik.values.username}
                   onChange={formik.handleChange}
                   error={!!formik.errors.username}
