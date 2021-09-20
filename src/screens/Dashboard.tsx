@@ -6,11 +6,13 @@ import "../screens/Dashboard.css";
 import CertificateImg from "../assets/certificate.svg";
 import WelcomeImg from "../assets/welcome.svg";
 import UsersImg from "../assets/users.svg";
+import AdminsImg from "../assets/admins.svg";
 
 import PercentageWidget from "../components/dashWidgets/PercentageWidget";
 import colors from "../data/colors";
 import MemberRegistrationAnalysisWidget from "../components/dashWidgets/MemberRegistrationAnalysisWidget";
 import {
+  fetchAdminsAnalytics,
   fetchCertificatesAnalytics,
   fetchUsersAnalytics,
 } from "../utils/requestHelper";
@@ -19,13 +21,33 @@ import VerifiedMember from "../../src/assets/verifiedMember.svg";
 import ProgressbarWidget from "../components/dashWidgets/ProgressbarWidget";
 import BarChartWidget from "../components/dashWidgets/BarChartWidget";
 
+import { bindActionCreators } from "redux";
+import { actionCreators } from "../redux";
+import { useDispatch } from "react-redux";
+
 const Dashboard = () => {
+  const dispatch = useDispatch();
+  const { setLoading } = bindActionCreators(actionCreators, dispatch);
+  const [adminAnalytics, setAdminAnalytics] = useState<{
+    totalAdmins: number;
+  }>();
   const [userAnalytics, setUserAnalytics] = useState<{
     certifiedUsers: {
       uid: number;
       fName: string;
       lName: string;
       numCertificates: number;
+    }[];
+    userRoles: {
+      role: string;
+      numOfUsers: number;
+    }[];
+    registrations: {
+      year: number;
+      monthRegistrations: {
+        month: string;
+        numOfRegistrations: number;
+      }[];
     }[];
     totalCertifiedUsers: number;
     totalVerifiedUsers: number;
@@ -44,6 +66,13 @@ const Dashboard = () => {
   }>();
 
   useEffect(() => {
+    setLoading(true);
+    fetchAdminsAnalytics()
+      .then((res) => {
+        setAdminAnalytics(res.data);
+      })
+      .catch((err) => console.error(err));
+
     fetchUsersAnalytics()
       .then((res) => {
         setUserAnalytics(res.data);
@@ -54,7 +83,15 @@ const Dashboard = () => {
       .then((res) => {
         setCertificateAnalytics(res.data);
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+
+    return () => {
+      setAdminAnalytics(null!);
+      setUserAnalytics(null!);
+      setCertificateAnalytics(null!);
+      setLoading(false);
+    };
   }, []);
 
   return (
@@ -96,10 +133,10 @@ const Dashboard = () => {
             />
 
             <DashCard
-              title="Total Issued certificates"
-              value={certificateAnalytics?.totalCertificates!}
-              redirectPath="/certificate"
-              image={CertificateImg}
+              title="Total admins"
+              value={adminAnalytics?.totalAdmins!}
+              redirectPath="/dashboard"
+              image={AdminsImg}
             />
           </div>
 
@@ -165,11 +202,13 @@ const Dashboard = () => {
             />
           </div>
 
-          <MemberRegistrationAnalysisWidget />
+          <MemberRegistrationAnalysisWidget
+            data={userAnalytics?.registrations!}
+          />
 
           <div className="row-4">
             <div className="row-4__bar-chart-widget-container">
-              <BarChartWidget />
+              <BarChartWidget data={userAnalytics?.userRoles!} />
             </div>
 
             <div className="row-4__progressbar-widget-container">
