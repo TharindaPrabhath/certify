@@ -7,8 +7,7 @@ const useAuth = () => {
     const {getAccessToken} = useTokenService();
 
     const signin = async (values: any) => {
-        const res = await axios.post(API_BASE_URL + requests.login, values);
-        return res;
+        return await axios.post(API_BASE_URL + requests.login, values);
     }
 
     const logout = async () => {
