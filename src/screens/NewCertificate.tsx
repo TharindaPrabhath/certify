@@ -31,6 +31,12 @@ import { toUserDtos } from "../utils/mapper";
 import { useSnackbar } from "notistack";
 import { addCertificate, fetchUsers } from "../utils/requestHelper";
 
+import { bindActionCreators } from "redux";
+import { actionCreators } from "../redux";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { ReducerType } from "../redux/store";
+
 const NewCertificate = () => {
   const [openUserSelectBox, setOpenUserSelectBox] = useState<boolean>(false);
   const [users, setUsers] = useState<UserDto[]>([]);
@@ -40,12 +46,20 @@ const NewCertificate = () => {
   const { enqueueSnackbar } = useSnackbar();
   const buttonStyles = useButtonStyles();
   const styles = useTextfieldStyles();
+  const dispatch = useDispatch();
+  const { setLoading } = bindActionCreators(actionCreators, dispatch);
+  const loading = useSelector(
+    (state: ReducerType) => state.loadingReducer.loading
+  );
 
   useEffect(() => {
-    fetchUsers()
-      .then((res) => setUsers(toUserDtos(res.data)))
-      .catch((err) => console.error(err));
-  }, []);
+    setLoading(false);
+    if (openUserSelectBox) {
+      fetchUsers()
+        .then((res) => setUsers(toUserDtos(res.data)))
+        .catch((err) => console.error(err));
+    }
+  }, [openUserSelectBox]);
 
   const initialValues = {
     reciever: searchedUser,
@@ -78,8 +92,9 @@ const NewCertificate = () => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: initialValues,
+    validationSchema: certificateValidationSchema,
     onSubmit: (values) => {
-      console.log(values);
+      setLoading(true);
       const res = addCertificate({
         ...values,
         user: {
@@ -97,6 +112,7 @@ const NewCertificate = () => {
               variant: "success",
             }
           );
+          formik.resetForm();
         })
         .catch((err) => {
           enqueueSnackbar(
@@ -105,9 +121,9 @@ const NewCertificate = () => {
               variant: "error",
             }
           );
-        });
+        })
+        .finally(() => setLoading(false));
     },
-    validationSchema: certificateValidationSchema,
   });
 
   return (
@@ -132,6 +148,7 @@ const NewCertificate = () => {
                 name="reciever"
                 type="text"
                 label="Reciever"
+                autoFocus
                 value={formik.values.reciever}
                 onClick={() => setOpenUserSelectBox(true)}
                 onChange={formik.handleChange}
@@ -229,7 +246,11 @@ const NewCertificate = () => {
                 rows={5}
               />
               <div className="submit-btn">
-                <Button className={buttonStyles.standardBtn} type="submit">
+                <Button
+                  className={buttonStyles.standardBtn}
+                  type="submit"
+                  disabled={loading}
+                >
                   Create Certificate
                 </Button>
               </div>
