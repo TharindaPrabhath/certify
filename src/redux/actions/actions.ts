@@ -4,8 +4,9 @@ import CertificateDto from "../../types/models/CertificateDto"
 import UserDto from "../../types/models/UserDto"
 import { AdminAction } from "../reducers/adminReducer"
 import { CertificateAction } from "../reducers/certificateReducer"
+import { LoadingAction } from "../reducers/loadingReducer"
 import { UserAction } from "../reducers/userReducer"
-import { AdminActionType, CertificateActionType, UserActionType } from "./ActionTypes"
+import { AdminActionType, CertificateActionType, LoadingActionType, UserActionType } from "./ActionTypes"
 
 export const setAdmin = (admin: AdminDto) => {
     return ((dispatch: Dispatch<AdminAction>) => {
@@ -75,4 +76,17 @@ export const removeCertificate = () => {
         })
     }) 
    
+}
+
+
+
+export const setLoading = (loading: boolean) => {
+    return ((dispatch: Dispatch<LoadingAction>) => {
+        dispatch({
+            type: LoadingActionType.SET_LOADING,
+            payload: {
+                loading: loading
+            }
+        })
+    } ) 
 }
