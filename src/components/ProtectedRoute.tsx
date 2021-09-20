@@ -11,8 +11,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ ...rest }) => {
   const [accessToken, setAccessToken] = useState<boolean>(false);
   const { isAdminLoggedIn } = useAuth();
 
-  //if (accessToken && rest.path !== "/signin") return <Route {...rest} />;
-  //return <Redirect to="/signin" />;
+  // if (accessToken && rest.path !== "/signin") return <Route {...rest} />;
+  // return <Redirect to="/signin" />;
   return <Route {...rest} />;
 };
 
