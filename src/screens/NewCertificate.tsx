@@ -1,49 +1,30 @@
-import React, { ReactNode, useEffect } from "react";
+import React, { ReactNode } from "react";
 
 import {
   Box,
   Breadcrumbs,
   Button,
   CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  List,
-  ListItem,
-  MenuItem,
-  MenuList,
   Radio,
-  Select,
   Step,
   StepLabel,
   Stepper,
-  Switch,
   TextField,
   Typography,
 } from "@material-ui/core";
-import {
-  Field,
-  Form,
-  Formik,
-  FormikConfig,
-  FormikValues,
-  useFormik,
-} from "formik";
+import { Field, Form, Formik, FormikConfig, FormikValues } from "formik";
 import { Link } from "react-router-dom";
 import { useButtonStyles, useTextfieldStyles } from "../data/styles";
 
 import "./Page.css";
 import colors from "../data/colors";
 import { useState } from "react";
-import * as yup from "yup";
-import UserDto from "../types/models/UserDto";
-import { toUserDtos } from "../utils/mapper";
 import { useSnackbar } from "notistack";
-import { addCertificate, fetchUsers } from "../utils/requestHelper";
+import {
+  addCertificate,
+  addThirdPartyCertificate,
+  fetchSuggestionUsers,
+} from "../utils/requestHelper";
 
 import { bindActionCreators } from "redux";
 import { actionCreators } from "../redux";
@@ -54,13 +35,29 @@ import { ReducerType } from "../redux/store";
 import { object, mixed, string, boolean } from "yup";
 import CertifyDatePicker from "../components/core/CertifyDatePicker";
 import CertifySelect from "../components/core/CertifySelect";
+import CertifyTextField from "../components/core/CertifyTextField";
+import CertifyCheckbox from "../components/core/CertifyCheckbox";
+import { Autocomplete } from "@material-ui/lab";
+import useLocalStorage from "../utils/useLocalStorage";
 
 const sleep = (time: number) => new Promise((acc) => setTimeout(acc, time));
 
 const NewCertificate = () => {
   const [memberCertificate, setMemberCertificate] = useState(true);
+  const [memberDefaultEmail, setMemeberDefaultEmail] = useState(true);
   const certificateTypes = ["Participation", "Content Creation", "Other"];
   const thirdPartRoles = ["Student", "Graduate", "Undergraduate", "Other"];
+  const [suggestions, setSuggestions] = useState<any[] | undefined[]>([]);
+  const { getAdmin } = useLocalStorage();
+
+  //  based on auto complete trash
+  const [reciever, setReciever] = useState("");
+  const [recieverId, setRecieverId] = useState(0);
+  const [value, setValue] = useState<string>("");
+  const [inputValue, setInputValue] = useState("");
+  //--------------------------------------------------
+
+  const { enqueueSnackbar } = useSnackbar();
   const textfieldStyles = useTextfieldStyles();
   const dispatch = useDispatch();
   const { setLoading } = bindActionCreators(actionCreators, dispatch);
@@ -101,9 +98,9 @@ const NewCertificate = () => {
     member: object().when("memberCertificate", {
       is: "true",
       then: object({
-        reciever: string().required("Reciever is required"),
+        //reciever: string().required("Reciever is required"),
         defaultEmail: boolean().required(),
-        customEmail: string().when("defaultEmail", {
+        customEmail: string().when("member.defaultEmail", {
           is: "false",
           then: string().required(),
         }),
@@ -115,7 +112,7 @@ const NewCertificate = () => {
       then: object({
         firstName: string().required("First Name is required"),
         lastName: string().required("Last Name is required"),
-        email: string().email().required("Email is required"),
+        email: string().email("Invalid email").required("Email is required"),
         phone: string().required("Phone is required"),
         role: string().required("Role is required"),
       }),
@@ -138,8 +135,10 @@ const NewCertificate = () => {
         otherwise: string().optional(),
       }),
       customEmail: mixed().when("defaultEmail", {
-        is: true,
-        then: string().email().required("Custom email is required"),
+        is: false,
+        then: string()
+          .email("Invalid email")
+          .required("Custom email is required"),
         otherwise: string().email().optional(),
       }),
     }),
@@ -179,6 +178,99 @@ const NewCertificate = () => {
     }),
   });
 
+  const handleSubmit = async (values: any) => {
+    const currAdminId = getAdmin().id;
+    if (values.memberCertificate === "true") {
+      const certificate: any = {
+        type: values.certificate.type,
+        reason: values.certificate.reason,
+        remarks: values.certificate.remarks,
+        user: {
+          uid: recieverId,
+        },
+        admin: {
+          id: parseInt(currAdminId!),
+        },
+      };
+
+      const res = addCertificate(certificate);
+      res
+        .then(() => {
+          enqueueSnackbar(
+            `Successfully issued the certificate to ${recieverId}`,
+            {
+              variant: "success",
+            }
+          );
+        })
+        .catch((err) => {
+          enqueueSnackbar(
+            `${err} .Could not issue the certificate.Try again later.`,
+            {
+              variant: "error",
+            }
+          );
+        })
+        .finally(() => setLoading(false));
+    } else {
+      const thirdPartyCertificate: any = {
+        user: {
+          fname: values.thirdPartyUser.firstName,
+          lname: values.thirdPartyUser.lastName,
+          email: values.thirdPartyUser.email,
+          phone: values.thirdPartyUser.phone,
+          role: values.thirdPartyUser.role,
+          address: values.thirdPartyUser.address,
+          description: values.thirdPartyUser.description,
+          emailVerified: false,
+          certified: true,
+          numCertificates: 0,
+          admin: {
+            id: parseInt(currAdminId!),
+          },
+        },
+        certificate: {
+          type: values.certificate.type,
+          reason: values.certificate.reason,
+          remarks: values.certificate.remarks,
+          admin: {
+            id: parseInt(currAdminId!),
+          },
+        },
+      };
+
+      addThirdPartyCertificate(thirdPartyCertificate)
+        .then((res) => {
+          enqueueSnackbar(
+            `Successfully issued the third party certificate to ${recieverId}`,
+            {
+              variant: "success",
+            }
+          );
+        })
+        .catch((err) => {
+          enqueueSnackbar(
+            `${err} .Could not issue the third party certificate.Try again later.`,
+            {
+              variant: "error",
+            }
+          );
+        })
+        .finally(() => setLoading(false));
+    }
+  };
+
+  const handleOnChange = (query: string) => {
+    setInputValue(query);
+    if (query !== "" && query.length !== 1) {
+      fetchSuggestionUsers(query)
+        .then((res) => {
+          setSuggestions(res.data);
+        })
+        .catch((err) => console.error(err));
+    }
+  };
+
   return (
     <div className="page">
       <div className="page__content">
@@ -197,9 +289,8 @@ const NewCertificate = () => {
               initialValues={initialValues}
               onSubmit={async (values) => {
                 setLoading(true);
-                await sleep(2000);
-                setLoading(false);
-                console.log(values);
+                //await sleep(2000);
+                handleSubmit(values);
               }}
             >
               <MyStep label="Step 1" validationSchema={step1ValidationSchema}>
@@ -240,30 +331,67 @@ const NewCertificate = () => {
                     <p style={{ fontSize: "1.1em", marginBottom: "1em" }}>
                       Create the reciever
                     </p>
-                    <Field
-                      name="member.reciever"
-                      as={TextField}
-                      label="Reciever"
-                      variant="outlined"
-                      color="primary"
-                      InputProps={{ className: textfieldStyles.input }}
+
+                    <Autocomplete
+                      id="combo-box-demo"
+                      value={reciever}
+                      onChange={(e, newValue) => {
+                        setReciever(newValue);
+                        if (newValue !== null && newValue.uid !== null)
+                          setRecieverId(newValue.uid);
+                      }}
+                      inputValue={inputValue}
+                      onInputChange={(e, newInputValue) => {
+                        handleOnChange(newInputValue);
+                      }}
+                      options={suggestions}
+                      getOptionLabel={(option) =>
+                        option.fname + " " + option.lname
+                      }
+                      style={{ width: "100%" }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          variant="outlined"
+                          color="primary"
+                          required={true}
+                          label="Reciever"
+                          //onChange={(e) => handleOnChange(e.target.value)}
+                        />
+                      )}
                     />
-                    <div style={{ display: "flex", alignItems: "center" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
                       <Field
                         name="member.defaultEmail"
-                        as={Switch}
-                        color="primary"
+                        as={CertifyCheckbox}
+                        checked={memberDefaultEmail}
+                        label="Send to reciever's default email"
+                        onClick={() =>
+                          setMemeberDefaultEmail(!memberDefaultEmail)
+                        }
                       />
-                      <p>Send to reciever's default email</p>
+                      <p style={{ color: "grey" }}>
+                        By disabling this will send the certificate to the
+                        entered custom email
+                      </p>
                     </div>
-                    <Field
-                      name="member.customEmail"
-                      as={TextField}
-                      label="Custom Email"
-                      variant="outlined"
-                      color="primary"
-                      InputProps={{ className: textfieldStyles.input }}
-                    />
+                    {!memberDefaultEmail && (
+                      <Field
+                        name="member.customEmail"
+                        as={TextField}
+                        type="email"
+                        required={!memberDefaultEmail}
+                        label="Custom Email"
+                        variant="outlined"
+                        color="primary"
+                        InputProps={{ className: textfieldStyles.input }}
+                      />
+                    )}
                   </MyBox>
                 ) : (
                   <MyBox>
@@ -272,7 +400,7 @@ const NewCertificate = () => {
                     </p>
                     <Field
                       name="thirdPartyUser.firstName"
-                      as={TextField}
+                      component={CertifyTextField}
                       label="First Name"
                       variant="outlined"
                       color="primary"
@@ -280,7 +408,7 @@ const NewCertificate = () => {
                     />
                     <Field
                       name="thirdPartyUser.lastName"
-                      as={TextField}
+                      component={CertifyTextField}
                       label="Last Name"
                       variant="outlined"
                       color="primary"
@@ -288,7 +416,7 @@ const NewCertificate = () => {
                     />
                     <Field
                       name="thirdPartyUser.email"
-                      as={TextField}
+                      component={CertifyTextField}
                       label="Email"
                       variant="outlined"
                       color="primary"
@@ -296,7 +424,7 @@ const NewCertificate = () => {
                     />
                     <Field
                       name="thirdPartyUser.phone"
-                      as={TextField}
+                      component={CertifyTextField}
                       label="Phone"
                       variant="outlined"
                       color="primary"
@@ -396,9 +524,6 @@ const MyStepper = ({ children, ...props }: FormikConfig<FormikValues>) => {
     return step === childrenArr.length - 1;
   }
 
-  // console.log(currentChild);
-  console.log(currentChild.props.validationSchema);
-
   return (
     <Formik
       {...props}
@@ -412,42 +537,49 @@ const MyStepper = ({ children, ...props }: FormikConfig<FormikValues>) => {
         }
       }}
     >
-      <Form autoComplete="off">
-        <Stepper activeStep={step} style={{ backgroundColor: "transparent" }}>
-          {childrenArr.map((child, index) => {
-            return (
-              <Step key={index}>
-                <StepLabel>{child.props.label}</StepLabel>
-              </Step>
-            );
-          })}
-        </Stepper>
-        {currentChild}
-        <div style={{ display: "flex", gap: "0.5em", marginTop: "1em" }}>
-          {step !== 0 ? (
-            <Button
-              className={buttonStyles.standardBtn}
-              disabled={loading}
-              onClick={() => setStep(step - 1)}
+      {({ values }) => {
+        return (
+          <Form autoComplete="off">
+            <Stepper
+              activeStep={step}
+              style={{ backgroundColor: "transparent" }}
             >
-              Back
-            </Button>
-          ) : null}
+              {childrenArr.map((child, index) => {
+                return (
+                  <Step key={index}>
+                    <StepLabel>{child.props.label}</StepLabel>
+                  </Step>
+                );
+              })}
+            </Stepper>
+            {currentChild}
+            <div style={{ display: "flex", gap: "0.5em", marginTop: "1em" }}>
+              {step !== 0 ? (
+                <Button
+                  className={buttonStyles.standardBtn}
+                  disabled={loading}
+                  onClick={() => setStep(step - 1)}
+                >
+                  Back
+                </Button>
+              ) : null}
 
-          <Button
-            className={buttonStyles.standardBtn}
-            startIcon={
-              loading ? (
-                <CircularProgress size="1rem" color="secondary" />
-              ) : null
-            }
-            disabled={loading}
-            type="submit"
-          >
-            {isLastStep() ? (loading ? "Submitting" : "Submit") : "Next"}
-          </Button>
-        </div>
-      </Form>
+              <Button
+                className={buttonStyles.standardBtn}
+                startIcon={
+                  loading ? (
+                    <CircularProgress size="1rem" color="secondary" />
+                  ) : null
+                }
+                disabled={loading}
+                type="submit"
+              >
+                {isLastStep() ? (loading ? "Submitting" : "Submit") : "Next"}
+              </Button>
+            </div>
+          </Form>
+        );
+      }}
     </Formik>
   );
 };
