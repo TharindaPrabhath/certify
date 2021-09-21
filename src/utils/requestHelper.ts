@@ -33,6 +33,12 @@ export function fetchUsers(){
     return axiosInstance().get(requests.fetchUsers);
 }
 
+export function fetchSuggestionUsers(query: string){
+    return axiosInstance().get(requests.fetchSuggestionUsers, {params: {
+        query: query
+    }});
+}
+
 export async function addUser(user: any){
     return await axiosInstance().post(requests.postNewUser, user);
 }
@@ -79,6 +85,11 @@ export function fetchCertificatesByUser(uid: number){
 export async function addCertificate(certificate: any){
     return await axiosInstance().post(requests.postNewCertificate, certificate);
 }
+
+export async function addThirdPartyCertificate(certificate: any){
+    return await axiosInstance().post(requests.postNewThirdPartyCertificate, certificate);
+}
+
 
 export async function updateCertificate(id: string, updatedCertificate: CertificateDto, adminId: number){
     return await axiosInstance().put(requests.updateCertificate, updatedCertificate, {params: {
