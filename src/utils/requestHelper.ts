@@ -45,15 +45,15 @@ export async function addUser(user: any){
 
 export async function updateUser(id: number, updatedUser: UserDto, adminId: number){
     return await axiosInstance().put(requests.updateUser, updatedUser, {params: {
-        userId: id,
-        adminId: adminId
+        user_id: id,
+        admin_id: adminId
     }});
 } 
 
 export function deleteUser(id: number, adminId: number){
     return axiosInstance().delete(requests.deleteUser, {params: {
-        userId: id,
-        adminId: adminId
+        user_id: id,
+        admin_id: adminId
     }})
 }
 
@@ -93,15 +93,15 @@ export async function addThirdPartyCertificate(certificate: any){
 
 export async function updateCertificate(id: string, updatedCertificate: CertificateDto, adminId: number){
     return await axiosInstance().put(requests.updateCertificate, updatedCertificate, {params: {
-        certificateId: id,
-        adminId: adminId
+        certificate_id: id,
+        admin_id: adminId
     }});
 } 
 
 export async function deleteCertificate(id: string, adminId: number){
     return await axiosInstance().delete(requests.deleteCertificate, {params: {
-        certificateId: id,
-        adminId: adminId
+        certificate_id: id,
+        admin_id: adminId
     }})
 }
 
