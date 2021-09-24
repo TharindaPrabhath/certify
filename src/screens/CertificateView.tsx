@@ -58,12 +58,12 @@ const CertificateView = () => {
     const currentUrl = window.location.href;
     setPageUrl(currentUrl);
     const certificateIdFromUrl = currentUrl.replace(
-      "http://localhost:3000/certificate/view?id=",
+      "https://symetry-certify-frontend.herokuapp.com/certificate/view?id=",
       ""
     );
+    console.log(certificateIdFromUrl);
 
     fetchCertificate(certificateIdFromUrl).then((res) => {
-      console.log(res);
       setCertificate(getCertificateDto(res.data));
     });
   }, []);
@@ -132,7 +132,7 @@ const CertificateView = () => {
                   style={{ textTransform: "lowercase" }}
                   variant="contained"
                 >
-                  cty00001
+                  {certificate.id}
                 </Button>
               }
             />
