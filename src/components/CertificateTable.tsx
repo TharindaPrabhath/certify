@@ -34,15 +34,15 @@ const getRow = (
   return { certificateId, recievedBy, issuedBy, type, issuedDate };
 };
 
-const rows: CertificateTableProp[] = [
-  getRow("001", "Tharinda P", "Lasana", "Participation", "2001.03.12"),
-  getRow("002", "Lishitha", "Lasana", "Participation", "2001.03.12"),
-  getRow("003", "Chamath", "Lasana", "Participation", "2001.03.12"),
-  getRow("004", "Nadun", "Lasana", "Participation", "2001.03.12"),
-  getRow("005", "Haritha", "Hasitha", "Participation", "2001.03.12"),
-  getRow("006", "Alahakoon", "Hasitha", "Participation", "2001.03.12"),
-  getRow("007", "Tharinda P", "Lasana", "Participation", "2001.03.12"),
-];
+// const rows: CertificateTableProp[] = [
+//   getRow("001", "Tharinda P", "Lasana", "Participation", "2001.03.12"),
+//   getRow("002", "Lishitha", "Lasana", "Participation", "2001.03.12"),
+//   getRow("003", "Chamath", "Lasana", "Participation", "2001.03.12"),
+//   getRow("004", "Nadun", "Lasana", "Participation", "2001.03.12"),
+//   getRow("005", "Haritha", "Hasitha", "Participation", "2001.03.12"),
+//   getRow("006", "Alahakoon", "Hasitha", "Participation", "2001.03.12"),
+//   getRow("007", "Tharinda P", "Lasana", "Participation", "2001.03.12"),
+// ];
 
 const CertificateTable = () => {
   const buttonStyles = useButtonStyles();

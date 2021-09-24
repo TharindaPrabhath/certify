@@ -132,7 +132,7 @@ const CertificateView = () => {
                   style={{ textTransform: "lowercase" }}
                   variant="contained"
                 >
-                  {certificate.id}
+                  {certificate?.id}
                 </Button>
               }
             />
