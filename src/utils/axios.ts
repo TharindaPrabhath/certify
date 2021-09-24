@@ -1,8 +1,8 @@
 import axios from "axios";
 import useTokenService from "./useTokenService";
 
-export const API_BASE_URL = "http://localhost:8080/api/v1";
-
+// export const API_BASE_URL = "http://localhost:8080/api/v1";
+export const API_BASE_URL = "https://symetry-certify.herokuapp.com"
 const useAxios = () => {
     const { getAccessToken } = useTokenService();
     const axiosInstance = axios.create(
