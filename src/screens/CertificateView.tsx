@@ -24,7 +24,6 @@ import html2canvas from "html2canvas";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import ShareIcon from "@material-ui/icons/Share";
 import CloseIcon from "@material-ui/icons/Close";
-import colors from "../data/colors";
 import moment from "moment";
 import {
   EmailIcon,
@@ -52,7 +51,7 @@ const CertificateView = () => {
   const [shareDialogOpen, setShareDialogOpen] = useState<boolean>(false);
   const [pageUrl, setPageUrl] = useState<string>("");
   const buttonStyles = useButtonStyles();
-  const { VerifiedBadge } = useBadge();
+  const { VerifiedBadge, StatusBadge } = useBadge();
   const SHARE_ICON_SIZE = 36;
 
   useEffect(() => {
@@ -144,12 +143,14 @@ const CertificateView = () => {
                 <div className="block-form-container__left-col">
                   <p className="key">First Name</p>
                   <p className="key">Last Name</p>
-                  <p className="key">Status</p>
+                  <p className="key">Verification Status</p>
+                  <p className="key">Member Status</p>
                 </div>
                 <div className="block-form-container__right-col">
                   <p className="value">{certificate?.user.fname}</p>
                   <p className="value">{certificate?.user.lname}</p>
                   <VerifiedBadge verified={certificate?.user.emailVerified!} />
+                  <StatusBadge member={certificate?.user.member!} />
                 </div>
               </div>
             </div>
