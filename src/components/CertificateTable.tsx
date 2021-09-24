@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { useButtonStyles } from "../data/styles";
 import CertificateDto from "../types/models/CertificateDto";
 import { CertificateTableProp } from "../types/TableProp";
@@ -22,6 +22,7 @@ import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import colors from "../data/colors";
 import moment from "moment";
 import useLocalStorage from "../utils/useLocalStorage";
+import useBadge from "../utils/useBadge";
 
 const getRow = (
   certificateId: string,
@@ -50,15 +51,13 @@ const CertificateTable = () => {
   const [certificates, setCertficates] = useState<CertificateTableRow[]>([]);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { setCertificate, removeCertificate } = bindActionCreators(
-    actionCreators,
-    dispatch
-  );
+  const { removeCertificate } = bindActionCreators(actionCreators, dispatch);
   const currentCertificate = useSelector(
     (state: ReducerType) => state.certificateReducer.currentCertificate
   );
   const history = useHistory();
   const { getAdmin } = useLocalStorage();
+  const { CertificateCategoryBadge } = useBadge();
 
   useEffect(() => {
     fetchCertificates()
@@ -76,6 +75,7 @@ const CertificateTable = () => {
     issuedBy: string;
     type: string;
     issuedDate: string;
+    memberCertificate: boolean;
   };
 
   const toCertificateTableData = (dataArr: any[]): CertificateTableRow[] => {
@@ -93,6 +93,7 @@ const CertificateTable = () => {
       issuedBy: data.admin.name,
       type: data.type,
       issuedDate: moment(data.issuedDate, "YYYY-MM-DD").format("YYYY-MM-DD"),
+      memberCertificate: data.memberCertificate,
     };
   };
 
@@ -157,7 +158,7 @@ const CertificateTable = () => {
     {
       field: "recievedBy",
       headerName: "Reciever",
-      width: 150,
+      width: 170,
       editable: false,
     },
     {
@@ -173,9 +174,22 @@ const CertificateTable = () => {
       editable: false,
     },
     {
+      field: "memberCertificate",
+      headerName: "Category",
+      width: 200,
+      editable: false,
+      renderCell: (params) => {
+        return (
+          <CertificateCategoryBadge
+            memberCertificate={params.row.memberCertificate}
+          />
+        );
+      },
+    },
+    {
       field: "issuedDate",
       headerName: "Issued Date",
-      width: 200,
+      width: 170,
       editable: false,
     },
     {
