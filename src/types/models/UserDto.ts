@@ -7,6 +7,7 @@ interface UserDto{
     email: string;
     phone: string,
     role: string,
+    member: boolean,
     birthday: string,
     createdDate: string,
     address: string,
