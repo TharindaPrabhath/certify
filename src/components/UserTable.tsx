@@ -26,6 +26,7 @@ import colors from "../data/colors";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import UserProfile from "./UserProfile";
 import useLocalStorage from "../utils/useLocalStorage";
+import useBadge from "../utils/useBadge";
 
 const getRow = (
   id: string,
@@ -70,6 +71,7 @@ const UserTable = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [openUserProfile, setOpenUserProfile] = useState<boolean>(false);
   const { getAdmin } = useLocalStorage();
+  const { StatusBadge } = useBadge();
 
   useEffect(() => {
     fetchUsers()
@@ -97,30 +99,29 @@ const UserTable = () => {
   };
 
   const handleDeleteClick = (event: React.MouseEvent<unknown>, id: number) => {
-    setOpenConfirmBox(true);
+    //setOpenConfirmBox(true);
+    //setConfirmBoxAgree(false);
 
-    if (confirmBoxAgree) {
-      deleteUser(id, parseInt(getAdmin().id!))
-        .then(() => {
-          enqueueSnackbar(`Successfully deleted the user ${id}`, {
-            variant: "success",
-          });
-
-          // removing the item from the table
-          setUsers(users.filter((u) => u.id !== id));
-
-          // if the deleted user is the current user in redux store. delete it
-          if (currentUser?.id === id) removeUser();
-        })
-        .catch((err) => {
-          enqueueSnackbar(
-            `${err} .Could not delete the user.Try again later.`,
-            {
-              variant: "error",
-            }
-          );
+    //if (confirmBoxAgree) {
+    deleteUser(id, parseInt(getAdmin().id!))
+      .then(() => {
+        enqueueSnackbar(`Successfully deleted the user ${id}`, {
+          variant: "success",
         });
-    }
+
+        // removing the item from the table
+        setUsers(users.filter((u) => u.id !== id));
+
+        // if the deleted user is the current user in redux store. delete it
+        if (currentUser?.id === id) removeUser();
+      })
+      .catch((err) => {
+        enqueueSnackbar(`${err} .Could not delete the user.Try again later.`, {
+          variant: "error",
+        });
+      })
+      .finally(() => setConfirmBoxAgree(false));
+    //}
   };
 
   const columns: GridColDef[] = [
@@ -143,6 +144,15 @@ const UserTable = () => {
       editable: false,
     },
     {
+      field: "member",
+      headerName: "Status",
+      width: 150,
+      editable: false,
+      renderCell: (params) => {
+        return <StatusBadge member={params.row.member} />;
+      },
+    },
+    {
       field: "email",
       headerName: "Email",
       width: 200,
@@ -163,7 +173,7 @@ const UserTable = () => {
     {
       field: "action",
       headerName: "Action",
-      width: 230,
+      width: 240,
       editable: false,
       renderCell: (params) => {
         return (
