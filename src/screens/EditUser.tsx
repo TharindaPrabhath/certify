@@ -31,6 +31,7 @@ const EditUser = () => {
     email: "",
     address: "",
     role: "",
+    member: false,
     description: "",
     admin: { id: 0, username: "" },
     emailVerified: false,
