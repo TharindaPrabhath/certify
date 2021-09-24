@@ -12,7 +12,7 @@ export const getUserDto = (data: any):UserDto => {
             phone: data.phone, role: data.role, address: data.address, 
             description: data.description, emailVerified: data.emailVerified, 
             certified: data.certified, numCertificates: data.numCertificates, admin: data.admin, 
-            birthday: data.birthday, createdDate: data.createdDate}
+            birthday: data.birthday, createdDate: data.createdDate, member: data.member}
 }
 
 export const toUserDtos = (arr: any[]):UserDto[] => {
@@ -29,7 +29,8 @@ export const toUserDtos = (arr: any[]):UserDto[] => {
 
 export const getCertificateDto = (data: any):CertificateDto => {
     return {id: data.id, type: data.type, reason: data.reason, remarks: data.remarks, 
-            issuedDate: moment(data.issuedDate, "YYYY-MM-DD").format("YYYY-MM-DD"), user: getUserDto(data.user), admin: getAdminDto(data.admin)}
+            issuedDate: moment(data.issuedDate, "YYYY-MM-DD").format("YYYY-MM-DD"), user: getUserDto(data.user), 
+            admin: getAdminDto(data.admin), memberCertificate: data.memberCertificate}
 }
 
 export const toCertificateDtos = (arr: any[]):CertificateDto[] => {
