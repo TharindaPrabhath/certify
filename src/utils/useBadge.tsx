@@ -1,7 +1,12 @@
 import colors from "../data/colors";
 
 const useBadge = () => {
-  return { VerifiedBadge, CertifiedBadge };
+  return {
+    VerifiedBadge,
+    CertifiedBadge,
+    StatusBadge,
+    CertificateCategoryBadge,
+  };
 };
 
 export default useBadge;
@@ -38,4 +43,51 @@ const CertifiedBadge = ({ certified }: { certified: boolean }) => {
       </div>
     );
   } else return null;
+};
+
+const StatusBadge = ({ member }: { member: boolean }) => {
+  return (
+    <div
+      style={{
+        backgroundColor: "transparent",
+      }}
+    >
+      <p
+        style={{
+          fontWeight: 600,
+          color: `${member ? colors.primaryBrandClr : colors.primaryErrorClr}`,
+          fontSize: "1em",
+        }}
+      >
+        {member ? "Member" : "Third Party"}
+      </p>
+    </div>
+  );
+};
+
+// (member certificate or not)
+const CertificateCategoryBadge = ({
+  memberCertificate,
+}: {
+  memberCertificate: boolean;
+}) => {
+  return (
+    <div
+      style={{
+        backgroundColor: "transparent",
+      }}
+    >
+      <p
+        style={{
+          fontWeight: 600,
+          color: `${
+            memberCertificate ? colors.primaryBrandClr : colors.primaryErrorClr
+          }`,
+          fontSize: "1em",
+        }}
+      >
+        {memberCertificate ? "Member Certificate" : "Third Party"}
+      </p>
+    </div>
+  );
 };
