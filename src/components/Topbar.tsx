@@ -8,7 +8,6 @@ import {
   Button,
   ClickAwayListener,
   Grow,
-  LinearProgress,
   MenuItem,
   MenuList,
   Paper,
@@ -77,18 +76,18 @@ const Topbar = () => {
             <MenuIcon style={{ color: ICON_INACTIVE_COLOR }} />
           </Button>
 
-          <Tooltip
+          {/* <Tooltip
             children={
               <Button>
                 <SearchIcon htmlColor={ICON_INACTIVE_COLOR} fontSize="medium" />
               </Button>
             }
             title={"Search"}
-          />
+          /> */}
         </div>
 
         <div className="topbar__content-right-col">
-          <Tooltip
+          {/* <Tooltip
             children={
               <Button
                 ref={notificationBtnRef}
@@ -103,7 +102,7 @@ const Topbar = () => {
               </Button>
             }
             title={"Notifications"}
-          />
+          /> */}
 
           <Tooltip
             children={
@@ -131,11 +130,11 @@ const Topbar = () => {
           <Sidebar />
         </SwipeableDrawer>
 
-        <Notification
+        {/* <Notification
           open={notificationOpen}
           anchorEl={notificationBtnRef}
           onClose={() => setNotificationOpen(false)}
-        />
+        /> */}
 
         <Popper
           open={avatarMenuOpen}
@@ -160,7 +159,6 @@ const Topbar = () => {
               >
                 <ClickAwayListener onClickAway={handleClose}>
                   <MenuList autoFocusItem={avatarMenuOpen} id="menu-list-grow">
-                    <MenuItem>Profile</MenuItem>
                     <MenuItem button onClick={handleLogoutClick}>
                       Logout
                     </MenuItem>
