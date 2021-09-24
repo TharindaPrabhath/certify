@@ -32,7 +32,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { ReducerType } from "../redux/store";
 
-import { object, mixed, string, boolean } from "yup";
+import { object, string, boolean } from "yup";
 import CertifyDatePicker from "../components/core/CertifyDatePicker";
 import CertifySelect from "../components/core/CertifySelect";
 import CertifyTextField from "../components/core/CertifyTextField";
@@ -98,7 +98,6 @@ const NewCertificate = () => {
     member: object().when("memberCertificate", {
       is: "true",
       then: object({
-        //reciever: string().required("Reciever is required"),
         defaultEmail: boolean().required(),
         customEmail: string().when("member.defaultEmail", {
           is: "false",
@@ -127,56 +126,56 @@ const NewCertificate = () => {
     }),
   });
 
-  const validationSchema = object({
-    member: object({
-      reciever: mixed().when("memberCertificate", {
-        is: true,
-        then: string().required("Reciever is required"),
-        otherwise: string().optional(),
-      }),
-      customEmail: mixed().when("defaultEmail", {
-        is: false,
-        then: string()
-          .email("Invalid email")
-          .required("Custom email is required"),
-        otherwise: string().email().optional(),
-      }),
-    }),
+  // const validationSchema = object({
+  //   member: object({
+  //     reciever: mixed().when("memberCertificate", {
+  //       is: true,
+  //       then: string().required("Reciever is required"),
+  //       otherwise: string().optional(),
+  //     }),
+  //     customEmail: mixed().when("defaultEmail", {
+  //       is: false,
+  //       then: string()
+  //         .email("Invalid email")
+  //         .required("Custom email is required"),
+  //       otherwise: string().email().optional(),
+  //     }),
+  //   }),
 
-    thirdPartyUser: object({
-      firstName: mixed().when("memberCertificate", {
-        is: false,
-        then: string().required("First Name is required"),
-        otherwise: string().optional(),
-      }),
-      lastName: mixed().when("memberCertificate", {
-        is: false,
-        then: string().required("Last Name is required"),
-        otherwise: string().optional(),
-      }),
-      email: mixed().when("memberCertificate", {
-        is: false,
-        then: string().email().required("Email is required"),
-        otherwise: string().email().optional(),
-      }),
-      phone: mixed().when("memberCertificate", {
-        is: false,
-        then: string().required("Phone is required"),
-        otherwise: string().optional(),
-      }),
-      role: mixed().when("memberCertificate", {
-        is: false,
-        then: string().required("Role is required"),
-        otherwise: string().optional(),
-      }),
-    }),
+  //   thirdPartyUser: object({
+  //     firstName: mixed().when("memberCertificate", {
+  //       is: false,
+  //       then: string().required("First Name is required"),
+  //       otherwise: string().optional(),
+  //     }),
+  //     lastName: mixed().when("memberCertificate", {
+  //       is: false,
+  //       then: string().required("Last Name is required"),
+  //       otherwise: string().optional(),
+  //     }),
+  //     email: mixed().when("memberCertificate", {
+  //       is: false,
+  //       then: string().email().required("Email is required"),
+  //       otherwise: string().email().optional(),
+  //     }),
+  //     phone: mixed().when("memberCertificate", {
+  //       is: false,
+  //       then: string().required("Phone is required"),
+  //       otherwise: string().optional(),
+  //     }),
+  //     role: mixed().when("memberCertificate", {
+  //       is: false,
+  //       then: string().required("Role is required"),
+  //       otherwise: string().optional(),
+  //     }),
+  //   }),
 
-    certificate: object({
-      type: string().required("Certificate type is required"),
-      reason: string().required("Reason is required"),
-      remarks: string().required("Remarks are required"),
-    }),
-  });
+  //   certificate: object({
+  //     type: string().required("Certificate type is required"),
+  //     reason: string().required("Reason is required"),
+  //     remarks: string().required("Remarks are required"),
+  //   }),
+  // });
 
   const handleSubmit = async (values: any) => {
     const currAdminId = getAdmin().id;
@@ -220,6 +219,7 @@ const NewCertificate = () => {
           email: values.thirdPartyUser.email,
           phone: values.thirdPartyUser.phone,
           role: values.thirdPartyUser.role,
+          member: false,
           address: values.thirdPartyUser.address,
           description: values.thirdPartyUser.description,
           emailVerified: false,
@@ -537,49 +537,42 @@ const MyStepper = ({ children, ...props }: FormikConfig<FormikValues>) => {
         }
       }}
     >
-      {({ values }) => {
-        return (
-          <Form autoComplete="off">
-            <Stepper
-              activeStep={step}
-              style={{ backgroundColor: "transparent" }}
+      <Form autoComplete="off">
+        <Stepper activeStep={step} style={{ backgroundColor: "transparent" }}>
+          {childrenArr.map((child, index) => {
+            return (
+              <Step key={index}>
+                <StepLabel>{child.props.label}</StepLabel>
+              </Step>
+            );
+          })}
+        </Stepper>
+        {currentChild}
+        <div style={{ display: "flex", gap: "0.5em", marginTop: "1em" }}>
+          {step !== 0 ? (
+            <Button
+              className={buttonStyles.standardBtn}
+              disabled={loading}
+              onClick={() => setStep(step - 1)}
             >
-              {childrenArr.map((child, index) => {
-                return (
-                  <Step key={index}>
-                    <StepLabel>{child.props.label}</StepLabel>
-                  </Step>
-                );
-              })}
-            </Stepper>
-            {currentChild}
-            <div style={{ display: "flex", gap: "0.5em", marginTop: "1em" }}>
-              {step !== 0 ? (
-                <Button
-                  className={buttonStyles.standardBtn}
-                  disabled={loading}
-                  onClick={() => setStep(step - 1)}
-                >
-                  Back
-                </Button>
-              ) : null}
+              Back
+            </Button>
+          ) : null}
 
-              <Button
-                className={buttonStyles.standardBtn}
-                startIcon={
-                  loading ? (
-                    <CircularProgress size="1rem" color="secondary" />
-                  ) : null
-                }
-                disabled={loading}
-                type="submit"
-              >
-                {isLastStep() ? (loading ? "Submitting" : "Submit") : "Next"}
-              </Button>
-            </div>
-          </Form>
-        );
-      }}
+          <Button
+            className={buttonStyles.standardBtn}
+            startIcon={
+              loading ? (
+                <CircularProgress size="1rem" color="secondary" />
+              ) : null
+            }
+            disabled={loading}
+            type="submit"
+          >
+            {isLastStep() ? (loading ? "Submitting" : "Submit") : "Next"}
+          </Button>
+        </div>
+      </Form>
     </Formik>
   );
 };
