@@ -59,7 +59,7 @@ function App() {
     //   const admin = getAdmin();
     //   setAdmin({ id: parseInt(admin.id!), username: admin.username! });
     // }
-  }, [currentAdmin?.username, saveAdmin]);
+  }, [currentAdmin?.username]);
 
   return (
     <ThemeProvider theme={theme}>
