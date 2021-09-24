@@ -77,6 +77,7 @@ const NewUser = () => {
       numCertificates: 0,
       phone: values.phone,
       role: values.role,
+      member: true,
       birthday: values.birthday,
       address: values.address,
       description: values.description,
