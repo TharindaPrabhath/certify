@@ -3,7 +3,9 @@
     border-radius: 1em;
 
     width: 100%;
+    max-width: 55em;
     height: 8em;
+    box-shadow: 1px 2px 10px #1b1a1a;
 }
 
 .dash-card__content{
@@ -14,7 +16,6 @@
     padding: 1em;
     box-sizing: border-box;
     height: 100%;
-    
 }
 
 .dash-card__content .left-col{
@@ -31,4 +32,19 @@
 
 .dash-card__content .value{
     font-size: 2em;
+}
+
+.dash-card__content .redirect-link{
+    font-size: 0.8em;
+    color: var(--secondary-font-clr);
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+}
+.dash-card__content .redirect-link:hover{
+    color: var(--primary-brand-clr);
+}
+.dash-card__content .right-col .image{
+    width: 5em;
 }

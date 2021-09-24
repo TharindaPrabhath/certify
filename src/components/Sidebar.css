@@ -1,24 +1,25 @@
 .sidebar{
-    background-color: var(--secondary-bg-clr);
-    color: var(--primary-font-clr);
-    height: 100%;
+    border-right: 2px solid var(--secondary-bg-clr);
+    color: var(--secondary-font-clr);
+    height: 100vh;
     width: 17em;
 }
 
 .sidebar__content{
-    margin: 2em 1em;
+    padding: 2em 0;
 }
 
 .sidebar__content .logo{
     display: flex;
     align-items: center;
+    margin-left: 2em;
 }
 
 .logo h2{
     margin-left: 0.5em;
     font-family: 'Palette Mosaic', cursive;
     font-size: 2em;
-    color: rgb(14, 173, 236);
+    color: var(--primary-brand-clr);
 }
 
 .tabs{
@@ -31,8 +32,19 @@
     align-items: center;
     border-left-color: transparent;
     padding-left: 1em;
+    width: 100%;
+    margin: -7px 0;
+    height: 3em;
+    color: var(--secondary-font-clr);
 }
 
 .tabs .tab.active{
     border-left: 3px solid var(--primary-brand-clr);
+    color: var(--primary-brand-clr);
+}
+
+@media only screen and (max-width: 900px) {
+    .sidebar{
+        background-color: var(--secondary-bg-clr);
+    }
 }

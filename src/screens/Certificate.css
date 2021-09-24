@@ -1,0 +1,26 @@
+.certificate-screen{
+    height: 100%;
+    overflow-y: scroll;
+    width: 100%;
+}
+
+.certificate-screen__content{
+    padding: 1em 2em 1em 2em;
+}
+
+.certificate-screen__content .top{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top .left-col{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.certificate-screen__content .table{
+    margin-top: 3em;
+    margin-bottom: 5em;
+}

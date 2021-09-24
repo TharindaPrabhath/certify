@@ -1,0 +1,139 @@
+.user-profile-dialog{
+    width: 25em;
+    height: 30em;
+}
+
+.user-profile-dialog__body{
+    padding: 0.5em;
+}
+
+
+/* Info tab styles */
+.user-profile-dialog__info{
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+}
+
+.user-profile-dialog__info .info__badges-container{
+    padding: 1em;
+}
+
+.user-profile-dialog__info .info__badges-container .badges{
+    margin-top: 1em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+}
+
+.user-profile-dialog__body .info__info-container{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+
+    padding: 0 1em;
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.set-1{
+    display: flex;
+    gap: 2em;
+}
+
+.set-2{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.set__left-col, .set__right-col{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.user-profile-dialog .key{
+    color: var(--dimmed-clr);
+}
+
+.user-profile-dialog .value{
+    color: black;
+}
+
+.descriptive-section .descriptive-section__value{
+    margin-top: 1em;
+    border: 3px solid #5f5d5d;
+    border-radius: 5px;
+
+    padding: 0.5em;
+}
+
+/* Certificates tab styles */
+.user-profile-dialog__certificates{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+
+/* Certificate card styles */
+.certificate-card{
+    background-color: #f5f5f5;
+    padding: 1em;
+    border-radius: 0.5em;
+    transition: all 300ms;
+}
+.certificate-card:hover{
+    transform: scale(1.01);
+    box-shadow: 1px 2px 5px #1b1a1a;
+}
+
+.certificate-card__content{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.certificate-card__content__row-1{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.certificate-card__content__row-1 .issued-date, .certificate-reason, .certificate-issued-by, .certificate-redirect-link{
+    font-size: 0.9em;
+}
+
+.certificate-card__content .certificate-reason{
+    text-align: justify;
+}
+
+.certificate-card__content__row-2{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+.certificate-card__content .row-2__sub-row{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.certificate-card__content .certificate-redirect-link{
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.certificate-card__content .certificate-redirect-link:hover{
+    color: var(--primary-brand-clr);
+}
+
+
+@media only screen and (min-width: 900px) {
+    .user-profile-dialog{
+        width: 35em;
+    }
+}

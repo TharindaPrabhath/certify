@@ -1,0 +1,65 @@
+.percentage-widget{
+    width: 100%;
+    max-width: 55em;
+
+    box-shadow: 1px 2px 10px #1b1a1a;
+}
+
+.percentage-widget__header{
+    border-radius: 1em 1em 0 0;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 1em;
+    box-sizing: border-box;
+
+    position: relative;
+
+    height: 8em;
+    
+}
+
+.percentage-widget__header .percentage{
+    font-weight: 500;
+    position: absolute;
+    left: 2.3em;
+    top: 2.6em;
+}
+
+.percentage-widget__header .title{
+}
+
+.percentage-widget__header .value span{
+}
+
+.pie-chart{
+    background-color:transparent;
+}
+
+.percentage-widget .right-image{
+    width: 8em;
+    opacity: 0.6;
+}
+
+.percentage-widget__body{
+    padding: 1em;
+
+    border-radius: 0 0 1em 1em;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+
+    height: fit-content;
+    max-height: 20em;
+}
+
+.members-container{
+    overflow-y: auto;
+}
+
+.members-list p{
+    margin-left: 1.5em;
+}
