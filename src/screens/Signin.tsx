@@ -1,7 +1,7 @@
-import { Button, Checkbox, TextField, Typography } from "@material-ui/core";
+import { Button, CircularProgress, TextField } from "@material-ui/core";
 import { useFormik } from "formik";
 import React, { useState } from "react";
-import { Link, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { useButtonStyles, useTextfieldStyles } from "../data/styles";
 
 import "./Signin.css";
@@ -12,24 +12,29 @@ import logo from "../assets/logo/logo.png";
 import useAuth from "../utils/useAuth";
 
 import * as yup from "yup";
-import colors from "../data/colors";
 import useTokenService from "../utils/useTokenService";
 import { bindActionCreators } from "redux";
 import { actionCreators } from "../redux";
 import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { ReducerType } from "../redux/store";
 
 const Signin = () => {
   const [success, setSuccess] = useState<boolean>(false);
   const buttonStyles = useButtonStyles();
   const { signin } = useAuth();
   const styles = useTextfieldStyles();
+  const dispatch = useDispatch();
+  const { setLoading } = bindActionCreators(actionCreators, dispatch);
+  const loading = useSelector(
+    (state: ReducerType) => state.loadingReducer.loading
+  );
 
   const userValidationSchema = yup.object().shape({
     username: yup.string().required("Username is required"),
     password: yup.string().required("Password is required"),
   });
   const { setAccessToken } = useTokenService();
-  const dispatch = useDispatch();
   const { setAdmin } = bindActionCreators(actionCreators, dispatch);
 
   const formik = useFormik({
@@ -40,7 +45,8 @@ const Signin = () => {
       //rememberMe: true,
     },
     validationSchema: userValidationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
+      setLoading(true);
       signin(values)
         .then((res) => {
           if (res.status === 200) {
@@ -52,7 +58,8 @@ const Signin = () => {
         .catch((err) => {
           setSuccess(false);
           console.error(err);
-        });
+        })
+        .finally(() => setLoading(false));
     },
   });
 
@@ -105,7 +112,7 @@ const Signin = () => {
                   InputProps={{ className: styles.input }}
                 />
 
-                <div className="special-actions">
+                {/* <div className="special-actions">
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <Checkbox color="primary" />
                     <Typography style={{ color: colors.secondaryFontClr }}>
@@ -118,9 +125,18 @@ const Signin = () => {
                       Forgot password?
                     </Typography>
                   </Link>
-                </div>
-                <Button className={buttonStyles.standardBtn} type="submit">
-                  Login
+                </div> */}
+                <Button
+                  className={buttonStyles.standardBtn}
+                  type="submit"
+                  disabled={loading}
+                  startIcon={
+                    loading ? (
+                      <CircularProgress size="1rem" color="secondary" />
+                    ) : null
+                  }
+                >
+                  {loading ? "Submitting" : "Login"}
                 </Button>
               </div>
             </form>

@@ -1,5 +1,6 @@
 import {
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -44,6 +45,12 @@ import {
   WhatsappShareButton,
 } from "react-share";
 import useBadge from "../utils/useBadge";
+import LoadingLinearProgress from "../components/LoadingLinearProgress";
+
+import { bindActionCreators } from "redux";
+import { actionCreators } from "../redux";
+import { useDispatch, useSelector } from "react-redux";
+import { ReducerType } from "../redux/store";
 
 const CertificateView = () => {
   const [certificate, setCertificate] = useState<CertificateDto>();
@@ -53,6 +60,11 @@ const CertificateView = () => {
   const buttonStyles = useButtonStyles();
   const { VerifiedBadge, StatusBadge } = useBadge();
   const SHARE_ICON_SIZE = 36;
+  const dispatch = useDispatch();
+  const { setLoading } = bindActionCreators(actionCreators, dispatch);
+  const loading = useSelector(
+    (state: ReducerType) => state.loadingReducer.loading
+  );
 
   useEffect(() => {
     const currentUrl = window.location.href;
@@ -63,9 +75,13 @@ const CertificateView = () => {
     );
     console.log(certificateIdFromUrl);
 
-    fetchCertificate(certificateIdFromUrl).then((res) => {
-      setCertificate(getCertificateDto(res.data));
-    });
+    setLoading(true);
+    fetchCertificate(certificateIdFromUrl)
+      .then((res) => {
+        setCertificate(getCertificateDto(res.data));
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
   }, []);
 
   const handleDownload = () => {
@@ -85,32 +101,43 @@ const CertificateView = () => {
 
   return (
     <div className="certificate-view">
-      <div className="certificate-view__content">
-        <div id="certificate" className="certificate-container">
-          <Certificate certificate={certificate} />
+      <LoadingLinearProgress />
+      {loading ? (
+        <div style={{ color: "black", textAlign: "center", marginTop: "10em" }}>
+          <CircularProgress />
+          <p>Loading. Moment Please...</p>
         </div>
-        <div className="actions-container">
-          <Button className={buttonStyles.standardBtn} onClick={handleDownload}>
-            <GetAppIcon />
-            Download
-          </Button>
-          <Button
-            variant="contained"
-            style={{ textTransform: "capitalize" }}
-            onClick={() => setShareDialogOpen(!shareDialogOpen)}
-          >
-            <ShareIcon />
-            Share
-          </Button>
-          <Button
-            style={{ textTransform: "capitalize" }}
-            variant="contained"
-            onClick={() => certificate && setDrawerOpen(!drawerOpen)}
-          >
-            More Info <NavigateNextIcon />
-          </Button>
+      ) : (
+        <div className="certificate-view__content">
+          <div id="certificate" className="certificate-container">
+            <Certificate certificate={certificate} />
+          </div>
+          <div className="actions-container">
+            <Button
+              className={buttonStyles.standardBtn}
+              onClick={handleDownload}
+            >
+              <GetAppIcon />
+              Download
+            </Button>
+            <Button
+              variant="contained"
+              style={{ textTransform: "capitalize" }}
+              onClick={() => setShareDialogOpen(!shareDialogOpen)}
+            >
+              <ShareIcon />
+              Share
+            </Button>
+            <Button
+              style={{ textTransform: "capitalize" }}
+              variant="contained"
+              onClick={() => certificate && setDrawerOpen(!drawerOpen)}
+            >
+              More Info <NavigateNextIcon />
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       <SwipeableDrawer
         open={drawerOpen}

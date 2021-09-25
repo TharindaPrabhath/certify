@@ -23,6 +23,10 @@ import colors from "../data/colors";
 import moment from "moment";
 import useLocalStorage from "../utils/useLocalStorage";
 import useBadge from "../utils/useBadge";
+import useSWR from "swr";
+import requests from "../data/requests";
+import axios from "../utils/axios";
+import useAxios from "../utils/axios";
 
 const getRow = (
   certificateId: string,
@@ -58,16 +62,24 @@ const CertificateTable = () => {
   const history = useHistory();
   const { getAdmin } = useLocalStorage();
   const { CertificateCategoryBadge } = useBadge();
+  const axios = useAxios();
 
-  useEffect(() => {
-    fetchCertificates()
-      .then((res) => {
-        setCertficates(toCertificateTableData(res.data));
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
+  const { data } = useSWR(requests.fetchCertificates, (url: string) =>
+    axios
+      .get(url)
+      .then((r) => toCertificateTableData(r.data))
+      .catch((err) => console.error(err))
+  );
+
+  // useEffect(() => {
+  //   fetchCertificates()
+  //     .then((res) => {
+  //       setCertficates(toCertificateTableData(res.data));
+  //     })
+  //     .catch((err) => {
+  //       console.error(err);
+  //     });
+  // }, []);
 
   type CertificateTableRow = {
     id: string;
@@ -235,7 +247,7 @@ const CertificateTable = () => {
       }}
     >
       <DataGrid
-        rows={certificates}
+        rows={data || []}
         columns={columns}
         pageSize={5}
         rowsPerPageOptions={[5]}
