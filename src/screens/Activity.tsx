@@ -7,6 +7,14 @@ import ActivityDto from "../types/models/ActivityDto";
 import { fetchActivities } from "../utils/requestHelper";
 import useLocalStorage from "../utils/useLocalStorage";
 
+import { bindActionCreators } from "redux";
+import { actionCreators } from "../redux";
+import { useDispatch } from "react-redux";
+
+import useSWR from "swr";
+import requests from "../data/requests";
+import useAxios from "../utils/axios";
+
 import "./Activity.css";
 
 export interface ActivityWrapper {
@@ -18,20 +26,36 @@ export interface ActivityWrapper {
 
 const Activity = () => {
   const { getAdmin } = useLocalStorage();
+  const dispatch = useDispatch();
+  const { setLoading } = bindActionCreators(actionCreators, dispatch);
+  const axios = useAxios();
 
-  const [activities, setActivities] = useState<ActivityWrapper>();
+  //const [activities, setActivities] = useState<ActivityWrapper>();
 
-  useEffect(() => {
-    if (getAdmin().id !== null) {
-      fetchActivities(parseInt(getAdmin().id!))
-        .then((res) => {
-          setActivities(res.data);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
-  }, []);
+  const { data: activities } = useSWR(requests.fetchActivities, (url: string) =>
+    axios
+      .get(url, {
+        params: {
+          admin_id: getAdmin().id,
+        },
+      })
+      .then((r) => r.data)
+      .catch((err) => console.error(err))
+  );
+
+  // useEffect(() => {
+  //   if (getAdmin().id !== null) {
+  //     setLoading(true);
+  //     fetchActivities(parseInt(getAdmin().id!))
+  //       .then((res) => {
+  //         setActivities(res.data);
+  //       })
+  //       .catch((err) => {
+  //         console.error(err);
+  //       })
+  //       .finally(() => setLoading(false));
+  //   }
+  // }, []);
 
   return (
     <div className="activity-screen">
