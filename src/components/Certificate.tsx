@@ -52,7 +52,9 @@ const Certificate = ({
           </h5>
           <h5 className="verification-web-site">
             Verify the authenticity of the certificate at:
-            <span> www.certify.com/certificate/verify</span>
+            <span>
+              {`  https://symetry-certify-frontend.herokuapp.com/certificate/verify`}
+            </span>
           </h5>
         </div>
       </div>
