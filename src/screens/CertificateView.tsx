@@ -99,6 +99,10 @@ const CertificateView = () => {
     });
   };
 
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+  };
+
   return (
     <div className="certificate-view">
       <LoadingLinearProgress />
@@ -158,6 +162,7 @@ const CertificateView = () => {
                   className="certificate-id-btn"
                   style={{ textTransform: "lowercase" }}
                   variant="contained"
+                  onClick={() => copyToClipboard(certificate?.id!)}
                 >
                   {certificate?.id}
                 </Button>
@@ -167,13 +172,27 @@ const CertificateView = () => {
             <div className="about-reciever">
               <h4>About reciever</h4>
               <div className="block-form-container">
-                <div className="block-form-container__left-col">
+                <div
+                  className="block-form-container__left-col"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "1.5em",
+                  }}
+                >
                   <p className="key">First Name</p>
                   <p className="key">Last Name</p>
                   <p className="key">Verification Status</p>
                   <p className="key">Member Status</p>
                 </div>
-                <div className="block-form-container__right-col">
+                <div
+                  className="block-form-container__right-col"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "1.5em",
+                  }}
+                >
                   <p className="value">{certificate?.user.fname}</p>
                   <p className="value">{certificate?.user.lname}</p>
                   <VerifiedBadge verified={certificate?.user.emailVerified!} />
@@ -185,11 +204,25 @@ const CertificateView = () => {
             <div className="about-certificate">
               <h4>About certificate</h4>
               <div className="block-form-container">
-                <div className="block-form-container__left-col">
+                <div
+                  className="block-form-container__left-col"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "1.5em",
+                  }}
+                >
                   <p className="key">Issued On</p>
                   <p className="key">Type</p>
                 </div>
-                <div className="block-form-container__right-col">
+                <div
+                  className="block-form-container__right-col"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "1.5em",
+                  }}
+                >
                   <p className="value">
                     {moment(certificate?.issuedDate, "YYYY-MM-DD").format(
                       "YYYY-MM-DD"
@@ -223,7 +256,11 @@ const CertificateView = () => {
           <div className="share">
             <div className="share__top">
               <TextField value={pageUrl} variant="outlined" />
-              <Button variant="contained" className="copy-link-btn">
+              <Button
+                variant="contained"
+                className="copy-link-btn"
+                onClick={() => copyToClipboard(pageUrl)}
+              >
                 Copy Link
               </Button>
             </div>
