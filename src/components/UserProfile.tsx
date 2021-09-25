@@ -7,6 +7,7 @@ import {
   Tabs,
   Tab,
   AppBar,
+  CircularProgress,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router";
@@ -25,21 +26,38 @@ interface UserProfileProps {
   id: number;
 }
 
+const Loading = () => {
+  return (
+    <div
+      style={{
+        marginLeft: "45%",
+        marginTop: "30%",
+      }}
+    >
+      <CircularProgress />
+      <p>Loading</p>
+    </div>
+  );
+};
+
 const UserProfile: React.FC<UserProfileProps> = ({ open, onClose, id }) => {
   const [user, setUser] = useState<UserDto>();
   const [certificates, setCertificates] = useState<CertificateDto[]>();
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const { VerifiedBadge, CertifiedBadge } = useBadge();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (open) {
+      setLoading(true);
       fetchUser(id)
         .then((res) => {
           setUser(res.data);
         })
         .catch((err) => {
           console.error(err);
-        });
+        })
+        .finally(() => setLoading(false));
 
       fetchCertificatesByUser(id)
         .then((res) => {
@@ -74,58 +92,61 @@ const UserProfile: React.FC<UserProfileProps> = ({ open, onClose, id }) => {
           </AppBar>
 
           <div className="user-profile-dialog__body">
-            {selectedTab === 0 && (
-              <div className="user-profile-dialog__info">
-                <section className="info__badges-container">
-                  <h5>Badges</h5>
-                  <div className="badges">
-                    <VerifiedBadge verified={user?.emailVerified!} />
-                    <CertifiedBadge certified={user?.certified!} />
-                  </div>
-                </section>
-
-                <section className="info__info-container">
-                  <div className="set-1">
-                    <div className="set__left-col">
-                      <p className="key">First Name</p>
-                      <p className="key">Last Name</p>
-                      <p className="key">Role</p>
-                      <p className="key">Birthday</p>
-                      <p className="key">Email</p>
-                      <p className="key">Phone</p>
+            {selectedTab === 0 &&
+              (!loading ? (
+                <div className="user-profile-dialog__info">
+                  <section className="info__badges-container">
+                    <h5>Badges</h5>
+                    <div className="badges">
+                      <VerifiedBadge verified={user?.emailVerified!} />
+                      <CertifiedBadge certified={user?.certified!} />
                     </div>
-                    <div className="set__right-col">
-                      <p className="value">{user?.fname}</p>
-                      <p className="value">{user?.lname}</p>
-                      <p className="value">{user?.role}</p>
-                      <p className="value">{user?.birthday}</p>
-                      <p className="value">{user?.email}</p>
-                      <p className="value">{user?.phone}</p>
+                  </section>
+
+                  <section className="info__info-container">
+                    <div className="set-1">
+                      <div className="set__left-col">
+                        <p className="key">First Name</p>
+                        <p className="key">Last Name</p>
+                        <p className="key">Role</p>
+                        <p className="key">Birthday</p>
+                        <p className="key">Email</p>
+                        <p className="key">Phone</p>
+                      </div>
+                      <div className="set__right-col">
+                        <p className="value">{user?.fname}</p>
+                        <p className="value">{user?.lname}</p>
+                        <p className="value">{user?.role}</p>
+                        <p className="value">{user?.birthday}</p>
+                        <p className="value">{user?.email}</p>
+                        <p className="value">{user?.phone}</p>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="set-2">
-                    {user?.address && (
-                      <div className="descriptive-section">
-                        <p className="key">Address</p>
-                        <p className="descriptive-section__value">
-                          {user?.address}
-                        </p>
-                      </div>
-                    )}
+                    <div className="set-2">
+                      {user?.address && (
+                        <div className="descriptive-section">
+                          <p className="key">Address</p>
+                          <p className="descriptive-section__value">
+                            {user?.address}
+                          </p>
+                        </div>
+                      )}
 
-                    {user?.description && (
-                      <div className="descriptive-section">
-                        <p className="key">Description</p>
-                        <p className="descriptive-section__value">
-                          {user?.description}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </section>
-              </div>
-            )}
+                      {user?.description && (
+                        <div className="descriptive-section">
+                          <p className="key">Description</p>
+                          <p className="descriptive-section__value">
+                            {user?.description}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                </div>
+              ) : (
+                <Loading />
+              ))}
             {selectedTab === 1 && (
               <div className="user-profile-dialog__certificates">
                 {certificates?.length !== 0 ? (

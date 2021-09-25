@@ -27,6 +27,9 @@ import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import UserProfile from "./UserProfile";
 import useLocalStorage from "../utils/useLocalStorage";
 import useBadge from "../utils/useBadge";
+import useSWR from "swr";
+import requests from "../data/requests";
+import useAxios from "../utils/axios";
 
 const getRow = (
   id: string,
@@ -57,7 +60,7 @@ const rows = [
 ];
 
 const UserTable = () => {
-  const [users, setUsers] = useState<UserDto[]>([]);
+  //const [users, setUsers] = useState<UserDto[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<number>();
   const [redirect, setRedirect] = useState<boolean>(false);
   const [openConfirmBox, setOpenConfirmBox] = useState<boolean>(false);
@@ -72,27 +75,35 @@ const UserTable = () => {
   const [openUserProfile, setOpenUserProfile] = useState<boolean>(false);
   const { getAdmin } = useLocalStorage();
   const { StatusBadge } = useBadge();
+  const axios = useAxios();
 
-  useEffect(() => {
-    fetchUsers()
-      .then((res) => {
-        setUsers(toUserDtos(res.data));
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
+  const { data: users } = useSWR(requests.fetchUsers, (url: string) =>
+    axios
+      .get(url)
+      .then((r) => toUserDtos(r.data))
+      .catch((err) => console.error(err))
+  );
+
+  // useEffect(() => {
+  //   fetchUsers()
+  //     .then((res) => {
+  //       setUsers(toUserDtos(res.data));
+  //     })
+  //     .catch((err) => {
+  //       console.error(err);
+  //     });
+  // }, []);
 
   const handleViewClick = (event: React.MouseEvent<unknown>, id: number) => {
     // set current user in redux store
-    setUser(users.find((u) => u.id === id)!);
+    setUser(users?.find((u) => u.id === id)!);
     setSelectedUserId(id);
     setOpenUserProfile(true);
   };
 
   const handleEditClick = (event: React.MouseEvent<unknown>, id: number) => {
     // set current user in redux store
-    setUser(users.find((u) => u.id === id)!);
+    setUser(users?.find((u) => u.id === id)!);
 
     setSelectedUserId(id);
     setRedirect(true);
@@ -110,7 +121,7 @@ const UserTable = () => {
         });
 
         // removing the item from the table
-        setUsers(users.filter((u) => u.id !== id));
+        //setUsers(users.filter((u) => u.id !== id));
 
         // if the deleted user is the current user in redux store. delete it
         if (currentUser?.id === id) removeUser();
@@ -225,7 +236,7 @@ const UserTable = () => {
       }}
     >
       <DataGrid
-        rows={users}
+        rows={users || []}
         columns={columns}
         pageSize={5}
         rowsPerPageOptions={[5]}
