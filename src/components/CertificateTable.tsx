@@ -207,7 +207,7 @@ const CertificateTable = () => {
     {
       field: "action",
       headerName: "Action",
-      width: 230,
+      width: 170,
       editable: false,
       renderCell: (params) => {
         return (
@@ -219,12 +219,12 @@ const CertificateTable = () => {
             >
               View
             </Button>
-            <Button
+            {/* <Button
               className={buttonStyles.editBtn}
-              //onClick={(e) => handleEditClick(e, params.row.id)}
+              onClick={(e) => handleEditClick(e, params.row.id)}
             >
               Edit
-            </Button>
+            </Button> */}
             <Button
               className={buttonStyles.deleteBtn}
               onClick={(e) => handleDeleteClick(e, params.row.id)}
