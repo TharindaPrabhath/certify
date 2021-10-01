@@ -74,11 +74,12 @@ const CertificateView = () => {
     const currentUrl = window.location.href;
     setPageUrl(currentUrl);
     const certificateIdFromUrl = currentUrl.replace(
-      "http://localhost:3000/certificate/view?id=",
+      "https://symetry-certify-frontend.herokuapp.com/certificate/view?id=",
       ""
     );
 
-    //https://symetry-certify-frontend.herokuapp.com/certificate/view?id=
+    // Production ->  https://symetry-certify-frontend.herokuapp.com/certificate/view?id=
+    // Dev ->         http://localhost:3000/certificate/view?id=
 
     setLoading(true);
     fetchCertificate(certificateIdFromUrl)
