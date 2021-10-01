@@ -1,5 +1,6 @@
 const login = "/auth/login"
 const validateToken = "/auth/validateToken"
+const refreshToken = "/auth/refresh-token"
 const validateCertificate = "/certificate/validate"
 const changePassword = "/admin/change-password"
 
@@ -26,7 +27,7 @@ const updateCertificate = "/certificate/update"
 const deleteUser = "/user/delete"
 const deleteCertificate = "/certificate/delete"
 
-const requests = {login, validateToken, validateCertificate, changePassword, fetchAdminByUsername , fetchAdmins, fetchUser, fetchUsers, fetchSuggestionUsers, fetchCertificate,
+const requests = {login, validateToken, refreshToken, validateCertificate, changePassword, fetchAdminByUsername , fetchAdmins, fetchUser, fetchUsers, fetchSuggestionUsers, fetchCertificate,
                 fetchCertificatesByUser, fetchCertificates, fetchAdminsAnalytics, fetchUsersAnalytics, fetchCertificatesAnalytics, fetchActivities, postNewUser, postNewCertificate, 
                 postNewThirdPartyCertificate, updateUser, updateCertificate, deleteUser, deleteCertificate }
     
