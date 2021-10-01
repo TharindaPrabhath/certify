@@ -22,13 +22,12 @@ import { SnackbarProvider } from "notistack";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AuthRoute from "./components/AuthRoute";
 import useLocalStorage from "./utils/useLocalStorage";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { ReducerType } from "./redux/store";
 import { fetchAdminByUsername } from "./utils/requestHelper";
 import Activity from "./screens/Activity";
-import { bindActionCreators } from "redux";
-import { actionCreators } from "../src/redux";
 import Settings from "./screens/Settings";
+import useTokenService from "./utils/useTokenService";
 
 const theme = createTheme({
   palette: {
@@ -42,12 +41,27 @@ const theme = createTheme({
 });
 
 function App() {
-  const { saveAdmin, getAdmin } = useLocalStorage();
+  const { saveAdmin } = useLocalStorage();
   const currentAdmin = useSelector(
     (state: ReducerType) => state.adminReducer.currentAdmin
   );
-  const dispatch = useDispatch();
-  const { setAdmin } = bindActionCreators(actionCreators, dispatch);
+  const { getRefreshTokenExpiresAt } = useTokenService();
+
+  useEffect(() => {
+    const refreshTokenExpiresAt = getRefreshTokenExpiresAt();
+    if (refreshTokenExpiresAt && refreshTokenExpiresAt !== undefined) {
+      // checking refersh token is expires or not
+      if (Date.now() > Date.parse(getRefreshTokenExpiresAt()!)) {
+        // refresh token has expired
+        // logging out the admin
+        localStorage.clear();
+      }
+    } else {
+      // no refresh token in the local storage. cannot trust the situation
+      // logging out the admin
+      localStorage.clear();
+    }
+  }, [getRefreshTokenExpiresAt]);
 
   useEffect(() => {
     fetchAdminByUsername(currentAdmin?.username!)
