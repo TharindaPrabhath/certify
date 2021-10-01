@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import {
   Button,
@@ -13,13 +13,12 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
 import { useButtonStyles } from "../data/styles";
 import { Redirect } from "react-router-dom";
-import UserDto from "../types/models/UserDto";
 
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actionCreators } from "../redux";
 import { toUserDtos } from "../utils/mapper";
-import { deleteUser, fetchUsers } from "../utils/requestHelper";
+import { deleteUser } from "../utils/requestHelper";
 import { useSnackbar } from "notistack";
 import { ReducerType } from "../redux/store";
 import colors from "../data/colors";
@@ -31,36 +30,40 @@ import useSWR from "swr";
 import requests from "../data/requests";
 import useAxios from "../utils/axios";
 
-const getRow = (
-  id: string,
-  fname: string,
-  lname: string,
-  email: string,
-  role: string,
-  birthday: string
-) => {
-  return { id, fname, lname, email, role, birthday };
-};
+// const getRow = (
+//   id: string,
+//   fname: string,
+//   lname: string,
+//   email: string,
+//   role: string,
+//   birthday: string
+// ) => {
+//   return { id, fname, lname, email, role, birthday };
+// };
 
-const rows = [
-  getRow("001", "Tharinda", "P", "tharindahp@gmail.com", "Uni", "2001.03.12"),
-  getRow("002", "Prabhath", "", "anurajeewa@gmail.com", "Uni", "2001.03.12"),
-  getRow("003", "Lasana", "sanketh", "lasana@gmail.com", "Uni", "2001.03.12"),
-  getRow(
-    "004",
-    "Lishitha",
-    "Alahakoon",
-    "lishitha@gmail.com",
-    "Uni",
-    "2001.03.12"
-  ),
-  getRow("005", "Nadun", "", "nadun@gmail.com", "Uni", "2001.03.12"),
-  getRow("006", "Chamath", "Roo", "chamath@gmail.com", "Uni", "2001.03.12"),
-  getRow("007", "Hasitha", "G", "hasitha@gmail.com", "Uni", "2001.03.12"),
-];
+// const rows = [
+//   getRow("001", "Tharinda", "P", "tharindahp@gmail.com", "Uni", "2001.03.12"),
+//   getRow("002", "Prabhath", "", "anurajeewa@gmail.com", "Uni", "2001.03.12"),
+//   getRow("003", "Lasana", "sanketh", "lasana@gmail.com", "Uni", "2001.03.12"),
+//   getRow(
+//     "004",
+//     "Lishitha",
+//     "Alahakoon",
+//     "lishitha@gmail.com",
+//     "Uni",
+//     "2001.03.12"
+//   ),
+//   getRow("005", "Nadun", "", "nadun@gmail.com", "Uni", "2001.03.12"),
+//   getRow("006", "Chamath", "Roo", "chamath@gmail.com", "Uni", "2001.03.12"),
+//   getRow("007", "Hasitha", "G", "hasitha@gmail.com", "Uni", "2001.03.12"),
+// ];
 
 const UserTable = () => {
-  //const [users, setUsers] = useState<UserDto[]>([]);
+  // pagination & sorting
+  const [pageNo, setPageNo] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
+  const [sortBy, setSortBy] = useState("uid");
+
   const [selectedUserId, setSelectedUserId] = useState<number>();
   const [redirect, setRedirect] = useState<boolean>(false);
   const [openConfirmBox, setOpenConfirmBox] = useState<boolean>(false);
@@ -77,22 +80,14 @@ const UserTable = () => {
   const { StatusBadge } = useBadge();
   const axios = useAxios();
 
-  const { data: users } = useSWR(requests.fetchUsers, (url: string) =>
-    axios
-      .get(url)
-      .then((r) => toUserDtos(r.data))
-      .catch((err) => console.error(err))
+  const { data: users } = useSWR(
+    `${requests.fetchUsers}?page_no=${pageNo}&page_size=${pageSize}&sort_by=${sortBy}`,
+    (url: string) =>
+      axios
+        .get(url)
+        .then((r) => toUserDtos(r.data))
+        .catch((err) => console.error(err))
   );
-
-  // useEffect(() => {
-  //   fetchUsers()
-  //     .then((res) => {
-  //       setUsers(toUserDtos(res.data));
-  //     })
-  //     .catch((err) => {
-  //       console.error(err);
-  //     });
-  // }, []);
 
   const handleViewClick = (event: React.MouseEvent<unknown>, id: number) => {
     // set current user in redux store
@@ -238,8 +233,13 @@ const UserTable = () => {
       <DataGrid
         rows={users || []}
         columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        rowCount={100}
+        rowsPerPageOptions={[5, 10]}
+        paginationMode="server"
+        pagination
+        pageSize={pageSize}
+        onPageChange={(n) => setPageNo(n)}
+        onPageSizeChange={(s) => setPageSize(s)}
         checkboxSelection
         disableSelectionOnClick
         style={{
