@@ -34,7 +34,12 @@ const Signin = () => {
     username: yup.string().required("Username is required"),
     password: yup.string().required("Password is required"),
   });
-  const { setAccessToken } = useTokenService();
+  const {
+    setAccessToken,
+    setRefreshToken,
+    setAccessTokenExpiresAt,
+    setRefreshTokenExpiresAt,
+  } = useTokenService();
   const { setAdmin } = bindActionCreators(actionCreators, dispatch);
 
   const formik = useFormik({
@@ -51,6 +56,9 @@ const Signin = () => {
         .then((res) => {
           if (res.status === 200) {
             setAccessToken(res.data.accessToken);
+            setRefreshToken(res.data.refreshToken);
+            setAccessTokenExpiresAt(res.data.accessTokenExpiresAt);
+            setRefreshTokenExpiresAt(res.data.refreshTokenExpiresAt);
             setAdmin({ username: values.username });
             setSuccess(true);
           } else setSuccess(false);

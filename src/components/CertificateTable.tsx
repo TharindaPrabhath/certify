@@ -6,13 +6,12 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useButtonStyles } from "../data/styles";
 import CertificateDto from "../types/models/CertificateDto";
-import { CertificateTableProp } from "../types/TableProp";
 import { useSnackbar } from "notistack";
-import { deleteCertificate, fetchCertificates } from "../utils/requestHelper";
+import { deleteCertificate } from "../utils/requestHelper";
 import { useDispatch, useSelector } from "react-redux";
 import { bindActionCreators } from "redux";
 import { actionCreators } from "../redux";
@@ -25,18 +24,17 @@ import useLocalStorage from "../utils/useLocalStorage";
 import useBadge from "../utils/useBadge";
 import useSWR from "swr";
 import requests from "../data/requests";
-import axios from "../utils/axios";
 import useAxios from "../utils/axios";
 
-const getRow = (
-  certificateId: string,
-  recievedBy: string,
-  issuedBy: string,
-  type: string,
-  issuedDate: string
-): CertificateTableProp => {
-  return { certificateId, recievedBy, issuedBy, type, issuedDate };
-};
+// const getRow = (
+//   certificateId: string,
+//   recievedBy: string,
+//   issuedBy: string,
+//   type: string,
+//   issuedDate: string
+// ): CertificateTableProp => {
+//   return { certificateId, recievedBy, issuedBy, type, issuedDate };
+// };
 
 // const rows: CertificateTableProp[] = [
 //   getRow("001", "Tharinda P", "Lasana", "Participation", "2001.03.12"),
@@ -49,10 +47,15 @@ const getRow = (
 // ];
 
 const CertificateTable = () => {
+  // pagination & sorting
+  const [pageNo, setPageNo] = useState(0);
+  const [pageSize, setPageSize] = useState(5);
+  const [sortBy, setSortBy] = useState("id");
+
   const buttonStyles = useButtonStyles();
   const [openConfirmBox, setOpenConfirmBox] = useState<boolean>(false);
   const [confirmBoxAgree, setConfirmBoxAgree] = useState<boolean>(false);
-  const [certificates, setCertficates] = useState<CertificateTableRow[]>([]);
+  //const [certificates, setCertficates] = useState<CertificateTableRow[]>([]);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
   const { removeCertificate } = bindActionCreators(actionCreators, dispatch);
@@ -64,22 +67,14 @@ const CertificateTable = () => {
   const { CertificateCategoryBadge } = useBadge();
   const axios = useAxios();
 
-  const { data } = useSWR(requests.fetchCertificates, (url: string) =>
-    axios
-      .get(url)
-      .then((r) => toCertificateTableData(r.data))
-      .catch((err) => console.error(err))
+  const { data: certificates } = useSWR(
+    `${requests.fetchCertificates}?page_no=${pageNo}&page_size=${pageSize}&sort_by=${sortBy}`,
+    (url: string) =>
+      axios
+        .get(url)
+        .then((r) => toCertificateTableData(r.data))
+        .catch((err) => console.error(err))
   );
-
-  // useEffect(() => {
-  //   fetchCertificates()
-  //     .then((res) => {
-  //       setCertficates(toCertificateTableData(res.data));
-  //     })
-  //     .catch((err) => {
-  //       console.error(err);
-  //     });
-  // }, []);
 
   type CertificateTableRow = {
     id: string;
@@ -134,7 +129,7 @@ const CertificateTable = () => {
           );
 
           // removing the item from the table
-          setCertficates(certificates.filter((c) => c.id !== certificate.id));
+          //setCertficates(certificates.filter((c) => c.id !== certificate.id));
 
           // if the deleted certificate is the current certificate in redux store. delete it
           if (currentCertificate?.id === certificate.id) removeCertificate();
@@ -207,7 +202,7 @@ const CertificateTable = () => {
     {
       field: "action",
       headerName: "Action",
-      width: 230,
+      width: 170,
       editable: false,
       renderCell: (params) => {
         return (
@@ -219,12 +214,12 @@ const CertificateTable = () => {
             >
               View
             </Button>
-            <Button
+            {/* <Button
               className={buttonStyles.editBtn}
-              //onClick={(e) => handleEditClick(e, params.row.id)}
+              onClick={(e) => handleEditClick(e, params.row.id)}
             >
               Edit
-            </Button>
+            </Button> */}
             <Button
               className={buttonStyles.deleteBtn}
               onClick={(e) => handleDeleteClick(e, params.row.id)}
@@ -247,10 +242,15 @@ const CertificateTable = () => {
       }}
     >
       <DataGrid
-        rows={data || []}
+        rows={certificates || []}
         columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
+        rowCount={100}
+        rowsPerPageOptions={[5, 10]}
+        paginationMode="server"
+        pagination
+        pageSize={pageSize}
+        onPageChange={(n) => setPageNo(n)}
+        onPageSizeChange={(s) => setPageSize(s)}
         checkboxSelection
         disableSelectionOnClick
         style={{

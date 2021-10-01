@@ -37,8 +37,8 @@ const CertificateVerification = () => {
         }
       })
       .catch((err) => {
-        setInvalidCertificate(true);
         setVerified(false);
+        setInvalidCertificate(true);
         console.error(err);
       })
       .finally(() => setLoading(false));
