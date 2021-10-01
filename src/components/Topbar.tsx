@@ -17,36 +17,18 @@ import {
 } from "@material-ui/core";
 import { useState } from "react";
 import Sidebar from "./Sidebar";
-import { useDispatch, useSelector } from "react-redux";
-import { bindActionCreators } from "redux";
-import { actionCreators } from "../redux";
-import { ReducerType } from "../redux/store";
 import colors from "../data/colors";
 import { Redirect } from "react-router";
-import NotificationsIcon from "@material-ui/icons/Notifications";
-import SearchIcon from "@material-ui/icons/Search";
-import Notification from "./Notification";
 import LoadingLinearProgress from "./LoadingLinearProgress";
 
 const Topbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [avatarMenuOpen, setAvatarMenuOpen] = useState<boolean>(false);
-  const [notificationOpen, setNotificationOpen] = useState<boolean>(false);
   const [logout, setLogout] = useState<boolean>(false);
-  const notificationBtnRef = React.useRef<HTMLButtonElement>(null);
   const avatarBtnRef = React.useRef<HTMLButtonElement>(null);
 
   const ICON_SIZE = 24;
   const ICON_INACTIVE_COLOR = "#f5f5f5";
-
-  const dispatch = useDispatch();
-  const { setAdmin, removeAdmin } = bindActionCreators(
-    actionCreators,
-    dispatch
-  );
-  const currentAdmin = useSelector(
-    (state: ReducerType) => state.adminReducer.currentAdmin
-  );
 
   const toggleSidebar = (open: boolean) => {
     setSidebarOpen(open);
