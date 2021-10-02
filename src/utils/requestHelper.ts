@@ -65,7 +65,7 @@ export async function validateCertificate(id: string) {
 }
 
 export function fetchCertificate(id: string){
-    return axiosInstance().get(requests.fetchCertificate, {params: {
+    return axios.get(requests.fetchCertificate, {params: {
         id: id
     }})
 }
