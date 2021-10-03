@@ -40,7 +40,7 @@ import CertifyCheckbox from "../components/core/CertifyCheckbox";
 import { Autocomplete } from "@material-ui/lab";
 import useLocalStorage from "../utils/useLocalStorage";
 
-const sleep = (time: number) => new Promise((acc) => setTimeout(acc, time));
+//const sleep = (time: number) => new Promise((acc) => setTimeout(acc, time));
 
 const NewCertificate = () => {
   const [memberCertificate, setMemberCertificate] = useState(true);
@@ -53,7 +53,6 @@ const NewCertificate = () => {
   //  based on auto complete trash
   const [reciever, setReciever] = useState("");
   const [recieverId, setRecieverId] = useState(0);
-  const [value, setValue] = useState<string>("");
   const [inputValue, setInputValue] = useState("");
   //--------------------------------------------------
 
@@ -346,7 +345,9 @@ const NewCertificate = () => {
                       }}
                       options={suggestions}
                       getOptionLabel={(option) =>
-                        option.fname + " " + option.lname
+                        option.fname === undefined && option.lname === undefined
+                          ? ""
+                          : option.fname + " " + option.lname
                       }
                       style={{ width: "100%" }}
                       renderInput={(params) => (

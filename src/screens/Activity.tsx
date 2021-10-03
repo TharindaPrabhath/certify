@@ -1,15 +1,9 @@
 import { Breadcrumbs, Typography } from "@material-ui/core";
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import ActivityTimeline from "../components/ActivityTimeline";
 import colors from "../data/colors";
 import ActivityDto from "../types/models/ActivityDto";
-import { fetchActivities } from "../utils/requestHelper";
 import useLocalStorage from "../utils/useLocalStorage";
-
-import { bindActionCreators } from "redux";
-import { actionCreators } from "../redux";
-import { useDispatch } from "react-redux";
 
 import useSWR from "swr";
 import requests from "../data/requests";
@@ -26,11 +20,7 @@ export interface ActivityWrapper {
 
 const Activity = () => {
   const { getAdmin } = useLocalStorage();
-  const dispatch = useDispatch();
-  const { setLoading } = bindActionCreators(actionCreators, dispatch);
   const axios = useAxios();
-
-  //const [activities, setActivities] = useState<ActivityWrapper>();
 
   const { data: activities } = useSWR(requests.fetchActivities, (url: string) =>
     axios
@@ -42,20 +32,6 @@ const Activity = () => {
       .then((r) => r.data)
       .catch((err) => console.error(err))
   );
-
-  // useEffect(() => {
-  //   if (getAdmin().id !== null) {
-  //     setLoading(true);
-  //     fetchActivities(parseInt(getAdmin().id!))
-  //       .then((res) => {
-  //         setActivities(res.data);
-  //       })
-  //       .catch((err) => {
-  //         console.error(err);
-  //       })
-  //       .finally(() => setLoading(false));
-  //   }
-  // }, []);
 
   return (
     <div className="activity-screen">

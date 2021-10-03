@@ -13,14 +13,10 @@ import React, { useEffect, useState } from "react";
 
 import "./CertificateView.css";
 
-import GetAppIcon from "@material-ui/icons/GetApp";
-import { useButtonStyles } from "../data/styles";
 import { fetchCertificate } from "../utils/requestHelper";
 import CertificateDto from "../types/models/CertificateDto";
 import { getCertificateDto } from "../utils/mapper";
 
-import { jsPDF } from "jspdf";
-import html2canvas from "html2canvas";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import ShareIcon from "@material-ui/icons/Share";
 import CloseIcon from "@material-ui/icons/Close";
@@ -60,7 +56,6 @@ const CertificateView = () => {
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [shareDialogOpen, setShareDialogOpen] = useState<boolean>(false);
   const [pageUrl, setPageUrl] = useState<string>("");
-  const buttonStyles = useButtonStyles();
   const { VerifiedBadge, StatusBadge } = useBadge();
   const SHARE_ICON_SIZE = 36;
   const dispatch = useDispatch();
@@ -85,7 +80,6 @@ const CertificateView = () => {
     fetchCertificate(certificateIdFromUrl)
       .then((res) => {
         const certificate = getCertificateDto(res.data);
-        console.log(certificate);
         setCertificate(certificate);
         generatePdf(certificate);
       })
@@ -137,20 +131,20 @@ const CertificateView = () => {
     setPdfCertificateUri(uri);
   };
 
-  const handleDownload = () => {
-    const input = document.getElementById("certificate");
-    html2canvas(input!).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF({
-        orientation: "p",
-        compress: false,
-        unit: "em",
-        format: "a4",
-      });
-      pdf.addImage(imgData, "JPEG", 0, 0, 49.5, 35);
-      pdf.save("certify certificate.pdf");
-    });
-  };
+  // const handleDownload = () => {
+  //   const input = document.getElementById("certificate");
+  //   html2canvas(input!).then((canvas) => {
+  //     const imgData = canvas.toDataURL("image/png");
+  //     const pdf = new jsPDF({
+  //       orientation: "p",
+  //       compress: false,
+  //       unit: "em",
+  //       format: "a4",
+  //     });
+  //     pdf.addImage(imgData, "JPEG", 0, 0, 49.5, 35);
+  //     pdf.save("certify certificate.pdf");
+  //   });
+  // };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -178,13 +172,13 @@ const CertificateView = () => {
             )}
           </div>
           <div className="actions-container">
-            <Button
+            {/* <Button
               className={buttonStyles.standardBtn}
               onClick={handleDownload}
             >
               <GetAppIcon />
               Download
-            </Button>
+            </Button> */}
             <Button
               variant="contained"
               style={{ textTransform: "capitalize" }}

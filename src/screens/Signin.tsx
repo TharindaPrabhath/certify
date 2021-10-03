@@ -61,10 +61,20 @@ const Signin = () => {
             setRefreshTokenExpiresAt(res.data.refreshTokenExpiresAt);
             setAdmin({ username: values.username });
             setSuccess(true);
-          } else setSuccess(false);
+          } else {
+            setSuccess(false);
+            formik.setErrors({
+              username: "Invalid username or password",
+              password: "Invalid username or password",
+            });
+          }
         })
         .catch((err) => {
           setSuccess(false);
+          formik.setErrors({
+            username: "Invalid username or password",
+            password: "Invalid username or password",
+          });
           console.error(err);
         })
         .finally(() => setLoading(false));
