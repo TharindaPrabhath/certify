@@ -11,7 +11,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ ...rest }) => {
 
   if (isAdminLoggedIn() && rest.path !== "/signin") return <Route {...rest} />;
   return <Redirect to="/signin" />;
-  //return <Route {...rest} />;
 };
 
 export default ProtectedRoute;
