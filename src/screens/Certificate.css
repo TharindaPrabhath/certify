@@ -20,7 +20,7 @@
     gap: 1em;
 }
 
-.top .right-col__new-certificate-btn{
+.top .right-col__new-certificate-btn-group{
     display: none;
 }
 
@@ -34,7 +34,8 @@
         display: none;
     }
 
-    .top .right-col__new-certificate-btn{
-        display: initial;
+    .top .right-col__new-certificate-btn-group{
+        display: flex;
+        gap: 1em;
     }
 }

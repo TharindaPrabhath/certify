@@ -85,7 +85,9 @@ const Certificate = () => {
                             <Link to="certificate/new">New Certificate</Link>
                           </MenuItem>
                           <MenuItem button>
-                            <Link to="certificate/new">Certificate Bulk</Link>
+                            <Link to="certificate/new-certificate-bulk">
+                              Certificate Bulk
+                            </Link>
                           </MenuItem>
                         </MenuList>
                       </ClickAwayListener>
@@ -94,15 +96,20 @@ const Certificate = () => {
                 )}
               </Popper>
             </div>
-            <Link
-              to="certificate/new"
-              className="right-col__new-certificate-btn"
-            >
-              <Button className={buttonStyles.standardBtn}>
-                <AddIcon />
-                New Certificate
-              </Button>
-            </Link>
+            <div className="right-col__new-certificate-btn-group">
+              <Link to="certificate/new-certificate-bulk">
+                <Button className={buttonStyles.standardBtn}>
+                  <AddIcon />
+                  Certificate Bulk
+                </Button>
+              </Link>
+              <Link to="certificate/new">
+                <Button className={buttonStyles.standardBtn}>
+                  <AddIcon />
+                  New Certificate
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
 
