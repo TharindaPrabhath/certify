@@ -224,7 +224,7 @@ const UserTable = () => {
   return (
     <div
       style={{
-        height: 400,
+        height: "100%",
         width: "100%",
         backgroundColor: colors.secondaryBgClr,
         borderRadius: "1em",
@@ -233,15 +233,16 @@ const UserTable = () => {
       <DataGrid
         rows={users || []}
         columns={columns}
-        rowCount={100}
-        rowsPerPageOptions={[5, 10]}
+        rowCount={10000}
+        rowsPerPageOptions={[5, 10, 50, 100]}
         paginationMode="server"
         pagination
-        pageSize={pageSize}
+        //pageSize={pageSize}
         onPageChange={(n) => setPageNo(n)}
         onPageSizeChange={(s) => setPageSize(s)}
         checkboxSelection
         disableSelectionOnClick
+        autoHeight
         style={{
           color: colors.secondaryFontClr,
           borderColor: "transparent",
