@@ -7,12 +7,12 @@ import {
   Typography,
 } from "@material-ui/core";
 import { Field, Form, Formik } from "formik";
-import React, { createRef, useState } from "react";
+import React, { createRef, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import CertifyTextField from "../components/core/CertifyTextField";
 import colors from "../data/colors";
 import { useButtonStyles } from "../data/styles";
-import { boolean, date, object, string } from "yup";
+import { date, object, string } from "yup";
 
 import "./NewCertificateBulk.css";
 import CertifyDatePicker from "../components/core/CertifyDatePicker";
@@ -22,6 +22,9 @@ import { ReducerType } from "../redux/store";
 import XLSX from "xlsx";
 import { CloseOutlined } from "@material-ui/icons";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import useLocalStorage from "../utils/useLocalStorage";
+import { addCertificateBulk, fetchEvents } from "../utils/requestHelper";
+import { setLoading } from "../redux/actions/actions";
 
 const validationSchema = object().shape({
   event: object({
@@ -30,7 +33,6 @@ const validationSchema = object().shape({
     imageUrl: string().optional(),
     startDate: date().optional(),
     endDate: date().optional(),
-    isNewEvent: boolean().required("Required"),
   }),
   certificate: object({
     type: string().required("Required"),
@@ -55,7 +57,15 @@ const NewCertificateBulk = () => {
     invalidType: boolean;
   }>();
   const [tableData, setTableData] = useState<TableRow[]>([]);
+  const [events, setEvents] = useState<any[]>([]);
   const [newEvent, setNewEvent] = useState(false);
+  const { getAdmin } = useLocalStorage();
+
+  useEffect(() => {
+    fetchEvents()
+      .then((res) => setEvents(res.data))
+      .catch((e) => console.error(e));
+  }, []);
 
   const tableColumns: GridColDef[] = [
     {
@@ -65,13 +75,13 @@ const NewCertificateBulk = () => {
       editable: false,
     },
     {
-      field: "firstName",
+      field: "fname",
       headerName: "First Name",
       width: 170,
       editable: false,
     },
     {
-      field: "lastName",
+      field: "lname",
       headerName: "Last Name",
       width: 170,
       editable: false,
@@ -86,8 +96,8 @@ const NewCertificateBulk = () => {
 
   type TableRow = {
     id: number;
-    firstName: string;
-    lastName: string;
+    fname: string;
+    lname: string;
     email: string;
   };
 
@@ -96,8 +106,8 @@ const NewCertificateBulk = () => {
     for (var i = 0; i < data.length; i++) {
       out.push({
         id: i + 1,
-        firstName: data[i].firstName,
-        lastName: data[i].lastName,
+        fname: data[i].firstName,
+        lname: data[i].lastName,
         email: data[i].email,
       });
     }
@@ -111,7 +121,6 @@ const NewCertificateBulk = () => {
       imageUrl: "",
       startDate: "",
       endDate: "",
-      isNewEvent: newEvent,
     },
     certificate: {
       type: "",
@@ -121,7 +130,23 @@ const NewCertificateBulk = () => {
   };
 
   const submit = (values: typeof initialValues) => {
-    console.log(values);
+    setLoading(true);
+    const out = {
+      ...values,
+      isNewEvent: newEvent,
+      receivers: tableData,
+      admin: {
+        id: parseInt(getAdmin().id!),
+      },
+    };
+    console.log(out);
+    addCertificateBulk(out)
+      .then((res) => {
+        console.log(res);
+        setLoading(false);
+      })
+      .catch((e) => console.error(e))
+      .finally(() => setLoading(false));
   };
 
   const handleFileImport = (e: any) => {
@@ -257,146 +282,153 @@ const NewCertificateBulk = () => {
             </div>
           </div>
 
-          {importedFile !== null && importedFile !== undefined && (
-            <div className="new-certificate-bulk-group">
-              <div className="new-certificate-bulk-group__left-col">
-                <div className="content__section">
-                  <div className="section__content">
-                    <h3 className="section__content__topic">Imported Data</h3>
-                    <p>Here is imported data from the file</p>
-                    <DataGrid
-                      rows={tableData}
-                      columns={tableColumns}
-                      //rowCount={100}
-                      //rowsPerPageOptions={[5, 10]}
-                      //pageSize={10}
-                      checkboxSelection
-                      disableSelectionOnClick
-                      autoHeight
-                      style={{
-                        color: colors.secondaryFontClr,
-                        borderColor: "transparent",
-                        borderRadius: "1em",
-                        padding: "0.5em",
-                      }}
-                    />
+          {importedFile !== null &&
+            importedFile !== undefined &&
+            !importedFile.invalidType && (
+              <div className="new-certificate-bulk-group">
+                <div className="new-certificate-bulk-group__left-col">
+                  <div className="content__section">
+                    <div className="section__content">
+                      <h3 className="section__content__topic">Imported Data</h3>
+                      <p>Here is imported data from the file</p>
+                      <DataGrid
+                        rows={tableData}
+                        columns={tableColumns}
+                        //rowCount={100}
+                        //rowsPerPageOptions={[5, 10]}
+                        //pageSize={10}
+                        checkboxSelection
+                        disableSelectionOnClick
+                        autoHeight
+                        style={{
+                          color: colors.secondaryFontClr,
+                          borderColor: "transparent",
+                          borderRadius: "1em",
+                          padding: "0.5em",
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
+
+                <Formik
+                  validationSchema={validationSchema}
+                  initialValues={initialValues}
+                  onSubmit={submit}
+                >
+                  <Form>
+                    <div className="new-certificate-bulk-group__right-col">
+                      <div className="content__section">
+                        <div className="section__content">
+                          <h3 className="section__content__topic">Event</h3>
+                          <p>Enter the details about this event</p>
+                          {newEvent ? (
+                            <>
+                              <Field
+                                label="Name"
+                                name="event.name"
+                                component={CertifyTextField}
+                                required
+                              ></Field>
+                              <Field
+                                label="Thumbnail URL"
+                                name="event.imageUrl"
+                                component={CertifyTextField}
+                              ></Field>
+                              <Field
+                                label="Description"
+                                name="event.description"
+                                component={CertifyTextField}
+                                textArea={true}
+                              ></Field>
+                              <Field
+                                label="Start Date"
+                                name="event.startDate"
+                                component={CertifyDatePicker}
+                              ></Field>
+                              <Field
+                                label="End Date"
+                                name="event.endDate"
+                                component={CertifyDatePicker}
+                              ></Field>
+                              <h4 style={{ textAlign: "center" }}>or</h4>
+                              <Button
+                                className={buttonStyles.standardBtn}
+                                onClick={() => setNewEvent(false)}
+                              >
+                                Select an existing event
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Field
+                                label="Select Event"
+                                name="event.name"
+                                component={CertifySelect}
+                                options={events.map((e) => e.name)}
+                                required
+                              ></Field>
+                              <h4 style={{ textAlign: "center" }}>or</h4>
+                              <Button
+                                className={buttonStyles.standardBtn}
+                                onClick={() => setNewEvent(true)}
+                              >
+                                Create a new Event
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="content__section">
+                        <div className="section__content">
+                          <h3 className="section__content__topic">
+                            Certificate
+                          </h3>
+                          <p>Enter the details about the certiicate</p>
+                          <Field
+                            label="Type"
+                            name="certificate.type"
+                            component={CertifySelect}
+                            options={certificateTypes}
+                            required
+                          ></Field>
+                          <Field
+                            label="Reason"
+                            name="certificate.reason"
+                            component={CertifyTextField}
+                            textArea={true}
+                            required
+                          ></Field>
+                          <Field
+                            label="Remarks"
+                            name="certificate.remarks"
+                            component={CertifyTextField}
+                            textArea={true}
+                            required
+                          ></Field>
+                          <Button
+                            className={buttonStyles.standardBtn}
+                            type="submit"
+                            disabled={loading}
+                            startIcon={
+                              loading ? (
+                                <CircularProgress
+                                  size="1rem"
+                                  color="secondary"
+                                />
+                              ) : null
+                            }
+                          >
+                            {loading ? "Submitting" : "Submit"}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </Form>
+                </Formik>
               </div>
-
-              <Formik
-                validationSchema={validationSchema}
-                initialValues={initialValues}
-                onSubmit={submit}
-              >
-                <Form>
-                  <div className="new-certificate-bulk-group__right-col">
-                    <div className="content__section">
-                      <div className="section__content">
-                        <h3 className="section__content__topic">Event</h3>
-                        <p>Enter the details about this event</p>
-                        {newEvent ? (
-                          <>
-                            <Field
-                              label="Name"
-                              name="event.name"
-                              component={CertifyTextField}
-                              required
-                            ></Field>
-                            <Field
-                              label="Thumbnail URL"
-                              name="event.imageUrl"
-                              component={CertifyTextField}
-                            ></Field>
-                            <Field
-                              label="Description"
-                              name="event.description"
-                              component={CertifyTextField}
-                              textArea={true}
-                            ></Field>
-                            <Field
-                              label="Start Date"
-                              name="event.startDate"
-                              component={CertifyDatePicker}
-                            ></Field>
-                            <Field
-                              label="End Date"
-                              name="event.endDate"
-                              component={CertifyDatePicker}
-                            ></Field>
-                            <h4 style={{ textAlign: "center" }}>or</h4>
-                            <Button
-                              className={buttonStyles.standardBtn}
-                              onClick={() => setNewEvent(false)}
-                            >
-                              Select an existing event
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            <Field
-                              label="Select Event"
-                              name="event.name"
-                              component={CertifySelect}
-                              options={certificateTypes}
-                              required
-                            ></Field>
-                            <h4 style={{ textAlign: "center" }}>or</h4>
-                            <Button
-                              className={buttonStyles.standardBtn}
-                              onClick={() => setNewEvent(true)}
-                            >
-                              Create a new Event
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="content__section">
-                      <div className="section__content">
-                        <h3 className="section__content__topic">Certificate</h3>
-                        <p>Enter the details about the certiicate</p>
-                        <Field
-                          label="Type"
-                          name="certificate.type"
-                          component={CertifySelect}
-                          options={certificateTypes}
-                          required
-                        ></Field>
-                        <Field
-                          label="Reason"
-                          name="certificate.reason"
-                          component={CertifyTextField}
-                          textArea={true}
-                          required
-                        ></Field>
-                        <Field
-                          label="Remarks"
-                          name="certificate.remarks"
-                          component={CertifyTextField}
-                          textArea={true}
-                          required
-                        ></Field>
-                        <Button
-                          className={buttonStyles.standardBtn}
-                          type="submit"
-                          disabled={loading}
-                          startIcon={
-                            loading ? (
-                              <CircularProgress size="1rem" color="secondary" />
-                            ) : null
-                          }
-                        >
-                          {loading ? "Submitting" : "Submit"}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </Form>
-              </Formik>
-            </div>
-          )}
+            )}
         </div>
       </div>
     </div>
