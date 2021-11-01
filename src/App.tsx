@@ -29,6 +29,8 @@ import Activity from "./screens/Activity";
 import Settings from "./screens/Settings";
 import useTokenService from "./utils/useTokenService";
 import NewCertificateBulk from "./screens/NewBulkCertificate";
+import Report from "./screens/Report";
+import ReportView from "./screens/ReportView";
 
 const theme = createTheme({
   palette: {
@@ -128,6 +130,12 @@ function App() {
                 </ProtectedRoute>
                 <ProtectedRoute path="/certificate/new-certificate-bulk" exact>
                   <NewCertificateBulk />
+                </ProtectedRoute>
+                <ProtectedRoute path="/report" exact>
+                  <Report />
+                </ProtectedRoute>
+                <ProtectedRoute path="/report/:id" exact>
+                  <ReportView />
                 </ProtectedRoute>
                 <ProtectedRoute path="/activity" exact>
                   <Activity />
