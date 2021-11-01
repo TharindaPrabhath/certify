@@ -1,0 +1,35 @@
+.report-screen {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.report-screen__content {
+  padding-right: 1em;
+  padding-left: 1em;
+  padding-top: 1em;
+  padding-bottom: 5em;
+}
+
+.report-card {
+  background-color: var(--secondary-bg-clr);
+  padding: 1em;
+  border-radius: 1em;
+  transition: 200ms all;
+  cursor: pointer;
+}
+.report-card:hover {
+  transform: scale(1.01);
+}
+
+.report-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.report-screen__content .card-section {
+  margin-top: 2em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}

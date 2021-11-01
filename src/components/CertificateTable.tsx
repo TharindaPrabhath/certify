@@ -235,7 +235,7 @@ const CertificateTable = () => {
   return (
     <div
       style={{
-        height: 400,
+        height: "100%",
         width: "100%",
         backgroundColor: colors.secondaryBgClr,
         borderRadius: "1em",
@@ -244,8 +244,8 @@ const CertificateTable = () => {
       <DataGrid
         rows={certificates || []}
         columns={columns}
-        rowCount={100}
-        rowsPerPageOptions={[5, 10]}
+        rowCount={1000}
+        rowsPerPageOptions={[5, 10, 50, 100]}
         paginationMode="server"
         pagination
         pageSize={pageSize}
@@ -253,6 +253,7 @@ const CertificateTable = () => {
         onPageSizeChange={(s) => setPageSize(s)}
         checkboxSelection
         disableSelectionOnClick
+        autoHeight
         style={{
           color: colors.secondaryFontClr,
           borderColor: "transparent",

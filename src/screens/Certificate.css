@@ -20,7 +20,22 @@
     gap: 1em;
 }
 
+.top .right-col__new-certificate-btn-group{
+    display: none;
+}
+
 .certificate-screen__content .table{
     margin-top: 3em;
     margin-bottom: 5em;
+}
+
+@media only screen and (min-width: 700px) {
+    .top .right-col__mobile-certificate-actions{
+        display: none;
+    }
+
+    .top .right-col__new-certificate-btn-group{
+        display: flex;
+        gap: 1em;
+    }
 }
