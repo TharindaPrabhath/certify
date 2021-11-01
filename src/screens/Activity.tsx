@@ -39,7 +39,7 @@ const Activity = () => {
         <div className="activity-timelines-container">
           <div className="top">
             <div className="left-col">
-              <h2>Users</h2>
+              <h2>Activity</h2>
               <Breadcrumbs aria-label="breadcrumb" style={{ color: "white" }}>
                 <Link to="/dashboard">Dashboard</Link>
                 <Typography style={{ color: colors.dimmedClr }}>

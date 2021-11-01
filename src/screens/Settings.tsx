@@ -81,7 +81,7 @@ const Settings = () => {
       <div className="settings-page__content">
         <div className="top">
           <div className="left-col">
-            <h2>Users</h2>
+            <h2>Settings</h2>
             <Breadcrumbs aria-label="breadcrumb" style={{ color: "white" }}>
               <Link to="/dashboard">Dashboard</Link>
               <Typography style={{ color: colors.dimmedClr }}>Users</Typography>
