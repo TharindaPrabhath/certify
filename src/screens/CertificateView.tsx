@@ -69,11 +69,11 @@ const CertificateView = () => {
     const currentUrl = window.location.href;
     setPageUrl(currentUrl);
     const certificateIdFromUrl = currentUrl.replace(
-      "https://symetry-certify-frontend.herokuapp.com/certificate/view?id=",
+      "https://verify.sasnaka.org/certificate/view?id=",
       ""
     );
 
-    // Production ->  https://symetry-certify-frontend.herokuapp.com/certificate/view?id=
+    // Production ->  https://verify.sasnaka.org/certificate/view?id=
     // Dev ->         http://localhost:3000/certificate/view?id=
 
     setLoading(true);
@@ -117,7 +117,7 @@ const CertificateView = () => {
     });
 
     firstPage.drawText(
-      ` https://symetry-certify-frontend.herokuapp.com/certificate/verify`,
+      ` https://verify.sasnaka.org/certificate/verify`,
       {
         x: 230,
         y: 30,
