@@ -94,6 +94,8 @@ const Dashboard = () => {
     };
   }, []);
 
+  console.log(certificateAnalytics);
+
   return (
     <div className="dashboard">
       <div className="dashboard__content">
