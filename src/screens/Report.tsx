@@ -6,6 +6,7 @@ import colors from "../data/colors";
 import "./Report.css";
 import { fetchReports } from "../utils/requestHelper";
 import moment from "moment";
+import NoContent from "../components/NoContent";
 
 const Report = () => {
   const [reports, setReports] = useState<any[]>([]);
@@ -32,20 +33,24 @@ const Report = () => {
         </div>
 
         <div className="card-section">
-          {reports.map((report) => {
-            return (
-              <div className="report-card">
-                <div className="report-card__content">
-                  <h4 className="report-title">{report.name}</h4>
-                  <p className="report-date">
-                    {moment(report.createdAt, "YYYY-MM-DD").format(
-                      "YYYY-MM-DD"
-                    )}
-                  </p>
+          {reports.length !== 0 ? (
+            reports.map((report) => {
+              return (
+                <div className="report-card">
+                  <div className="report-card__content">
+                    <h4 className="report-title">{report.name}</h4>
+                    <p className="report-date">
+                      {moment(report.createdAt, "YYYY-MM-DD").format(
+                        "YYYY-MM-DD"
+                      )}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          ) : (
+            <NoContent />
+          )}
         </div>
       </div>
     </div>
