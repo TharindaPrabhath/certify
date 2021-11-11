@@ -10,6 +10,7 @@ import requests from "../data/requests";
 import useAxios from "../utils/axios";
 
 import "./Activity.css";
+import NoContent from "../components/NoContent";
 
 export interface ActivityWrapper {
   today: ActivityDto[];
@@ -48,12 +49,20 @@ const Activity = () => {
               </Breadcrumbs>
             </div>
           </div>
-          <ActivityTimeline topic="Today" activities={activities?.today} />
-          <ActivityTimeline
-            topic="Yesterday"
-            activities={activities?.yesterday}
-          />
-          <ActivityTimeline topic="Older" activities={activities?.older} />
+          {activities ? (
+            <>
+              <ActivityTimeline topic="Today" activities={activities?.today} />
+              <ActivityTimeline
+                topic="Yesterday"
+                activities={activities?.yesterday}
+              />
+              <ActivityTimeline topic="Older" activities={activities?.older} />
+            </>
+          ) : (
+            <div style={{ height: "100vh", width: "100%" }}>
+              <NoContent />
+            </div>
+          )}
         </div>
       </div>
     </div>
