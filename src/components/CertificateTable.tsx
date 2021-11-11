@@ -25,6 +25,7 @@ import useBadge from "../utils/useBadge";
 import useSWR from "swr";
 import requests from "../data/requests";
 import useAxios from "../utils/axios";
+import NoContent from "./NoContent";
 
 // const getRow = (
 //   certificateId: string,
@@ -241,26 +242,30 @@ const CertificateTable = () => {
         borderRadius: "1em",
       }}
     >
-      <DataGrid
-        rows={certificates || []}
-        columns={columns}
-        rowCount={1000}
-        rowsPerPageOptions={[5, 10, 50, 100]}
-        paginationMode="server"
-        pagination
-        pageSize={pageSize}
-        onPageChange={(n) => setPageNo(n)}
-        onPageSizeChange={(s) => setPageSize(s)}
-        checkboxSelection
-        disableSelectionOnClick
-        autoHeight
-        style={{
-          color: colors.secondaryFontClr,
-          borderColor: "transparent",
-          borderRadius: "1em",
-          padding: "0.5em",
-        }}
-      />
+      {certificates?.length !== 0 ? (
+        <DataGrid
+          rows={certificates || []}
+          columns={columns}
+          rowCount={1000}
+          rowsPerPageOptions={[5, 10, 50, 100]}
+          paginationMode="server"
+          pagination
+          pageSize={pageSize}
+          onPageChange={(n) => setPageNo(n)}
+          onPageSizeChange={(s) => setPageSize(s)}
+          checkboxSelection
+          disableSelectionOnClick
+          autoHeight
+          style={{
+            color: colors.secondaryFontClr,
+            borderColor: "transparent",
+            borderRadius: "1em",
+            padding: "0.5em",
+          }}
+        />
+      ) : (
+        <NoContent />
+      )}
 
       <Dialog
         open={openConfirmBox}
