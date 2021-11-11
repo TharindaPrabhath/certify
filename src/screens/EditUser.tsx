@@ -97,7 +97,7 @@ const EditUser = () => {
       res
         .then(() => {
           enqueueSnackbar(
-            `Successfully deleted the user ${user.fname} ${user.lname}`,
+            `Successfully updated the user ${user.fname} ${user.lname}`,
             {
               variant: "success",
             }
