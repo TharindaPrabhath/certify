@@ -97,6 +97,7 @@ const CertificateView = () => {
       size: 42,
       font: helveticaFont,
       color: rgb(0.26, 0.65, 0.96),
+      maxWidth: 480,
     });
 
     firstPage.drawText(
@@ -106,6 +107,7 @@ const CertificateView = () => {
         y: 230,
         size: 16,
         font: helveticaFont,
+        maxWidth: 470,
       }
     );
 
