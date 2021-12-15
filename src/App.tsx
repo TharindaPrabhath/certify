@@ -110,7 +110,7 @@ function App() {
                 <ProtectedRoute path="/dashboard" exact>
                   <Dashboard />
                 </ProtectedRoute>
-                <ProtectedRoute path="/user" exact>
+                {/* <ProtectedRoute path="/user" exact>
                   <User />
                 </ProtectedRoute>
                 <ProtectedRoute path="/user/new" exact>
@@ -121,7 +121,7 @@ function App() {
                 </ProtectedRoute>
                 <ProtectedRoute path="/user/:uid" exact>
                   <UserProfile />
-                </ProtectedRoute>
+                </ProtectedRoute> */}
                 <ProtectedRoute path="/certificate" exact>
                   <Certificate />
                 </ProtectedRoute>
@@ -131,7 +131,7 @@ function App() {
                 <ProtectedRoute path="/certificate/new-certificate-bulk" exact>
                   <NewCertificateBulk />
                 </ProtectedRoute>
-                <ProtectedRoute path="/report" exact>
+                {/* <ProtectedRoute path="/report" exact>
                   <Report />
                 </ProtectedRoute>
                 <ProtectedRoute path="/report/:id" exact>
@@ -139,7 +139,7 @@ function App() {
                 </ProtectedRoute>
                 <ProtectedRoute path="/activity" exact>
                   <Activity />
-                </ProtectedRoute>
+                </ProtectedRoute> */}
                 <ProtectedRoute path="/settings" exact>
                   <Settings />
                 </ProtectedRoute>
