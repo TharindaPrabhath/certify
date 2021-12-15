@@ -5,7 +5,6 @@ import {
   Breadcrumbs,
   Button,
   CircularProgress,
-  Radio,
   Step,
   StepLabel,
   Stepper,
@@ -23,7 +22,6 @@ import { useSnackbar } from "notistack";
 import {
   addCertificate,
   addThirdPartyCertificate,
-  fetchSuggestionUsers,
 } from "../utils/requestHelper";
 
 import { bindActionCreators } from "redux";
@@ -36,48 +34,31 @@ import { object, string, boolean } from "yup";
 import CertifyDatePicker from "../components/core/CertifyDatePicker";
 import CertifySelect from "../components/core/CertifySelect";
 import CertifyTextField from "../components/core/CertifyTextField";
-import CertifyCheckbox from "../components/core/CertifyCheckbox";
-import { Autocomplete } from "@material-ui/lab";
 import useLocalStorage from "../utils/useLocalStorage";
 
 //const sleep = (time: number) => new Promise((acc) => setTimeout(acc, time));
 
 const NewCertificate = () => {
-  const [memberCertificate, setMemberCertificate] = useState(true);
-  const [memberDefaultEmail, setMemeberDefaultEmail] = useState(true);
   const certificateTypes = ["Participation", "Content Creation", "Other"];
-  const thirdPartRoles = ["Student", "Graduate", "Undergraduate", "Other"];
-  const [suggestions, setSuggestions] = useState<any[] | undefined[]>([]);
   const { getAdmin } = useLocalStorage();
 
   //  based on auto complete trash
   const [reciever, setReciever] = useState("");
-  const [recieverId, setRecieverId] = useState(0);
-  const [inputValue, setInputValue] = useState("");
   //--------------------------------------------------
+
+  const buttonStyles = useButtonStyles();
+  const [newEvent, setNewEvent] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
   const textfieldStyles = useTextfieldStyles();
   const dispatch = useDispatch();
   const { setLoading } = bindActionCreators(actionCreators, dispatch);
   const initialValues = {
-    memberCertificate: "true",
-    member: {
-      reciever: "",
-      defaultEmail: true,
-      customEmail: "",
-    },
-
-    thirdPartyUser: {
+    receiver: {
       firstName: "",
       lastName: "",
       email: "",
-      emailVerified: false,
       phone: "",
-      role: "",
-      birthday: "",
-      address: "",
-      description: "",
     },
 
     certificate: {
@@ -85,188 +66,110 @@ const NewCertificate = () => {
       reason: "",
       remarks: "",
     },
+
+    event: {
+      name: "",
+      description: "",
+      startDate: "",
+      endDate: "",
+      thumbnailUrl: "",
+    },
   };
 
   const step1ValidationSchema = object({
-    memberCertificate: boolean()
-      .required("Target group is required")
-      .default(true),
+    event: object({
+      name: string().required("Required"),
+      description: string().optional(),
+      startDate: string().optional(),
+      endDate: string().optional(),
+      thumbnailUrl: string().optional(),
+    }),
   });
 
   const step2ValidationSchema = object({
-    member: object().when("memberCertificate", {
-      is: "true",
-      then: object({
-        defaultEmail: boolean().required(),
-        customEmail: string().when("member.defaultEmail", {
-          is: "false",
-          then: string().required(),
-        }),
-      }),
-    }),
-
-    thirdPartyUser: object().when("memberCertificate", {
-      is: "false",
-      then: object({
-        firstName: string().required("First Name is required"),
-        lastName: string().required("Last Name is required"),
-        email: string().email("Invalid email").required("Email is required"),
-        phone: string().required("Phone is required"),
-        role: string().required("Role is required"),
-      }),
+    receiver: object({
+      firstName: string().required("Required"),
+      lastName: string().required("Required"),
+      email: string().email("Invalid email").required("Required"),
+      phone: string().min(9, "Invalid phone").optional(),
     }),
   });
 
   const step3ValidationSchema = object({
     certificate: object({
-      type: string().required("Certificate type is required"),
-      reason: string().required("Reason is required"),
-      remarks: string().required("Remarks are required"),
+      type: string().required("Required"),
+      reason: string().required("Required"),
+      remarks: string().optional(),
     }),
   });
 
-  // const validationSchema = object({
-  //   member: object({
-  //     reciever: mixed().when("memberCertificate", {
-  //       is: true,
-  //       then: string().required("Reciever is required"),
-  //       otherwise: string().optional(),
-  //     }),
-  //     customEmail: mixed().when("defaultEmail", {
-  //       is: false,
-  //       then: string()
-  //         .email("Invalid email")
-  //         .required("Custom email is required"),
-  //       otherwise: string().email().optional(),
-  //     }),
-  //   }),
-
-  //   thirdPartyUser: object({
-  //     firstName: mixed().when("memberCertificate", {
-  //       is: false,
-  //       then: string().required("First Name is required"),
-  //       otherwise: string().optional(),
-  //     }),
-  //     lastName: mixed().when("memberCertificate", {
-  //       is: false,
-  //       then: string().required("Last Name is required"),
-  //       otherwise: string().optional(),
-  //     }),
-  //     email: mixed().when("memberCertificate", {
-  //       is: false,
-  //       then: string().email().required("Email is required"),
-  //       otherwise: string().email().optional(),
-  //     }),
-  //     phone: mixed().when("memberCertificate", {
-  //       is: false,
-  //       then: string().required("Phone is required"),
-  //       otherwise: string().optional(),
-  //     }),
-  //     role: mixed().when("memberCertificate", {
-  //       is: false,
-  //       then: string().required("Role is required"),
-  //       otherwise: string().optional(),
-  //     }),
-  //   }),
-
-  //   certificate: object({
-  //     type: string().required("Certificate type is required"),
-  //     reason: string().required("Reason is required"),
-  //     remarks: string().required("Remarks are required"),
-  //   }),
-  // });
-
   const handleSubmit = async (values: any) => {
-    const currAdminId = getAdmin().id;
-    if (values.memberCertificate === "true") {
-      const certificate: any = {
+    const user = getAdmin();
+    const certificate: any = {
+      receiver: {
+        firstName: values.receiver.firstName,
+        lastName: values.receiver.lastName,
+        email: values.receiver.email,
+        phone: values.receiver.phone,
+      },
+      certificate: {
         type: values.certificate.type,
         reason: values.certificate.reason,
         remarks: values.certificate.remarks,
-        user: {
-          uid: recieverId,
-        },
-        admin: {
-          id: parseInt(currAdminId!),
-        },
-      };
+      },
+      event: {
+        id: "",
+        name: values.event.name,
+        description: values.event.description,
+        startDate: values.event.startDate,
+        endDate: values.event.endDate,
+        thumbnailUrl: values.event.thumbnailUrl,
+      },
+      user: {
+        id: user.id,
+        email: "",
+      },
+    };
 
-      const res = addCertificate(certificate);
-      res
-        .then(() => {
-          enqueueSnackbar(
-            `Successfully issued the certificate to ${recieverId}`,
-            {
-              variant: "success",
-            }
-          );
-        })
-        .catch((err) => {
-          enqueueSnackbar(
-            `${err} .Could not issue the certificate.Try again later.`,
-            {
-              variant: "error",
-            }
-          );
-        })
-        .finally(() => setLoading(false));
+    if (values.memberCertificate === "true") {
+      // const res = addCertificate(certificate);
+      // res
+      //   .then(() => {
+      //     enqueueSnackbar(
+      //       `Successfully issued the certificate to ${recieverId}`,
+      //       {
+      //         variant: "success",
+      //       }
+      //     );
+      //   })
+      //   .catch((err) => {
+      //     enqueueSnackbar(
+      //       `${err} .Could not issue the certificate.Try again later.`,
+      //       {
+      //         variant: "error",
+      //       }
+      //     );
+      //   })
+      //   .finally(() => setLoading(false));
     } else {
-      const thirdPartyCertificate: any = {
-        user: {
-          fname: values.thirdPartyUser.firstName,
-          lname: values.thirdPartyUser.lastName,
-          email: values.thirdPartyUser.email,
-          phone: values.thirdPartyUser.phone,
-          role: values.thirdPartyUser.role,
-          member: false,
-          address: values.thirdPartyUser.address,
-          description: values.thirdPartyUser.description,
-          emailVerified: false,
-          certified: true,
-          numCertificates: 0,
-          admin: {
-            id: parseInt(currAdminId!),
-          },
-        },
-        certificate: {
-          type: values.certificate.type,
-          reason: values.certificate.reason,
-          remarks: values.certificate.remarks,
-          admin: {
-            id: parseInt(currAdminId!),
-          },
-        },
-      };
-
-      addThirdPartyCertificate(thirdPartyCertificate)
-        .then((res) => {
-          enqueueSnackbar(
-            `Successfully issued the third party certificate to ${recieverId}`,
-            {
-              variant: "success",
-            }
-          );
-        })
-        .catch((err) => {
-          enqueueSnackbar(
-            `${err} .Could not issue the third party certificate.Try again later.`,
-            {
-              variant: "error",
-            }
-          );
-        })
-        .finally(() => setLoading(false));
-    }
-  };
-
-  const handleOnChange = (query: string) => {
-    setInputValue(query);
-    if (query !== "" && query.length !== 1) {
-      fetchSuggestionUsers(query)
-        .then((res) => {
-          setSuggestions(res.data);
-        })
-        .catch((err) => console.error(err));
+      // addThirdPartyCertificate(thirdPartyCertificate)
+      //   .then((res) => {
+      //     enqueueSnackbar(
+      //       `Successfully issued the third party certificate to ${recieverId}`,
+      //       {
+      //         variant: "success",
+      //       }
+      //     );
+      //   })
+      //   .catch((err) => {
+      //     enqueueSnackbar(
+      //       `${err} .Could not issue the third party certificate.Try again later.`,
+      //       {
+      //         variant: "error",
+      //       }
+      //     );
+      //   })
+      //   .finally(() => setLoading(false));
     }
   };
 
@@ -292,185 +195,124 @@ const NewCertificate = () => {
                 handleSubmit(values);
               }}
             >
-              <MyStep label="Step 1" validationSchema={step1ValidationSchema}>
+              <MyStep label="Event" validationSchema={step1ValidationSchema}>
                 <MyBox>
                   <p style={{ fontSize: "1.1em", marginBottom: "1em" }}>
-                    Who does recieve this certificate ?
+                    Enter the details about the related event
                   </p>
-                  <div role="group">
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <Field
-                        name="memberCertificate"
-                        value="true"
-                        type="radio"
-                        as={Radio}
-                        color="primary"
-                        onClick={() => setMemberCertificate(true)}
-                      />
-                      <p>Member of Certify</p>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <Field
-                        name="memberCertificate"
-                        value="false"
-                        type="radio"
-                        as={Radio}
-                        color="primary"
-                        onClick={() => setMemberCertificate(false)}
-                      />
-                      <p>Third party person</p>
-                    </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "1em",
+                    }}
+                  >
+                    {newEvent ? (
+                      <>
+                        <Field
+                          label="Name"
+                          name="event.name"
+                          component={CertifyTextField}
+                          required
+                        ></Field>
+                        <Field
+                          label="Thumbnail URL"
+                          name="event.thumbnailUrl"
+                          component={CertifyTextField}
+                        ></Field>
+                        <Field
+                          label="Description"
+                          name="event.description"
+                          component={CertifyTextField}
+                          textArea={true}
+                        ></Field>
+                        <Field
+                          label="Start Date"
+                          name="event.startDate"
+                          component={CertifyDatePicker}
+                        ></Field>
+                        <Field
+                          label="End Date"
+                          name="event.endDate"
+                          component={CertifyDatePicker}
+                        ></Field>
+                        <h4 style={{ textAlign: "center" }}>or</h4>
+                        <Button
+                          className={buttonStyles.standardBtn}
+                          onClick={() => setNewEvent(false)}
+                        >
+                          Select an existing event
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Field
+                          label="Select Event"
+                          name="event.name"
+                          component={CertifySelect}
+                          options={["Event 1", "Event 2", "Event 3"]}
+                          required
+                        ></Field>
+                        <h4 style={{ textAlign: "center" }}>or</h4>
+                        <Button
+                          className={buttonStyles.standardBtn}
+                          onClick={() => setNewEvent(true)}
+                        >
+                          Create a new Event
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </MyBox>
               </MyStep>
 
-              <MyStep label="Step 2" validationSchema={step2ValidationSchema}>
-                {memberCertificate ? (
-                  <MyBox>
-                    <p style={{ fontSize: "1.1em", marginBottom: "1em" }}>
-                      Create the reciever
-                    </p>
-
-                    <Autocomplete
-                      id="combo-box-demo"
-                      value={reciever}
-                      onChange={(e, newValue) => {
-                        setReciever(newValue);
-                        if (newValue !== null && newValue.uid !== null)
-                          setRecieverId(newValue.uid);
-                      }}
-                      inputValue={inputValue}
-                      onInputChange={(e, newInputValue) => {
-                        handleOnChange(newInputValue);
-                      }}
-                      options={suggestions}
-                      getOptionLabel={(option) =>
-                        option.fname === undefined && option.lname === undefined
-                          ? ""
-                          : option.fname + " " + option.lname
-                      }
-                      style={{ width: "100%" }}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          variant="outlined"
-                          color="primary"
-                          required={true}
-                          label="Reciever"
-                          //onChange={(e) => handleOnChange(e.target.value)}
-                        />
-                      )}
-                    />
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <Field
-                        name="member.defaultEmail"
-                        as={CertifyCheckbox}
-                        checked={memberDefaultEmail}
-                        label="Send to reciever's default email"
-                        onClick={() =>
-                          setMemeberDefaultEmail(!memberDefaultEmail)
-                        }
-                      />
-                      <p style={{ color: "grey" }}>
-                        By disabling this will send the certificate to the
-                        entered custom email
-                      </p>
-                    </div>
-                    {!memberDefaultEmail && (
-                      <Field
-                        name="member.customEmail"
-                        as={TextField}
-                        type="email"
-                        required={!memberDefaultEmail}
-                        label="Custom Email"
-                        variant="outlined"
-                        color="primary"
-                        InputProps={{ className: textfieldStyles.input }}
-                      />
-                    )}
-                  </MyBox>
-                ) : (
-                  <MyBox>
-                    <p style={{ fontSize: "1.1em", marginBottom: "1em" }}>
-                      Create the third party reciever
-                    </p>
-                    <Field
-                      name="thirdPartyUser.firstName"
-                      component={CertifyTextField}
-                      label="First Name"
-                      variant="outlined"
-                      color="primary"
-                      InputProps={{ className: textfieldStyles.input }}
-                    />
-                    <Field
-                      name="thirdPartyUser.lastName"
-                      component={CertifyTextField}
-                      label="Last Name"
-                      variant="outlined"
-                      color="primary"
-                      InputProps={{ className: textfieldStyles.input }}
-                    />
-                    <Field
-                      name="thirdPartyUser.email"
-                      component={CertifyTextField}
-                      label="Email"
-                      variant="outlined"
-                      color="primary"
-                      InputProps={{ className: textfieldStyles.input }}
-                    />
-                    <Field
-                      name="thirdPartyUser.phone"
-                      component={CertifyTextField}
-                      label="Phone"
-                      variant="outlined"
-                      color="primary"
-                      InputProps={{ className: textfieldStyles.input }}
-                    />
-                    <Field
-                      name="thirdPartyUser.role"
-                      label="Role"
-                      component={CertifySelect}
-                      options={thirdPartRoles}
-                    />
-                    <Field
-                      label="Birthday"
-                      name="thirdPartyUser.birthday"
-                      component={CertifyDatePicker}
-                      InputProps={{ className: textfieldStyles.input }}
-                    />
-                    <Field
-                      name="thirdPartyUser.address"
-                      as={TextField}
-                      multiline={true}
-                      rows={5}
-                      label="Address"
-                      variant="outlined"
-                      color="primary"
-                      InputProps={{ className: textfieldStyles.input }}
-                    />
-                    <Field
-                      name="thirdPartyUser.description"
-                      as={TextField}
-                      multiline={true}
-                      rows={5}
-                      label="Description"
-                      variant="outlined"
-                      color="primary"
-                      InputProps={{ className: textfieldStyles.input }}
-                    />
-                  </MyBox>
-                )}
-              </MyStep>
-
-              <MyStep label="Step 3" validationSchema={step3ValidationSchema}>
+              <MyStep label="Receiver" validationSchema={step2ValidationSchema}>
                 <MyBox>
                   <p style={{ fontSize: "1.1em", marginBottom: "1em" }}>
-                    Create the certificate
+                    Enter the details about the receiver of the certificate
+                  </p>
+                  <Field
+                    name="receiver.firstName"
+                    component={CertifyTextField}
+                    label="First Name"
+                    variant="outlined"
+                    color="primary"
+                    InputProps={{ className: textfieldStyles.input }}
+                  />
+                  <Field
+                    name="receiver.lastName"
+                    component={CertifyTextField}
+                    label="Last Name"
+                    variant="outlined"
+                    color="primary"
+                    InputProps={{ className: textfieldStyles.input }}
+                  />
+                  <Field
+                    name="receiver.email"
+                    component={CertifyTextField}
+                    label="Email"
+                    variant="outlined"
+                    color="primary"
+                    InputProps={{ className: textfieldStyles.input }}
+                  />
+                  <Field
+                    name="receiver.phone"
+                    component={CertifyTextField}
+                    label="Phone"
+                    variant="outlined"
+                    color="primary"
+                    InputProps={{ className: textfieldStyles.input }}
+                  />
+                </MyBox>
+              </MyStep>
+
+              <MyStep
+                label="Certificate"
+                validationSchema={step3ValidationSchema}
+              >
+                <MyBox>
+                  <p style={{ fontSize: "1.1em", marginBottom: "1em" }}>
+                    Enter the details about the certificate
                   </p>
                   <Field
                     name="certificate.type"
@@ -531,7 +373,6 @@ const MyStepper = ({ children, ...props }: FormikConfig<FormikValues>) => {
       validationSchema={currentChild.props.validationSchema}
       onSubmit={(values, helpers) => {
         if (isLastStep()) {
-          console.log("here");
           props.onSubmit(values, helpers);
         } else {
           setStep(step + 1);
