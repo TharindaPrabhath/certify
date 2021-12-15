@@ -66,10 +66,10 @@ const Settings: SidebarProp = {
 
 const SidebarData: SidebarProp[] = [
   Dashboard,
-  User,
+  // User,
   Certificate,
-  Report,
-  Activity,
+  // Report,
+  // Activity,
   Settings,
 ];
 
